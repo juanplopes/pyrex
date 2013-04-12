@@ -17,6 +17,9 @@ class TestPyrex(unittest.TestCase):
     def test_simple_repetition(self):
         self.assertEqual([(0, 1), (0, 2), (1, 1)], list(pyrex.rex('a+').match('aa')))
 
+    def test_simple_repetition_with_optional(self):
+        self.assertEqual([(0, 1), (0, 2), (1, 1)], list(pyrex.rex('a+?').match('aa')))
+
     def test_simple_repetition_zero_or_more(self):
         self.assertEqual([(0, 1), (0, 2), (1, 1)], list(pyrex.rex('a*').match('aa')))
 
@@ -28,8 +31,6 @@ class TestPyrex(unittest.TestCase):
 
     def test_grouping_simple(self):
         self.assertEqual([(0, 3), (0, 5)], list(pyrex.rex('a(ab)+').match('aabab')))
-
-
 
         
 if __name__ == "__main__":

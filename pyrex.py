@@ -17,12 +17,13 @@ def rex(pattern):
         
     def repetition():
         e = primary()
-        if tokens.maybe('?'):
-            e = Repetition(e, 0, 1)
-        elif tokens.maybe('*'):
-            e = Repetition(e, 0, float('inf'))
-        elif tokens.maybe('+'):
-            e = Repetition(e, 1, float('inf'))
+        while tokens.peek('?*+'):
+            if tokens.maybe('?'):
+                e = Repetition(e, 0, 1)
+            elif tokens.maybe('*'):
+                e = Repetition(e, 0, float('inf'))
+            elif tokens.maybe('+'):
+                e = Repetition(e, 1, float('inf'))
         return e
         
     def primary():
@@ -45,6 +46,11 @@ class Tokens:
     def eof(self):
         return self.i >= len(self.pattern)
 
+    def peek(self, chars):
+        if self.eof() or self.pattern[self.i] not in chars:
+            return None
+        return self.pattern[self.i]
+
     def avoid_peek(self, chars):
         if self.eof() or self.pattern[self.i] in chars:
             return None
@@ -55,9 +61,7 @@ class Tokens:
         return self.pattern[self.i - 1]
 
     def maybe(self, chars):
-        if self.eof() or self.pattern[self.i] not in chars:
-            return None
-        return self.next()
+        return self.peek(chars) and self.next()
        
             
 def backtrack(it, atleast, atmost, string, i):
