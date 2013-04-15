@@ -4,39 +4,57 @@ def rex(pattern):
     tokens = Tokens(pattern)
 
     def option():
-        es = [sequence()]
-        while tokens.maybe('|'):
-            es.append(sequence())
-        return Option(es)
+        split, join = State(), State()
+        while True:
+            start, end = sequence()
+            split.then(start)
+            end.then(join)
+            if not tokens.maybe('|'): break
+        return split, join
         
     def sequence():
-        es = [repetition()]
+        start, end = repetition()
         while tokens.avoid_peek('|)'):
-            es.append(repetition())
-        return Sequence(es)
+            nstart, nend = repetition()
+            end.then(nstart)
+            end = nend
+        return start, end
+        
         
     def repetition():
-        e = primary()
+        start, end = primary()
         while tokens.peek('?*+'):
+            split, join = State(), State()
+            split.then(start)
+            
             if tokens.maybe('?'):
-                e = Repetition(e, 0, 1)
+                end.then(join)
+                split.then(join)
             elif tokens.maybe('*'):
-                e = Repetition(e, 0, float('inf'))
+                end.then(split)
+                split.then(join)
             elif tokens.maybe('+'):
-                e = Repetition(e, 1, float('inf'))
-        return e
+                end.then(split)
+                end.then(join)
+
+            start, end = split, join
+        return start, end
         
     def primary():
         if tokens.maybe('.'):
-            return Any()
+            state = State(incr=1)
+            return state, state
         elif tokens.maybe('('):
             e = option()
             tokens.maybe(')')
             return e
         elif tokens.avoid_peek('.+*?()|'):
-            return Literal(tokens.next())
+            state = State(tokens.next())
+            return state, state
 
-    return option()
+    start, end = option()
+    end.then(FinalState())
+    return Machine(start)
 
 class Tokens:
     def __init__(self, pattern):    
@@ -62,63 +80,48 @@ class Tokens:
 
     def maybe(self, chars):
         return self.peek(chars) and self.next()
-       
-            
-def backtrack(it, atleast, atmost, string, i):
-    if atleast <= 0: yield 0
-    if atmost <= 0: return
-
-    child = next(it)
-    for consumed in child.consume(string, i):
-        for result in backtrack(it, atleast-1, atmost-1, string, i+consumed):
-            yield consumed + result
-
+    
 class Machine(object):
+    def __init__(self, state):
+        self.state = state
+        
     def match(self, string):
+        cache = {}
+        def ask(x, s, i):
+            if x not in cache:
+                cache[x] = {}
+            if i not in cache[x]:
+                cache[x][i] = x.consume(ask, s, i)
+            return cache[x][i]
+                
         for i in range(len(string)):
-            for consumed in self.consume(string, i):
-                if consumed > 0:
-                    yield (i, consumed)           
-
-class Literal(Machine):
-    def __init__(self, char):
-        self.char = char
+            result = ask(self.state, string, i)
+            if result is not None:
+                return (i, result)
+    
+class FinalState(object):
+    def consume(self, ask, string, i):
+        return 0
        
-    def consume(self, string, i):
-        if i < len(string) and string[i] == self.char:
-            yield 1
+class State(object):
+    def __init__(self, char='', incr=None):
+        self.char = char
+        self.incr = incr or len(char) or 0
+        self.exits = []
+       
+    def then(self, state):
+        self.exits.append(state)
+        return state
+       
+    def consume(self, ask, string, i):
+        if i+self.incr<=len(string) and (not self.char or string[i] == self.char): 
+            for exit in self.exits:
+                result = ask(exit, string, i+self.incr)
+                if result is not None:
+                    return self.incr+result
 
-class Any(Machine):
-    def consume(self, string, i):
-        if i < len(string):
-            yield 1
 
-class Sequence(Machine):
-    def __init__(self, children):
-        self.children = children
-        
-    def consume(self, string, i):
-        n = len(self.children)
-        return backtrack(iter(self.children), n, n, string, i)
-              
-class Option(Machine):
-    def __init__(self, children):
-        self.children = children
-        
-    def consume(self, string, i):
-        for child in self.children:
-            for consumed in child.consume(string, i):
-                yield consumed
 
-class Repetition(Machine):
-    def __init__(self, child, atleast, atmost):
-        self.child = child
-        self.atleast = atleast
-        self.atmost = atmost
-        
-    def consume(self, string, i):
-        return backtrack(repeat(self.child), self.atleast, self.atmost, string, i)
-              
 
     
     
