@@ -1,5 +1,3 @@
-from itertools import repeat
-
 def rex(pattern):
     tokens = Tokens(pattern)
 
@@ -102,7 +100,6 @@ class State(object):
        
     def then(self, state):
         self.exits.append(state)
-        return state
        
     def consume(self, ask, string, i):
         if i+self.incr<=len(string) and (not self.char or string[i] == self.char): 
