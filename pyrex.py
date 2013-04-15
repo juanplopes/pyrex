@@ -14,7 +14,7 @@ def rex(pattern):
         
     def sequence():
         start, end = repetition()
-        while tokens.avoid_peek('|)'):
+        while tokens.peek('|)', negate=True):
             nstart, nend = repetition()
             end.then(nstart)
             end = nend
@@ -48,7 +48,7 @@ def rex(pattern):
             e = option()
             tokens.maybe(')')
             return e
-        elif tokens.avoid_peek('.+*?()|'):
+        elif tokens.peek('.+*?()|', negate=True):
             state = State(tokens.next())
             return state, state
 
@@ -61,16 +61,8 @@ class Tokens:
         self.pattern = pattern
         self.i = 0
 
-    def eof(self):
-        return self.i >= len(self.pattern)
-
-    def peek(self, chars):
-        if self.eof() or self.pattern[self.i] not in chars:
-            return None
-        return self.pattern[self.i]
-
-    def avoid_peek(self, chars):
-        if self.eof() or self.pattern[self.i] in chars:
+    def peek(self, chars, negate=False):
+        if self.i >= len(self.pattern) or (self.pattern[self.i] not in chars) ^ negate:
             return None
         return self.pattern[self.i]
         
@@ -87,12 +79,11 @@ class Machine(object):
         
     def match(self, string):
         cache = {}
-        def ask(x, s, i):
-            if x not in cache:
-                cache[x] = {}
-            if i not in cache[x]:
-                cache[x][i] = x.consume(ask, s, i)
-            return cache[x][i]
+        def ask(state, s, i):
+            key = (state, i)
+            if key not in cache:
+                cache[key] = state.consume(ask, s, i)
+            return cache[key]
                 
         for i in range(len(string)):
             result = ask(self.state, string, i)
