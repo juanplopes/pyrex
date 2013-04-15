@@ -110,9 +110,4 @@ class State(object):
                 result = ask(exit, string, i+self.incr)
                 if result is not None:
                     return self.incr+result
-
-
-
-
-    
-    
+                    

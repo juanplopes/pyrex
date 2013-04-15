@@ -5,6 +5,9 @@ class TestPyrex(unittest.TestCase):
     def test_single_literal(self):
         self.assertEqual((0, 1), pyrex.rex('a').match('a'))
 
+    def test_single_literal_in_the_middle(self):
+        self.assertEqual((1, 1), pyrex.rex('a').match('ba'))
+
     def test_single_literal_matching_multiple_times(self):
         self.assertEqual((0, 1), pyrex.rex('a').match('aa'))
 
@@ -37,6 +40,9 @@ class TestPyrex(unittest.TestCase):
 
     def test_will_match_greedly(self):
         self.assertEqual((0, 30), pyrex.rex('(.+.+)+y').match('a'*29+'y'))
+
+    def test_will_match_greedly_in_the_middle(self):
+        self.assertEqual((1, 30), pyrex.rex('a(.+.+)+y').match('b' + 'a'*29+ 'y'))
 
     def test_article_specially_crafted_regex(self):
         self.assertEqual((0, 30), pyrex.rex('a?'*30+'a'*30).match('a'*30))
