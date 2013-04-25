@@ -41,38 +41,34 @@ class Machine(object):
         self.states = states
         
     def match(self, string):
-        def best(a, b):
-            if not a: return b
-            if a[0] < b[0] or a[0] == b[0] and a[1] > b[1]: return a
-            return b
-        return reduce(best, self.matches(string), None)
+        ms = self.matches(string)
+        if not ms: return None
+        return min(ms, key=lambda x:(x[0], -x[1]))
         
     def matches(self, string):
         P, Q, V = [], [], [-1] * len(self.states)
+        answers = []
         
         def add(start, i, j):
-            if j==len(self.states): 
-                yield (start, i-start)
-            elif V[j] != i:
-                V[j] = i
+            if j==len(self.states): return answers.append((start, i-start))
+            if V[j] == i: return
+            V[j] = i
 
-                state = self.states[j]
-                if isinstance(state, tuple):
-                    for incr in state:
-                        for answer in add(start, i, j+incr):
-                            yield answer
-                else:
-                    Q.append((start, j))
+            state = self.states[j]
+            if isinstance(state, tuple):
+                for incr in state:
+                    add(start, i, j+incr)
+            else:
+                Q.append((start, j))
         
+        add(0, 0, 0)
         for i, c in enumerate(string):
-            for x in add(i, i, 0): pass
-                
+            add(i, i, 0)
             P, Q = Q, []
             
             for start, j in P:
                 state = self.states[j]
                 if state is None or c == state:
-                    for x in add(start, i+1, j+1):
-                        yield x
-
-           
+                    add(start, i+1, j+1)
+    
+        return answers

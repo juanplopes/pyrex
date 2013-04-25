@@ -26,9 +26,9 @@ class TestPyrex(unittest.TestCase):
     def test_simple_repetition_zero_or_more(self):
         self.assertEqual((0, 2), pyrex.rex('a*').match('aa'))
 
-    def test_wont_match_zero_width_string(self):
-        self.assertEqual(None, pyrex.rex('a*').match(''))
-        self.assertEqual(None, pyrex.rex('a*').match('b'))
+    def test_will_match_zero_width_string(self):
+        self.assertEqual((0, 0), pyrex.rex('a*').match(''))
+        self.assertEqual((0, 0), pyrex.rex('a*').match('b'))
 
     def test_simple_repetition_zero_or_one(self):
         self.assertEqual((0, 2), pyrex.rex('aa?').match('aa'))
