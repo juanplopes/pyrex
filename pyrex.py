@@ -32,9 +32,13 @@ def rex(pattern):
         token = tokens.popleft()
         if token == '.': return [None]
         if token == '(': return (option(), tokens.popleft())[0]
-        return [token]
+        if token not in '?*+)|': return [token]
+        raise Exception('Not expected: "{}"'.format(token))
 
-    return Machine(option())
+
+    e = option()
+    if not tokens: return Machine(e)
+    raise Exception('Not expected: "{}"'.format(''.join(tokens)))
                 
 class Machine(object):
     def __init__(self, states):

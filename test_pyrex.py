@@ -5,6 +5,12 @@ class TestPyrex(unittest.TestCase):
     def test_single_literal(self):
         self.assertEqual((0, 1), pyrex.rex('a').match('a'))
 
+    def test_malformed_expression(self):
+        self.assertRaises(Exception, pyrex.rex, '*')
+
+    def test_malformed_expression(self):
+        self.assertRaises(Exception, pyrex.rex, ')a')
+
     def test_single_literal_in_the_middle(self):
         self.assertEqual((1, 1), pyrex.rex('a').match('ba'))
 
