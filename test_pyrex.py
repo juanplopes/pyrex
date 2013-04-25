@@ -44,8 +44,8 @@ class TestPyrex(unittest.TestCase):
     def test_will_match_greedly_in_the_middle(self):
         self.assertEqual((1, 30), pyrex.rex('a(.+.+)+y').match('b' + 'a'*29+ 'y'))
 
-    def test_article_specially_crafted_regex(self):
-        self.assertEqual((0, 30), pyrex.rex('a?'*30+'a'*30).match('a'*30))
+    def test_article_specially_crafted_regex(self, n=100):
+        self.assertEqual((0, n), pyrex.rex('a?'*n+'a'*n).match('a'*n))
 
         
 if __name__ == "__main__":

@@ -2,57 +2,36 @@ def rex(pattern):
     tokens = Tokens(pattern)
 
     def option():
-        split, join = State(), State()
-        while True:
-            start, end = sequence()
-            split.then(start)
-            end.then(join)
-            if not tokens.maybe('|'): break
-        return split, join
-        
+        e = sequence()
+        for token in tokens.walk('|'):
+            e2 = sequence()
+            e = [(1, len(e)+2)] + e + [(len(e2)+1,)] + e2
+        return e        
+
     def sequence():
-        start, end = repetition()
+        e = []
         while tokens.peek('|)', negate=True):
-            nstart, nend = repetition()
-            end.then(nstart)
-            end = nend
-        return start, end
-        
+            e += repetition()
+        return e
         
     def repetition():
-        start, end = primary()
-        while tokens.peek('?*+'):
-            split, join = State(), State()
-            split.then(start)
-            
-            if tokens.maybe('?'):
-                end.then(join)
-                split.then(join)
-            elif tokens.maybe('*'):
-                end.then(split)
-                split.then(join)
-            elif tokens.maybe('+'):
-                end.then(split)
-                end.then(join)
-
-            start, end = split, join
-        return start, end
+        e = primary()
+        for token in tokens.walk('?*+'):
+            if token == '?': e = [(1, len(e)+1)] + e
+            if token == '+': e = e + [(1, -len(e))]
+            if token == '*': e = [(1, len(e)+2)] + e + [(-len(e)-1,)]
+        return e
         
     def primary():
-        if tokens.maybe('.'):
-            state = State(incr=1)
-            return state, state
-        elif tokens.maybe('('):
-            e = option()
-            tokens.maybe(')')
-            return e
-        elif tokens.peek('.+*?()|', negate=True):
-            state = State(tokens.next())
-            return state, state
+        token = next(tokens.walk('', negate=True))
+        if token == '.':
+            return [None]
+        elif token == '(':
+            return (option(), next(tokens.walk(')')))[0]
+        else:
+            return [token]
 
-    start, end = option()
-    end.then(FinalState())
-    return Machine(start)
+    return Machine(option())
 
 class Tokens:
     def __init__(self, pattern):    
@@ -60,51 +39,47 @@ class Tokens:
         self.i = 0
 
     def peek(self, chars, negate=False):
-        if self.i >= len(self.pattern) or (self.pattern[self.i] not in chars) ^ negate:
-            return None
-        return self.pattern[self.i]
-        
-    def next(self):
-        self.i += 1
-        return self.pattern[self.i - 1]
+        if self.i < len(self.pattern) and (self.pattern[self.i] in chars) ^ negate:
+            return self.pattern[self.i]
 
-    def maybe(self, chars):
-        return self.peek(chars) and self.next()
-    
+    def walk(self, chars, negate=False):
+        while self.peek(chars, negate):
+            self.i += 1
+            yield self.pattern[self.i-1]
+                
 class Machine(object):
-    def __init__(self, state):
-        self.state = state
+    def __init__(self, states):
+        self.states = states
         
     def match(self, string):
-        cache = {}
-        def ask(state, s, i):
-            key = (state, i)
-            if key not in cache:
-                cache[key] = state.consume(ask, s, i)
-            return cache[key]
-                
-        for i in range(len(string)):
-            result = ask(self.state, string, i)
-            if result is not None:
-                return (i, result)
+        P, Q, V = [], [], [-1] * len(self.states)
+        
+        def best(a, b):
+            if a is None: return b
+            if b is None: return a
+            return a if (a[0] < b[0] if a[0] != b[0] else a[1] > b[1]) else b
+            
+        def add(start, i, j):
+            if j==len(self.states): return (start, i-start)
+            if V[j] == i: return
+            V[j] = i
+
+            state = self.states[j]
+            if isinstance(state, tuple):
+                return reduce(best, (add(start, i, j+incr) for incr in state))
+            else:
+                Q.append((start, j))
+        
+        match = None
+        add(0, 0, 0)
+        for i, c in enumerate(string):
+            P, Q = Q, []
+            
+            for start, j in P:
+                state = self.states[j]
+                if state is None or c == state:
+                    match = best(match, add(start, i+1, j+1))
+            add(i+1, i+1, 0)
+        return match
     
-class FinalState(object):
-    def consume(self, ask, string, i):
-        return 0
-       
-class State(object):
-    def __init__(self, char='', incr=None):
-        self.char = char
-        self.incr = incr or len(char) or 0
-        self.exits = []
-       
-    def then(self, state):
-        self.exits.append(state)
-       
-    def consume(self, ask, string, i):
-        if i+self.incr<=len(string) and (not self.char or string[i] == self.char): 
-            for exit in self.exits:
-                result = ask(exit, string, i+self.incr)
-                if result is not None:
-                    return self.incr+result
-                    
+           
