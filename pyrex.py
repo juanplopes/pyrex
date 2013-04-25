@@ -52,7 +52,7 @@ class Machine(object):
             return a if a[0] < b[0] or a[0] == b[0] and a[1] > b[1] else b
                 
         def addnext(start, i, j):
-            if j==len(self.states): return (start, i-start)
+            if j==len(self.states): return (start, i)
             if j in V or V.add(j): return
 
             state = self.states[j]

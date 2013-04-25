@@ -12,7 +12,7 @@ class TestPyrex(unittest.TestCase):
         self.assertRaises(Exception, pyrex.rex, ')a')
 
     def test_single_literal_in_the_middle(self):
-        self.assertEqual((1, 1), pyrex.rex('a').match('ba'))
+        self.assertEqual((1, 2), pyrex.rex('a').match('ba'))
 
     def test_single_literal_matching_multiple_times(self):
         self.assertEqual((0, 1), pyrex.rex('a').match('aa'))
@@ -52,7 +52,7 @@ class TestPyrex(unittest.TestCase):
         self.assertEqual((0, 30), pyrex.rex('(.+.+)+y').match('a'*29+'y'))
 
     def test_will_match_greedly_in_the_middle(self):
-        self.assertEqual((1, 30), pyrex.rex('a(.+.+)+y').match('b' + 'a'*29+ 'yb'))
+        self.assertEqual((1, 31), pyrex.rex('a(.+.+)+y').match('b' + 'a'*29+ 'yb'))
 
     def test_article_specially_crafted_regex(self, n=100):
         self.assertEqual((0, n), pyrex.rex('a?'*n+'a'*n).match('a'*n))
