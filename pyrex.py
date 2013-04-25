@@ -41,22 +41,19 @@ class Machine(object):
         self.states = states
         
     def match(self, string):
-        A, B = deque(), deque()
-        V = [-1] * len(self.states)
+        A, B, V = deque(), deque(), set()
              
         def best(a, b):
-            if a is None: return b
-            if b is None: return a
+            if not a or not b: return a or b
             return a if a[0] < b[0] or a[0] == b[0] and a[1] > b[1] else b
                 
-        def add(start, i, j):
+        def addnext(start, i, j):
             if j==len(self.states): return (start, i-start)
-            if V[j] == i: return
-            V[j] = i
+            if j in V or V.add(j): return
 
             state = self.states[j]
             if isinstance(state, tuple):
-                return reduce(best, (add(start, i, j+incr) for incr in state))
+                return reduce(best, (addnext(start, i, j+incr) for incr in state))
             else:
                 B.append((start, j))
         
@@ -64,12 +61,13 @@ class Machine(object):
             while A:
                 start, j = A.popleft()
                 if self.states[j] in (None, c):
-                    yield add(start, i+1, j+1)
+                    yield addnext(start, i+1, j+1)
         
         answer = None
         for i, c in enumerate(string):
-            add(i, i, 0)
-            A, B = B, A
-            answer = reduce(best, advance(i, c), answer)
+            addnext(i, i, 0)
+            A, B, V = B, A, set()
+            answer = reduce(best, advance(i, c), answer)           
             
         return answer
+        
