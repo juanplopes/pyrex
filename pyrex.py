@@ -57,7 +57,7 @@ class Machine(object):
         def best(a, b):
             if a is None: return b
             if b is None: return a
-            return a if (a[0] < b[0] if a[0] != b[0] else a[1] > b[1]) else b
+            return a if a[0] < b[0] or a[0] == b[0] and a[1] > b[1] else b
             
         def add(start, i, j):
             if j==len(self.states): return (start, i-start)
