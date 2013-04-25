@@ -27,8 +27,8 @@ class TestPyrex(unittest.TestCase):
         self.assertEqual((0, 2), pyrex.rex('a*').match('aa'))
 
     def test_will_match_zero_width_string(self):
-        self.assertEqual((0, 0), pyrex.rex('a*').match(''))
-        self.assertEqual((0, 0), pyrex.rex('a*').match('b'))
+        self.assertEqual(None, pyrex.rex('a*').match(''))
+        self.assertEqual(None, pyrex.rex('a*').match('b'))
 
     def test_simple_repetition_zero_or_one(self):
         self.assertEqual((0, 2), pyrex.rex('aa?').match('aa'))
@@ -46,7 +46,7 @@ class TestPyrex(unittest.TestCase):
         self.assertEqual((0, 30), pyrex.rex('(.+.+)+y').match('a'*29+'y'))
 
     def test_will_match_greedly_in_the_middle(self):
-        self.assertEqual((1, 30), pyrex.rex('a(.+.+)+y').match('b' + 'a'*29+ 'y'))
+        self.assertEqual((1, 30), pyrex.rex('a(.+.+)+y').match('b' + 'a'*29+ 'yb'))
 
     def test_article_specially_crafted_regex(self, n=100):
         self.assertEqual((0, n), pyrex.rex('a?'*n+'a'*n).match('a'*n))
