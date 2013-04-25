@@ -1,4 +1,5 @@
 from collections import deque
+from functools import reduce
 
 def rex(pattern):
     tokens = deque(pattern)
@@ -29,12 +30,9 @@ def rex(pattern):
         
     def primary():
         token = tokens.popleft()
-        if token == '.':
-            return [None]
-        elif token == '(':
-            return (option(), tokens.popleft())[0]
-        else:
-            return [token]
+        if token == '.': return [None]
+        if token == '(': return (option(), tokens.popleft())[0]
+        return [token]
 
     return Machine(option())
                 
@@ -43,34 +41,38 @@ class Machine(object):
         self.states = states
         
     def match(self, string):
+        def best(a, b):
+            if not a: return b
+            if a[0] < b[0] or a[0] == b[0] and a[1] > b[1]: return a
+            return b
+        return reduce(best, self.matches(string), None)
+        
+    def matches(self, string):
         P, Q, V = [], [], [-1] * len(self.states)
         
-        def best(a, b):
-            if a is None: return b
-            if b is None: return a
-            return a if a[0] < b[0] or a[0] == b[0] and a[1] > b[1] else b
-            
         def add(start, i, j):
-            if j==len(self.states): return (start, i-start)
-            if V[j] == i: return
-            V[j] = i
+            if j==len(self.states): 
+                yield (start, i-start)
+            elif V[j] != i:
+                V[j] = i
 
-            state = self.states[j]
-            if isinstance(state, tuple):
-                return reduce(best, (add(start, i, j+incr) for incr in state))
-            else:
-                Q.append((start, j))
+                state = self.states[j]
+                if isinstance(state, tuple):
+                    for incr in state:
+                        for answer in add(start, i, j+incr):
+                            yield answer
+                else:
+                    Q.append((start, j))
         
-        match = None
-        add(0, 0, 0)
         for i, c in enumerate(string):
+            for x in add(i, i, 0): pass
+                
             P, Q = Q, []
             
             for start, j in P:
                 state = self.states[j]
                 if state is None or c == state:
-                    match = best(match, add(start, i+1, j+1))
-            add(i+1, i+1, 0)
-        return match 
+                    for x in add(start, i+1, j+1):
+                        yield x
 
            
