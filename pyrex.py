@@ -23,9 +23,8 @@ def rex(pattern):
     def repetition():
         e = primary()
         for token in walk('?*+'):
-            if token == '?': e = [(1, len(e)+1)] + e
-            if token == '+': e = e + [(1, -len(e))]
-            if token == '*': e = [(1, len(e)+2)] + e + [(-len(e)-1,)]
+            if token in '+*': e = e + [(1, -len(e))]
+            if token in '?*': e = [(1, len(e)+1)] + e
         return e
         
     def primary():
