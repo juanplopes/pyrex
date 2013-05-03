@@ -75,3 +75,11 @@ class Machine(object):
             
         return answer
         
+    def dump(self):
+        for i, s in enumerate(self.states):
+            if isinstance(s, tuple):
+                print '%04d:'%i, 'JUMP', ' OR '.join(map(lambda x: '%+d'%x, s))
+            else:
+                print '%04d:'%i, 'CONSUME', s if s is not None else 'ANY'
+        print '%04d:'%len(self.states), 'YAY_MATCH!'
+        
