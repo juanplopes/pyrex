@@ -74,12 +74,11 @@ class Machine(object):
             answer = reduce(best, advance(i, c), answer)           
             
         return answer
-        
-    def dump(self):
-        for i, s in enumerate(self.states):
-            if isinstance(s, tuple):
-                print '%04d:'%i, 'JUMP', ' OR '.join(map(lambda x: '%+d'%x, s))
-            else:
-                print '%04d:'%i, 'CONSUME', s if s is not None else 'ANY'
-        print '%04d:'%len(self.states), 'YAY_MATCH!'
+       
+    def __repr__(self):
+        return '\n'.join('{line:04d}: {instr} {arg}'.format(
+                      line = i, 
+                      instr = 'JUMP' if isinstance(s, tuple) else 'CONSUME',
+                      arg = s) 
+                  for i, s in enumerate(self.states))
         
