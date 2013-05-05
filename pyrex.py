@@ -75,10 +75,11 @@ class Machine(object):
             
         return answer
        
+    def source(self):
+        for s in self.states:
+            yield ('JUMP ' if isinstance(s, tuple) else 'CONSUME ') + str(s)
+        yield 'YAY_MATCH!'
+       
     def __repr__(self):
-        return '\n'.join('{line:04d}: {instr} {arg}'.format(
-                      line = i, 
-                      instr = 'JUMP' if isinstance(s, tuple) else 'CONSUME',
-                      arg = s) 
-                  for i, s in enumerate(self.states))
+        return '\n'.join('{:04d}: {}'.format(i, s) for i, s in enumerate(self.source()))
         
