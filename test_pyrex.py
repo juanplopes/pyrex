@@ -8,7 +8,7 @@ class TestPyrex(unittest.TestCase):
     def test_malformed_expression(self):
         self.assertRaises(Exception, pyrex.rex, '*')
 
-    def test_malformed_expression(self):
+    def test_malformed_expression_starting_with_parethensis(self):
         self.assertRaises(Exception, pyrex.rex, ')a')
 
     def test_single_literal_in_the_middle(self):
@@ -56,6 +56,10 @@ class TestPyrex(unittest.TestCase):
 
     def test_article_specially_crafted_regex(self, n=100):
         self.assertEqual((0, n), pyrex.rex('a?'*n+'a'*n).match('a'*n))
+
+    def test_regex_source(self, n=100):
+        self.assertEqual('0000: CONSUME a\n0001: JUMP (1, 2)\n0002: CONSUME b\n0003: YAY_MATCH!', str(pyrex.rex('ab?')))
+
 
         
 if __name__ == "__main__":
