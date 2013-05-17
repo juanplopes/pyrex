@@ -106,7 +106,7 @@
 % *****************************************************************************
 
 % alterando o aspecto da cor azul
-\definecolor{blue}{RGB}{41,5,195}
+%\definecolor{blue}{RGB}{41,5,195}
 
 % informações do PDF
 \hypersetup{
@@ -222,7 +222,7 @@ Texto de agradecimento.
 
 Este é o resumo em português.\\
 
-\noindent {Palavras-chave}: Chave1. Chave2. Chave3.
+\noindent {Palavras-chave}: Expressões regulares. Regex. Autômatos Finitos.
 
 % ----------------------------------------------------------
 % Abstract
@@ -232,7 +232,7 @@ Este é o resumo em português.\\
 
 This is the english abstract.\\
 
-\noindent {Keywords}: Word1. Word2. Word3.
+\noindent {Keywords}: Regular expressions. Regex. Finite automata.
 
 % ----------------------------------------------------------
 % Listas de ilustrações e tabelas
@@ -299,7 +299,7 @@ Neste capítulo serão apresentados a motivação, objetivos, e a estrutura do p
 
 Expressões regulares fazem parte do ferramental da maioria das linguagens e plataformas de desenvolvimento modernas. Seu uso é bastante difundido na indústria para os mais variados fins, desde o reconhecimento de padrões, passando pela extração de símbolos para análise sintática de linguagens formais, até a sanitização de entradas do usuário para fins de segurança.
 
-Seu extensivo uso vem precedido por uma forte base teórica na área de autômatos finitos, introduzida nos anos 40 por McCulloch e Pitts, formalizada na década seguinte por Kleene e implementada no final dos anos 60 por Thompson, enquanto desenvolvia o editor de texto QED, posteriormente portada para os mais conhecidos ed e grep, integrantes do sistema operacional Unix.
+Seu extensivo uso vem precedido por uma forte base teórica na área de autômatos finitos, introduzida nos anos 40 por McCulloch e Pitts, formalizada na década seguinte por Kleene e implementada por Ken Thompson no final dos anos 60 \cite{bib:Thompson68}, enquanto desenvolvia o editor de texto QED, posteriormente portada para os mais conhecidos ed e grep, integrantes do sistema operacional Unix.
 
 Desde então, conforme as implementações foram evoluindo, muitas funcionalidades foram adicionadas à linguagem de descrição de expressões regulares que as afastaram da teoria original. Enquanto originalmente descreviam linguagens estritamente regulares, a implementação mais difundida atualmente (PCRE) é capaz não só de reconhecer qualquer linguagem livre de contexto, como também algumas sensíveis a contexto. 
 
@@ -333,9 +333,6 @@ O capítulo 5 expõe as conclusões e contribuições deste trabalho, bem como a
 \backmatter
 %\citeoption{abnt-options4}
 \bibliography{bibliografia}
-\printindex
-
-
 
 \end{document}
 
