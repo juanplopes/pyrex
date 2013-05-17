@@ -78,7 +78,7 @@
 %----------------------------------------------------------------------------------------------
 
 \autor{Juan}{Lopes}
-\titulo{Uma Implementação de Expressões Regulares Para Reconhecimento de Linguagens em Tempo Polinomial}
+\titulo{Expressões Regulares em Tempo Polinomial}
 
 \orientador{titulação} % rotulo
            {[nome de]}{[sobrenome]} % {nome}{sobrenome}
@@ -121,9 +121,9 @@
   pdfcreator={\UERJautor},
   colorlinks=true,                  % false: boxed links; true: colored links
   linkcolor=blue,                   % color of internal links blue
-  citecolor=red,                    % color of links to bibliography blue
-  filecolor=magenta,                % color of file links magenta
-  urlcolor=green,
+  citecolor=blue,                    % color of links to bibliography blue
+  filecolor=blue,                % color of file links magenta
+  urlcolor=blue,
   bookmarksdepth=4
 }
 
@@ -220,7 +220,7 @@ Texto de agradecimento.
 
 \refbibliografica
 
-Este é o resumo em português.\\
+Este é o resumo em português.
 
 \noindent {Palavras-chave}: Expressões regulares. Regex. Autômatos Finitos.
 
@@ -230,7 +230,7 @@ Este é o resumo em português.\\
 
 \pretextualchapter{Abstract}
 
-This is the english abstract.\\
+This is the english abstract.
 
 \noindent {Keywords}: Regular expressions. Regex. Finite automata.
 
@@ -240,40 +240,6 @@ This is the english abstract.\\
 
 \listadefiguras
 \listadetabelas
-
-% ----------------------------------------------------------
-% Outras listas ????
-% ----------------------------------------------------------
-
-% lista de algoritmos ??? 
-\listadealgoritmos
-
-% lista de codigos de programacao ??? \listadecodigos
-
-% ----------------------------------------------------------
-% Lista de abreviaturas e siglas
-% ----------------------------------------------------------
-
-%\listadeabreviaturas
-
-\pretextualchapter{Lista de abreviaturas e siglas}
-
-\abreviatura{CEADS}{Centro de Estudos Ambientais e Desenvolvimento Sustentável}
-\abreviatura{abreviatura2}{Texto2}
-\abreviatura{abreviatura3}{Texto3}
-\abreviatura{abreviatura4}{Texto4}
-
-% ----------------------------------------------------------
-% Lista de simbolos
-% ----------------------------------------------------------
-
-%\listadesimbolos
-
-\pretextualchapter{Lista de símbolos}
-
-\simbolo{simbolo1}{definição1}
-\simbolo{simbolo2}{definição2}
-\simbolo{simbolo3}{definição3}
 
 % ----------------------------------------------------------
 % Sumario
@@ -299,11 +265,11 @@ Neste capítulo serão apresentados a motivação, objetivos, e a estrutura do p
 
 Expressões regulares fazem parte do ferramental da maioria das linguagens e plataformas de desenvolvimento modernas. Seu uso é bastante difundido na indústria para os mais variados fins, desde o reconhecimento de padrões, passando pela extração de símbolos para análise sintática de linguagens formais, até a sanitização de entradas do usuário para fins de segurança.
 
-Seu extensivo uso vem precedido por uma forte base teórica na área de autômatos finitos, introduzida nos anos 40 por McCulloch e Pitts, formalizada na década seguinte por Kleene e implementada por Ken Thompson no final dos anos 60 \cite{bib:Thompson68}, enquanto desenvolvia o editor de texto QED, posteriormente portada para os mais conhecidos ed e grep, integrantes do sistema operacional Unix.
+Seu extensivo uso vem precedido por uma forte base teórica na área de autômatos finitos, introduzida nos anos 40 por McCulloch e Pitts \cite{bib:McCulloch43}, formalizada na década seguinte por Kleene \cite{bib:Kleene56} e implementada por Ken Thompson no final dos anos 60 \cite{bib:Thompson68}, enquanto desenvolvia o editor de texto QED, posteriormente portada para os mais conhecidos ed e grep, integrantes do sistema operacional Unix.
 
-Desde então, conforme as implementações foram evoluindo, muitas funcionalidades foram adicionadas à linguagem de descrição de expressões regulares que as afastaram da teoria original. Enquanto originalmente descreviam linguagens estritamente regulares, a implementação mais difundida atualmente (PCRE) é capaz não só de reconhecer qualquer linguagem livre de contexto, como também algumas sensíveis a contexto. 
+Desde então, conforme as implementações foram evoluindo, muitas funcionalidades foram adicionadas à linguagem de descrição de expressões regulares que as afastaram da teoria original. Enquanto originalmente descreviam linguagens estritamente regulares, a implementação mais difundida atualmente (PCRE) é capaz não só de reconhecer qualquer linguagem livre de contexto, como também algumas sensíveis a contexto. \cite{bib:Nikita12}
 
-Uma das consequências mais notáveis desta evolução não planejada é que o reconhecimento de strings da linguagem, um problema com solução linear originalmente, ganhou soluções exponenciais em um grande número de implementações modernas, que inclui muitas das mais usadas. Talvez a funcionalidade mais perigosa neste sentido sejam as backreferences, que não só impedem soluções polinomiais como tornam o problema de reconhecimento NP-completo. Entretanto, mesmo nas expressões que poderiam ser reconhecidas estritamente com autômatos finitos, certas particularidades de implementação as tornam potencialmente exponenciais, no pior caso.
+Uma das consequências mais notáveis desta evolução não planejada é que o reconhecimento de strings da linguagem, um problema com solução linear originalmente, ganhou soluções exponenciais em um grande número de implementações modernas, que inclui muitas das mais usadas. Talvez a funcionalidade mais perigosa neste sentido sejam as backreferences, que não só impedem soluções polinomiais como tornam o problema de reconhecimento NP-completo. Entretanto, mesmo nas expressões que poderiam ser reconhecidas estritamente com autômatos finitos, certas particularidades de implementação as tornam potencialmente exponenciais, no pior caso. \cite{bib:Cox07}
 
 Essas implementações tornam o uso de expressões regulares potencialmente inseguro em situações ora triviais. Um usuário mal intencionado pode ser capaz de forçar a execução de uma expressão com caráter exponencial para efetuar um ataque de negação de serviço em um servidor web, por exemplo. Muitas vezes a prevenção para esse tipo de ataque pode não ser trivial, e.g. em Java, onde métodos comumente usados contra a entrada do usuário, como replaceAll e split, da classe String são implementados usado expressões regulares vulneráveis a esse tipo de ataque.
 
