@@ -4,9 +4,9 @@
 \usepackage{cmap}           % Mapear caracteres especiais no PDF
 \usepackage[utf8]{inputenc} % Determina a codificacao utiizada
                             % (conversão automática dos acentos)
+\usepackage{listings}
 \usepackage{makeidx}        % Cria o indice
 \usepackage{hyperref}       % Controla a formacao do indice
-\usepackage{lastpage}       % Usado pela Ficha catalografica
 \usepackage{indentfirst}    % Indenta o primeiro paragrafo de cada secao.
 \usepackage{color}          % Controle das cores
 \usepackage{graphicx}       % Inclusao de graficos
@@ -29,11 +29,11 @@
             {Departamento de Informática e Ciência da Computação}
 
 \autor{Juan}{Lopes}
-\titulo{Uma Implementação de Expressões Regulares em PTIME}
+\titulo{Uma Implementação de Expressões Regulares em Tempo Polinomial}
 
-\orientador{Prof} % rotulo
-           {Paulo Eustáquio Duarte}{Pinto} % {nome}{sobrenome}
-           {[afiliação]} % afiliacao
+\orientador{Prof.} % rotulo
+           {Paulo Eustáquio Duarte}{Pinto, DSc.} % {nome}{sobrenome}
+           {} % afiliacao
 
 \coorientador{titulação} % rotulo
            {[nome de]}{[sobrenome]} % {nome}{sobrenome}
@@ -67,17 +67,17 @@
   pdfproducer={LaTeX with class repUERJ}, % producer of the document
   pdfcreator={\UERJautor},
   colorlinks=true,                  % false: boxed links; true: colored links
-  linkcolor=blue,                   % color of internal links blue
-  citecolor=blue,                    % color of links to bibliography blue
-  filecolor=blue,                % color of file links magenta
-  urlcolor=blue,
+  linkcolor=black,                   % color of internal links blue
+  citecolor=black,                    % color of links to bibliography blue
+  filecolor=black,                % color of file links magenta
+  urlcolor=black,
   bookmarksdepth=4
 }
+
 
 \makeindex
 
 \begin{document}
-
 \frontmatter
 \capa
 \folhaderosto
@@ -94,10 +94,6 @@
     \hfill À minha esposa, Jacqueline.
   \vfill
 
-
-% ----------------------------------------------------------
-% Epigrafe
-% ----------------------------------------------------------
 
 \pretextualchapter{}
 
@@ -216,6 +212,59 @@ O capítulo 5 expõe as conclusões e contribuições deste trabalho, bem como a
 %======================================================================================
 
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+\section{Linguagens Formais}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Uma linguagem formal é um conjunto de símbolos -- potencialmente infinito -- que pode estar restrito a um número de regras específicas a eles. Estes símbolos são construídos a partir da combinação de um conjunto finito de elementos da linguagem chamado \emph{alfabeto}. 
+
+Por ser tratar de conjuntos, a notação clássica dos mesmos é utilizada para linguagens. E.g. $A \cup B$ representa a união de linguagens A e B, assim como $A \supset B$ é uma proposição que afirma que a linguagem A contém todos os símbolos da linguagem B. $w \in A$ afirma que o símbolo $w$ está presente na linguagem A.
+
+Linguagens formais é um tema que mistura elementos da ciência da computação, matemática e linguística. Seu papel na computação é fundamental pela relação de seus problemas com os descritos pela teoria da computação.
+
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+\section{Gramáticas Formais}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Uma das formas de representar linguagens formais é através de gramáticas gerativas. O termo ``gramática formal'' é comumente utilizado para referir-se a gramáticas gerativas. Entretanto, existem outras formas de representar gramáticas formais além deste. Este trabalho irá se limitar à definição mais comum.
+
+Gramáticas gerativas são sistemas de reescrita, i.e. a partir de um símbolo inicial, é possível usar as regras de reescrita para produzir todos os símbolos de uma linguagem. Esta operação é, de certa forma, o problema dual de reconhecer um símbolo como parte da linguagem através de um autômato \cite{bib:Ruohonen09}.
+
+Uma gramática é formada pela quádrupla: $(N, \Sigma, P, S)$. Onde:
+
+\begin{lcircp}
+    \item N é o conjunto de símbolos não terminais. Eles não fazem parte da linguagem original, então precisam ser sempre substituídos para alcançar um símbolo válido na linguagem.
+    \item $\Sigma$ é o conjunto de símbolos terminais da linguagem. Também conhecido como alfabeto.
+    \item P é o conjunto de regras de produção, geralmente na forma $\alpha \rightarrow \beta$, onde $\alpha$ e $\beta$ são sequências de símbolos terminais e não-terminais.
+    \item S é o símbolo inicial do sistema de reescrita. $S \in N$.
+\end{lcircp}
+
+Um exemplo de gramática é a que define expressões da forma $a^nb^n$:
+
+\begin{equation*}
+	S \rightarrow aSb
+\end{equation*}
+\begin{equation*}
+	S \rightarrow ab
+\end{equation*}
+
+Perceba que todas as regras do lado esquerdo possuem apenas um símbolo não terminal. Se fôssemos escrever uma gramática para expressões na forma $a^nb^nc^n$, precisaríamos de uma gramática mais rebuscada:
+
+\begin{equation*}
+	S \rightarrow aTSc
+\end{equation*}
+\begin{equation*}
+	S \rightarrow abc
+\end{equation*}
+\begin{equation*}
+	Ta \rightarrow aT
+\end{equation*}
+\begin{equation*}
+	Tb \rightarrow bb
+\end{equation*}
+
+O fato desta gramática definir sequências de símbolos à esquerda com mais de um símbolo a torna especial. Segundo a hiearquia de Chomsky, a primeira gramática é livre de contexto, enquanto a segunda é sensível a contexto.
+
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 \section{Hierarquia de Chomsky}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -237,7 +286,7 @@ Cada conjunto é propriamente incluso no seu conjunto superior na hierarquia, co
   \label{fig:chomsky}
 \end{figure}
 
-\subsection{Linguagens regulares}
+\subsection{Linguagens Regulares}
 
 Linguagens regulares são aquelas cujas regras de formação são na forma $S \rightarrow aT$ ou $S \rightarrow a$, onde \emph{S} e \emph{T} são não-terminais e \emph{a} é um terminal na linguagem. Estas linguagens são equivalentes em poder de expressão a \emph{autômatos finitos}. 
 
@@ -245,7 +294,7 @@ Alguns autores também incluem regras do tipo $S \rightarrow \epsilon$, desde qu
 
 Exemplos de linguagens regulares incluem: endereços de email, repetição de caracteres ($a^n$), repetição independente de dois caracteres ($a^nb^m$).
 
-\subsection{Linguagens livres de contexto}
+\subsection{Linguagens Livres de Contexto}
 
 Linguagens livres de contexto são linguagens onde todas as regras de formação são do tipo $S \rightarrow \gamma$, onde \emph{S} é um não-terminal e $\gamma$ é uma sequência composta por terminais e não-terminais. 
 
@@ -253,14 +302,14 @@ Isto na prática significa que a substituição de um não-terminal é sempre fe
 
 Entre alguns exemplos clássicos de linguagens livres de contexto figuram: parênteses aninhados, repetição condicionada de dois caracteres ($a^nb^n$), expressões aritméticas.
 
-\subsection{Linguagens sensíveis a contexto}
+\subsection{Linguagens Sensíveis a Contexto}
 Linguagens sensíveis a contexto são linguagens onde todas as regras de formação são do tipo $\alpha S\beta\rightarrow \alpha\gamma\beta$, onde $\alpha$, $\gamma$ e $\beta$ são sequências compostas por terminais e não-terminais. Elas diferem das linguagens livres de contexto por definir -- exatamente -- contexto para que um não-terminal S seja substituído por uma sequência $\gamma$. 
 
 Apesar de terem um escopo bem mais amplo, gramáticas deste tipo ainda são passíveis de ser computadas usando um \emph{autômato linearmente limitado}. 
 
 Exemplos: \emph{squares} (\emph{DogDog, CatCat, WikiWiki...}), \emph{matching triplets} ($a^nb^nc^n$).
 
-\subsection{Linguagens recursivamente enumeráveis}
+\subsection{Linguagens Recursivamente Enumeráveis}
 
 Linguagens recursivamente enumeráveis não definem restrições para as regras de produção. Portanto, qualquer sequência de terminais e não-terminais $\alpha$ pode ser substituída por outra $\beta$. Linguagens assim são reconhecíveis por uma \emph{máquina de Turing}. 
 
@@ -268,8 +317,27 @@ Diferente dos tipos anteriores, quando apresentada a uma sequência que não fa�
 
 Um dos exemplos mais notáveis de linguagens recursivamente enumeráveis que não são sensíveis a contexto é a sintaxe de templates do C++ \cite{bib:Veldhuizen03}.
 
+\subsection{Tabela de Referência}
+
+É possível resumir os tipos de linguagens da hierarquia de Chomsky numa tabela de referência quanto à máquina que a processa e os tipos de regras que aceita.
+
+\begin{center}
+	\begin{tabular}{ c | c | c | c }
+		 & {\bf Linguagem} & {\bf Máquina} & {\bf Regras} \\
+		\hline 
+		0 & Recursivamente enumerável & Máquina de Turing 			 & 
+			$\alpha \rightarrow \beta$ \\ 
+		1 & Sensível a contexto 		& Autômato limitado linearmente & 
+			$\alpha S\beta\rightarrow \alpha\gamma\beta$\\ 
+		2 & Livre de contexto 			& Autômato de pilha 			 & 
+			$S \rightarrow \gamma$\\ 
+		3 & Regular 					& Autômato finito 				 &
+			$S \rightarrow aT$ ou $S \rightarrow a$\\ 
+	\end{tabular}
+\end{center}
+
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-\section{Expressões regulares}
+\section{Expressões Regulares}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Expressões regulares são sequências de caracteres que definem linguagens regulares. Estas sequências obedecem a algumas regras de criação. Alguns caracteres são interpretados literalmente, enquanto outros são considerados metacaracteres que controlam como os trechos da expressão se relacionam.
@@ -299,15 +367,30 @@ A precedência natural dos operadores, da mais fraca para a mais forte, é: alte
 
 É possível agrupar sub-expressões utilizando parênteses, tal qual é feito com expressões aritméticas. Assim $a(b|c)d*$ tem um sentido completamente diferente de $ab|cd*$.
 
-Estas operações, apesar de bastante incompletas, definem inequivocamente expressões regulares. É possível representar qualquer linguagem regular utilizando apenas estes operadores. Mais importante: é teoricamente possível reconhecer qualquer sequência nesta linguagem com apenas uma passagem pela entrada (sem \emph{backtracking}). 
+Estas operações, apesar de bastante incompletas, definem inequivocamente expressões regulares. É possível representar qualquer linguagem regular utilizando apenas estes operadores. Mais importante: é teoricamente possível reconhecer qualquer símbolo nesta linguagem com apenas uma passagem pela entrada (sem \emph{backtracking}). 
+
+Representando apenas linguagens regulares, as expressões regulares representam um paradoxo sobre si mesmas: elas não são capazes de representar nem a própria linguagem que as define. O grande culpado disso é a presença dos parênteses agrupadores, tornando esta gramática propriamente pertencente ao conjunto das gramáticas livres de contexto.
 
 Novas implementações de expressões regulares adicionaram novos operadores que tornam a sintaxe mais concisa. Porém, essas adições normalmente não alteram o poder expressivo das regexes. No entanto, existem adições que adicionam poder expressivo, como é o caso das \emph{backreferences}, que permitem o reconhecimento de algumas linguagens não-regulares. \emph{Backreferences} consiste em referências \emph{submatches} reconhecias anteriormente.
 
-Por exemplo, uma linguagem composta por sequências de caracteres repetidas, como \emph{DogDog} ou \emph{CatCat}. É possível definir uma expressão regular $/(.*)\backslash 1/$ que reconhece esta linguagem. o $\backslash 1$ instrui ao motor de reconhecimento a esperar uma nova sequência exatamente igual à obtida pelo reconhecimento do primeiro grupo $(.*)$.
+Por exemplo, uma linguagem composta por símbolos repetidos, como \emph{DogDog} ou \emph{CatCat}. É possível definir uma expressão regular $/(.*)\backslash 1/$ que reconhece esta linguagem. o $\backslash 1$ instrui ao motor de reconhecimento a esperar um novo símbolo exatamente igual ao obtido pelo reconhecimento do primeiro grupo $(.*)$.
 
 Esta linguagem não apenas cai fora do conjunto das linguagens regulares, como também não é uma linguagem livre de contexto.
 
 Tal poder expressivo tem seu preço. Match de backreferences é um problema NP-completo, logo, os melhores algoritmos conhecidos ainda tem pior caso exponencial. É possível, porém, escrever algoritmos polinomiais para expressões que não fazem uso de backreferences. No entanto, pela diferente natureza dos dois tipos de algoritmos, normalmente as linguagens implementam apenas um deles, fazendo com que algumas expressões que originalmente poderiam ser avaliadas em tempo polinomial serem penalizadas sem necessidade.
+
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+\section{Construção do Autômato}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+TBD
+
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+\section{Simulação do Autômato}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+TBD
+
 
 \backmatter
 
@@ -317,11 +400,11 @@ Tal poder expressivo tem seu preço. Match de backreferences é um problema NP-c
 \postextualchapter{Benchmark em Python: re, pyrex}
 %======================================================================================
 
-\section{Tabela de tempos}
+\section{Tabela de Tempos (em microsegundos)}
 
 \begin{center}
 	\vline
-	\begin{tabular}{ l || c | r }
+	\begin{tabular}{ c || c | c }
 		{\bf n} & {\bf re} & {\bf pyrex} \\
 		\hline 
 		1 & 5 & 20  \\ 
@@ -348,7 +431,7 @@ Tal poder expressivo tem seu preço. Match de backreferences é um problema NP-c
 	\vline
 	\quad
 	\vline
-	\begin{tabular}{ l || c | r }
+	\begin{tabular}{ c || c | c }
 		{\bf n} & {\bf re} & {\bf pyrex} \\
 		\hline 
 		21 & 2409 & 136 \\ 
@@ -382,7 +465,7 @@ Tal poder expressivo tem seu preço. Match de backreferences é um problema NP-c
 
 \section{Código fonte}
 
-\begin{verbatim}
+\begin{lstlisting}[language=python]
 import re, pyrex
 
 from timeit import timeit
@@ -393,8 +476,9 @@ r2 = pyrex.rex('(a?a)+b')
 time = lambda r, i: timeit(lambda: r.match('a'*i), number=1)*1e6
 
 for i in xrange(1, 41):
-    print '{}\t{:8.0f}\t{:8.0f}'.format(i, time(r1, i), time(r2, i))
-\end{verbatim}
+    print '{}\t{:8.0f}\t{:8.0f}'.format(
+        i, time(r1, i), time(r2, i))
+\end{lstlisting}
 
 \bibliography{bibliografia}
 

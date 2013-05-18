@@ -314,12 +314,12 @@
 \newcommand\toccapituloapostituloestilo{\normalfont}
 
 \newcommand\capitulonomeestilo{}
-\newcommand\capitulonumestilo{\bf}
+\newcommand\capitulonumestilo{\bf\large\sc}
 \newcommand\capitulonumtituloestilo{}
-\newcommand\capitulotituloestilo{\bf\MakeUppercase}
+\newcommand\capitulotituloestilo{\huge\sc}
 \newcommand\capitulotitulotextoestilo{\normalfont}
 
-\newcommand\ptcapitulotituloestilo{\bf\MakeUppercase}
+\newcommand\ptcapitulotituloestilo{\huge\sc}
 \newcommand\ptcapitulotitulotextoestilo{\normalfont}
 
 \newlength\ptcapituloespacoantes
@@ -373,13 +373,13 @@
       {\addcontentsline{toc}{chapter}
         {\normalfont\nobreak
           {\bf\protect\numberline{\thechapter}}\nobreak
-          {\bf\uppercase{#1}}
+          {\bf{#1}}
         }}
   \else
     \addcontentsline{toc}{chapter}
       {\normalfont\nobreak
         {\protect\numberline{}}\nobreak
-        {\uppercase{#1}}
+        {#1}
       }
   \fi
   \chaptermark{#1}%
@@ -394,7 +394,7 @@
   \vspace*{\capituloespacoantes}%  \vspace*{50\p@}%
   {\parindent \z@ \raggedright \normalfont
     \ifnum \c@secnumdepth >\m@ne
-        {\capitulonumestilo{\thechapter\space\space}}
+        {\capitulonumestilo{Cap\'{i}tulo \thechapter\space\space}} \\
       \capitulonumtituloestilo
     \fi
     \interlinepenalty\@M
@@ -407,7 +407,7 @@
   \phantomsection
   \addcontentsline{toc}{chapter}
     {\normalfont\protect\numberline{}\nobreak
-      {\bf\uppercase{#1}}
+      {\bf #1}
     }
   \if@twocolumn
      \@topnewpage[\@makeschapterhead{#1}]%
@@ -439,14 +439,14 @@
     \phantomsection\addcontentsline{toc}{chapter}
       {\normalfont\nobreak
         {\protect\numberline{}}\nobreak
-        {\bf\uppercase{\@chapapp}\space\thechapter}\nobreak
+        {\bf \@chapapp}\space\thechapter\nobreak
         {\normalfont{\space\space--\space\space#1}}
       }
   \else
     \addcontentsline{toc}{chapter}
       {\normalfont\nobreak
         {\protect\numberline{}}\nobreak
-        {\uppercase{#1}}
+        {#1}
       }
   \fi
   \chaptermark{#1}%
@@ -474,7 +474,7 @@
   \phantomsection
   \addcontentsline{toc}{chapter}
     {\normalfont\protect\numberline{}\nobreak
-      {\bf\uppercase{#1}}
+      {\bf #1}
     }
   \if@twocolumn
     \@topnewpage[\@makespstchapterhead{#1}]%
@@ -512,7 +512,7 @@
 \newcommand\subsection{\@startsection{subsection}{2}{\z@}%
                                      {-2\baselineskip}%
                                      {\baselineskip}%
-                                     {\protect\normalfont\protect\normalsize\noexpand\uline}}
+                                     {\protect\normalfont\protect\normalsize\noexpand}}
 \newcommand\subsubsection{\@startsection{subsubsection}{3}{\z@}%
                                      {-2\baselineskip}%
                                      {\baselineskip}%
@@ -540,7 +540,7 @@
     \begingroup
       \@hangfrom{\hskip #3\relax\@svsec}
       \interlinepenalty\@M
-      \ifnum #2=2 #6\uline{#8}\else #6{#8}\fi%solucao temporaria para \uline(?!?!)
+      \ifnum #2=2 #6{#8}\else #6{#8}\fi%solucao temporaria para \uline(?!?!)
 %      \interlinepenalty\@M #6{#8}
     \endgroup
     \ifthenelse{\boolean{appendixannex}}{}{
@@ -916,7 +916,7 @@
              \@makespstchapterhead{\indexname}]%
   \addcontentsline{toc}{chapter}
     {\normalfont\protect\numberline{}\nobreak
-      {\bf\uppercase{\indexname}}
+      {\bf\indexname}
     }%
   \@mkboth{\MakeUppercase\indexname}{\MakeUppercase\indexname}%
   \thispagestyle{UERJ}\singlespacing
