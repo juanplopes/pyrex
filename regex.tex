@@ -159,19 +159,35 @@ Neste capítulo serão apresentados a motivação, objetivos, e a estrutura do p
 
 Expressões regulares fazem parte do ferramental da maioria das linguagens e plataformas de desenvolvimento modernas. Seu uso é bastante difundido na indústria para os mais variados fins, desde o reconhecimento de padrões, passando pela extração de símbolos para análise sintática de linguagens formais, até a sanitização de entradas do usuário para fins de segurança.
 
-Seu extensivo uso vem precedido por uma forte base teórica na área de autômatos finitos, introduzida nos anos 40 por McCulloch e Pitts \cite{bib:McCulloch43}, formalizada na década seguinte por Kleene \cite{bib:Kleene56} e implementada por Ken Thompson no final dos anos 60 \cite{bib:Thompson68}, enquanto desenvolvia o editor de texto \emph{QED}, posteriormente portada para os mais conhecidos \emph{ed} e \emph{grep}, integrantes do sistema operacional Unix.
+Seu extensivo uso vem precedido por uma forte base teórica na área de autômatos finitos, introduzida nos anos 40 por McCulloch e Pitts \cite{bib:McCulloch43} e formalizada na década seguinte por Kleene \cite{bib:Kleene56}.
+
+Expressões regulares e autômatos finitos compartilham uma relação estreita. São equivalentes em poder expressivo, e a conversão do primeiro para o segundo é trivial, como pode ser visto na Figura \ref{fig:exemplo_automato}. Ken Thompson demonstrou isso em sua implementação no final dos anos 60 \cite{bib:Thompson68}, enquanto desenvolvia o editor de texto \emph{QED}. As mesmas expressões regulares foram, posteriormente, portadas para os mais conhecidos \emph{ed} e \emph{grep}, integrantes do sistema operacional Unix.
 
 \begin{figure}[ht]
   \centering
-  \includegraphics[scale=0.25]{figures/exemplo_automato.png}
+  \includegraphics[scale=0.3]{figures/exemplo_automato.png}
   \caption{Exemplo de autômato para expressão regular $(a|b)+c$}
+  \label{fig:exemplo_automato}
 \end{figure}
 
 Desde então, conforme as implementações foram evoluindo, muitas funcionalidades foram adicionadas à linguagem de descrição de expressões regulares que as afastaram da teoria original. Enquanto originalmente descreviam linguagens estritamente regulares, a implementação mais difundida atualmente (\emph{PCRE}) é capaz não só de reconhecer qualquer linguagem livre de contexto, como também algumas sensíveis a contexto. \cite{bib:Nikita12}
 
-Uma das consequências mais notáveis desta evolução não planejada é que o reconhecimento de strings da linguagem, um problema com solução linear originalmente, ganhou soluções exponenciais em um grande número de implementações modernas, que inclui muitas das mais usadas. Talvez a funcionalidade mais perigosa neste sentido sejam as backreferences, que não só impedem soluções polinomiais como tornam o problema de reconhecimento NP-completo. Entretanto, mesmo nas expressões que poderiam ser reconhecidas estritamente com autômatos finitos, certas particularidades de implementação as tornam potencialmente exponenciais, no pior caso. \cite{bib:Cox07}
+Uma das consequências mais notáveis desta evolução não planejada é que o reconhecimento de strings da linguagem, um problema com solução linear originalmente, ganhou soluções exponenciais em um grande número de implementações modernas, que inclui muitas das mais usadas. Talvez a funcionalidade mais perigosa neste sentido sejam as backreferences, que não só impedem soluções polinomiais como tornam o problema de reconhecimento NP-completo. Entretanto, mesmo nas expressões que poderiam ser reconhecidas estritamente com autômatos finitos, certas particularidades de implementação as tornam potencialmente exponenciais, no pior caso \cite{bib:Cox07}.
 
-Essas implementações tornam o uso de expressões regulares potencialmente inseguro em situações ora triviais. Um usuário mal intencionado pode ser capaz de forçar a execução de uma expressão com caráter exponencial para efetuar um ataque de negação de serviço em um servidor web, por exemplo. Muitas vezes a prevenção para esse tipo de ataque pode não ser trivial, e.g. em Java, onde métodos comumente usados contra a entrada do usuário, como \emph{replaceAll} e \emph{split}, da classe \emph{String} são implementados usado expressões regulares vulneráveis a esse tipo de ataque.
+A Figura \ref{fig:benchmark1} mostra o crescimento no tempo de execução entre a implementação da biblioteca padrão da linguagem Python e a implementação proposta neste projeto, usando o método de Thompson. 
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[scale=0.5]{figures/benchmark1.png}
+  \caption{Avaliação da string $a^n$ contra a expressão $(a|a)+b$ (em escala logarítmica)}
+  \label{fig:benchmark1}
+\end{figure}
+
+Essas implementações tornam o uso de expressões regulares potencialmente inseguro em situações ora triviais. Um usuário mal intencionado pode ser capaz de forçar a execução de uma expressão com caráter exponencial para efetuar um ataque de negação de serviço em um servidor web, por exemplo. 
+
+Muitas vezes a prevenção para esse tipo de ataque pode não ser trivial, e.g. em Java, onde métodos comumente usados contra a entrada do usuário, como \emph{replaceAll} e \emph{split}, da classe \emph{String} são implementados usado expressões regulares vulneráveis a esse tipo de ataque.
+
+Mesmo em casos onde o usuário mal intencionado não tem acesso a escrever expressões regulares, um erro de programação pode deixar o sistema vulnerável a negação de serviço. Este problema torna-se especialmente notável pelo frequente compartilhamento em repositórios online, que contém muitas expressões vulneráveis \cite{bib:Kirrage13,bib:Weidman10}. 
 
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 \section{Objetivo}
@@ -212,7 +228,7 @@ Segundo Noam Chomsky \cite{bib:Chomsky57}, uma linguagem formal pode ser classif
     \item {\bf Tipo 3}: linguagens regulares
 \end{lcircp}
 
-Cada conjunto é propriamente incluso no seu conjunto superior na hierarquia, como pode ser visto na Figura ~\ref{fig:chomsky}.
+Cada conjunto é propriamente incluso no seu conjunto superior na hierarquia, como pode ser visto na Figura \ref{fig:chomsky}.
 
 \begin{figure}[ht]
   \centering
@@ -221,14 +237,36 @@ Cada conjunto é propriamente incluso no seu conjunto superior na hierarquia, co
   \label{fig:chomsky}
 \end{figure}
 
-{\bf Linguagens regulares} são aquelas cujas regras de formação são na forma $S \rightarrow aT$ ou $S \rightarrow a$, onde \emph{S} e \emph{T} são não-terminais e \emph{a} é um terminal na linguagem. Estas linguagens são equivalentes em poder de expressão a \emph{autômatos finitos}. Exemplos: $a^n$, $a^nb^m$.
+\subsection{Linguagens regulares}
 
-{\bf Linguagens livres de contexto} são linguagens onde todas as regras de formação são do tipo $S \rightarrow \gamma$, onde $\gamma$ é uma sequência composta por terminais e não-terminais. Isto na prática significa que a substituição de um não-terminal é sempre feita independente do contexto onde é encontrado. Linguagens deste tipo são equivalentes em poder expressivo a \emph{autômatos de pilha}. Elas compõem a base teórica para a maioria das linguagens de programação. Exemplos: \emph{parênteses aninhados}, $a^nb^n$.
+Linguagens regulares são aquelas cujas regras de formação são na forma $S \rightarrow aT$ ou $S \rightarrow a$, onde \emph{S} e \emph{T} são não-terminais e \emph{a} é um terminal na linguagem. Estas linguagens são equivalentes em poder de expressão a \emph{autômatos finitos}. 
 
-{\bf Linguagens sensíveis a contexto} são linguagens onde todas as regras de formação são do tipo $\alpha S\beta\rightarrow \alpha\gamma\beta$, onde $\alpha$, $\gamma$ e $\beta$ são sequências compostas por terminais e não-terminais. Elas diferem das linguagens livres de contexto por definir -- exatamente -- contexto para que um não-terminal S seja substituído por uma sequência $\gamma$. Apesar de terem um escopo bem mais amplo, gramáticas deste tipo ainda são passíveis de ser computadas usando um \emph{autômato linearmente limitado}. Exemplos: \emph{squares} (\emph{DogDog, CatCat, WikiWiki}), $a^nb^nc^n$.
+Alguns autores também incluem regras do tipo $S \rightarrow \epsilon$, desde que S não apareça do lado direito de nenhuma regra.
 
-{\bf Linguagens recursivamente enumeráveis} não definem restrições para as regras de produção. Portanto, qualquer sequência de terminais e não-terminais $\alpha$ pode ser substituída por outra $\beta$. Linguagens assim são reconhecíveis por uma \emph{máquina de Turing}. Entretanto, diferente dos tipos anteriores, quando apresentada a uma sequência que não faça parte da linguagem, não há garantia de parada da máquina, definindo o que é chamado na teoria de conjunto \emph{semi-decidível}.
+Exemplos de linguagens regulares incluem: endereços de email, repetição de caracteres ($a^n$), repetição independente de dois caracteres ($a^nb^m$).
 
+\subsection{Linguagens livres de contexto}
+
+Linguagens livres de contexto são linguagens onde todas as regras de formação são do tipo $S \rightarrow \gamma$, onde \emph{S} é um não-terminal e $\gamma$ é uma sequência composta por terminais e não-terminais. 
+
+Isto na prática significa que a substituição de um não-terminal é sempre feita independente do contexto onde é encontrado. Linguagens deste tipo são equivalentes em poder expressivo a \emph{autômatos de pilha}. Elas compõem a base teórica para a maioria das linguagens de programação. 
+
+Entre alguns exemplos clássicos de linguagens livres de contexto figuram: parênteses aninhados, repetição condicionada de dois caracteres ($a^nb^n$), expressões aritméticas.
+
+\subsection{Linguagens sensíveis a contexto}
+Linguagens sensíveis a contexto são linguagens onde todas as regras de formação são do tipo $\alpha S\beta\rightarrow \alpha\gamma\beta$, onde $\alpha$, $\gamma$ e $\beta$ são sequências compostas por terminais e não-terminais. Elas diferem das linguagens livres de contexto por definir -- exatamente -- contexto para que um não-terminal S seja substituído por uma sequência $\gamma$. 
+
+Apesar de terem um escopo bem mais amplo, gramáticas deste tipo ainda são passíveis de ser computadas usando um \emph{autômato linearmente limitado}. 
+
+Exemplos: \emph{squares} (\emph{DogDog, CatCat, WikiWiki...}), \emph{matching triplets} ($a^nb^nc^n$).
+
+\subsection{Linguagens recursivamente enumeráveis}
+
+Linguagens recursivamente enumeráveis não definem restrições para as regras de produção. Portanto, qualquer sequência de terminais e não-terminais $\alpha$ pode ser substituída por outra $\beta$. Linguagens assim são reconhecíveis por uma \emph{máquina de Turing}. 
+
+Diferente dos tipos anteriores, quando apresentada a uma sequência que não faça parte da linguagem, não há garantia de parada da máquina, definindo o que é chamado na teoria de conjunto \emph{semi-decidível}.
+
+Um dos exemplos mais notáveis de linguagens recursivamente enumeráveis que não são sensíveis a contexto é a sintaxe de templates do C++ \cite{bib:Veldhuizen03}.
 
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 \section{Expressões regulares}
@@ -250,7 +288,7 @@ Perceba que é possível definir outros operadores comuns, como $?$ e $+$. Mas �
 
 Outros operadores sobre caracteres como o $.$ (qualquer caractere) e as classes de caractere (e.g. $[a-zA-Z]$) são trivialmente implementados usando alternação de expressões.
 
-A precedência natural dos operadores, da mais fraca para a mais forte, é: alternância, concatenação, repetição. Assim, uma expressão como $ab|cd*$ é interpretada como exibido na Figura ~\ref{fig:abcd_parse_tree}.
+A precedência natural dos operadores, da mais fraca para a mais forte, é: alternância, concatenação, repetição. Assim, uma expressão como $ab|cd*$ é interpretada como exibido na Figura \ref{fig:abcd_parse_tree}.
 
 \begin{figure}[ht]
   \centering
@@ -261,7 +299,7 @@ A precedência natural dos operadores, da mais fraca para a mais forte, é: alte
 
 É possível agrupar sub-expressões utilizando parênteses, tal qual é feito com expressões aritméticas. Assim $a(b|c)d*$ tem um sentido completamente diferente de $ab|cd*$.
 
-Estas operações, apesar de bastante incompletas, definem inequivocamente expressões regulares. É possível representar qualquer linguagem regular utilizando apenas estes operadores. Mais importante: é teóricamente possível reconhecer qualquer sequência nesta linguagem com apenas uma passagem pela entrada (sem \emph{backtracking}). 
+Estas operações, apesar de bastante incompletas, definem inequivocamente expressões regulares. É possível representar qualquer linguagem regular utilizando apenas estes operadores. Mais importante: é teoricamente possível reconhecer qualquer sequência nesta linguagem com apenas uma passagem pela entrada (sem \emph{backtracking}). 
 
 Novas implementações de expressões regulares adicionaram novos operadores que tornam a sintaxe mais concisa. Porém, essas adições normalmente não alteram o poder expressivo das regexes. No entanto, existem adições que adicionam poder expressivo, como é o caso das \emph{backreferences}, que permitem o reconhecimento de algumas linguagens não-regulares. \emph{Backreferences} consiste em referências \emph{submatches} reconhecias anteriormente.
 
@@ -272,7 +310,92 @@ Esta linguagem não apenas cai fora do conjunto das linguagens regulares, como t
 Tal poder expressivo tem seu preço. Match de backreferences é um problema NP-completo, logo, os melhores algoritmos conhecidos ainda tem pior caso exponencial. É possível, porém, escrever algoritmos polinomiais para expressões que não fazem uso de backreferences. No entanto, pela diferente natureza dos dois tipos de algoritmos, normalmente as linguagens implementam apenas um deles, fazendo com que algumas expressões que originalmente poderiam ser avaliadas em tempo polinomial serem penalizadas sem necessidade.
 
 \backmatter
-%\citeoption{abnt-options4}
+
+\appendix
+
+%======================================================================================
+\postextualchapter{Benchmark em Python: re, pyrex}
+%======================================================================================
+
+\section{Tabela de tempos}
+
+\begin{center}
+	\vline
+	\begin{tabular}{ l || c | r }
+		{\bf n} & {\bf re} & {\bf pyrex} \\
+		\hline 
+		1 & 5 & 20  \\ 
+		2 & 4 & 23 \\ 
+		3 & 3 & 27 \\ 
+		4 & 3 & 33 \\ 
+		5 & 3 & 39 \\ 
+		6 & 4 & 44 \\ 
+		7 & 6 & 50 \\ 
+		8 & 6 & 55 \\ 
+		9 & 9 & 61 \\ 
+		10 & 13 & 67 \\ 
+		11 & 22 & 73 \\ 
+		12 & 33 & 79 \\ 
+		13 & 55 & 91 \\ 
+		14 & 84 & 95 \\ 
+		15 & 133 & 100 \\ 
+		16 & 221 & 103 \\ 
+		17 & 353 & 108 \\ 
+		18 & 566 & 114 \\ 
+		19 & 927 & 121 \\ 
+		20 & 1486 & 129 \\ 
+	\end{tabular}
+	\vline
+	\quad
+	\vline
+	\begin{tabular}{ l || c | r }
+		{\bf n} & {\bf re} & {\bf pyrex} \\
+		\hline 
+		21 & 2409 & 136 \\ 
+		22 & 3875 & 142 \\ 
+		23 & 6438 & 159 \\ 
+		24 & 10251 & 153 \\ 
+		25 & 17418 & 178 \\ 
+		26 & 26590 & 177 \\ 
+		27 & 42723 & 189 \\ 
+		28 & 68890 & 190 \\ 
+		29 & 111910 & 198 \\ 
+		30 & 181338 & 201 \\ 
+		31 & 296340 & 212 \\ 
+		32 & 478507 & 219 \\ 
+		33 & 763335 & 222 \\ 
+		34 & 1259066 & 228 \\ 
+		35 & 1937591 & 232 \\ 
+		36 & 3136469 & 240 \\ 
+		37 & 5078676 & 246 \\ 
+		38 & 8261930 & 250 \\ 
+		39 & 13229837 & 256 \\ 
+		40 & 21334059 & 262 \\
+	\end{tabular}
+	\vline
+\end{center}
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[scale=0.5]{figures/benchmark1.png}
+\end{figure}
+
+\section{Código fonte}
+
+\begin{verbatim}
+import re, pyrex
+
+from timeit import timeit
+
+r1 = re.compile('(a?a)+b')
+r2 = pyrex.rex('(a?a)+b')
+
+time = lambda r, i: timeit(lambda: r.match('a'*i), number=1)*1e6
+
+for i in xrange(1, 41):
+    print '{}\t{:8.0f}\t{:8.0f}'.format(i, time(r1, i), time(r2, i))
+\end{verbatim}
+
 \bibliography{bibliografia}
 
 \end{document}
