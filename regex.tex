@@ -168,14 +168,11 @@ Expressões regulares fazem parte do ferramental da maioria das linguagens e pla
 
 Seu extensivo uso vem precedido por uma forte base teórica na área de autômatos finitos, introduzida nos anos 40 por McCulloch e Pitts \cite{bib:McCulloch43}, formalizada na década seguinte por Kleene \cite{bib:Kleene56} e implementada por Ken Thompson no final dos anos 60 \cite{bib:Thompson68}, enquanto desenvolvia o editor de texto \emph{QED}, posteriormente portada para os mais conhecidos \emph{ed} e \emph{grep}, integrantes do sistema operacional Unix.
 
-
-
 \begin{figure}[ht]
   \centering
   \includegraphics[scale=0.25]{figures/exemplo_automato.png}
-  \caption{Exemplo de autômato para expressão regular (a\textbar b)+c}
+  \caption{Exemplo de autômato para expressão regular $(a|b)+c$}
 \end{figure}
-
 
 Desde então, conforme as implementações foram evoluindo, muitas funcionalidades foram adicionadas à linguagem de descrição de expressões regulares que as afastaram da teoria original. Enquanto originalmente descreviam linguagens estritamente regulares, a implementação mais difundida atualmente (\emph{PCRE}) é capaz não só de reconhecer qualquer linguagem livre de contexto, como também algumas sensíveis a contexto. \cite{bib:Nikita12}
 
@@ -209,7 +206,65 @@ O capítulo 5 expõe as conclusões e contribuições deste trabalho, bem como a
 \chapter{Base Teórica}
 %======================================================================================
 
-AAA
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+\section{Hierarquia de Chomsky}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Segundo Noam Chomsky \cite{bib:Chomsky57}, uma linguagem formal pode ser classificada em um de quatro tipos baseados na capacidade expressiva das gramáticas formais que a expressam:
+
+\begin{lcircp}
+    \item {\bf Tipo 3}: linguagens regulares
+    \item {\bf Tipo 2}: linguagens livres de contexto
+    \item {\bf Tipo 1}: linguagens sensíveis a contexto
+    \item {\bf Tipo 0}: linguagens recursivamente enumeráveis (ou irrestritas)
+\end{lcircp}
+
+Cada conjunto é propriamente incluso no seu conjunto superior na hierarquia, como pode ser visto na Figura ~\ref{fig:chomsky}.
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[scale=0.5]{figures/chomsky.png}
+  \caption{Representação da inclusão de conjuntos na hiearquia de Chomsky}
+  \label{fig:chomsky}
+\end{figure}
+
+{\bf Linguagens regulares} são aquelas cujas regras de formação são na forma $S \rightarrow aT$ ou $S \rightarrow a$, onde \emph{S} e \emph{T} são não-terminais e \emph{a} é um terminal na linguagem. Estas linguagens são equivalentes em poder de expressão a \emph{autômatos finitos}. Exemplos: $a^n$, $a^nb^m$.
+
+{\bf Linguagens livres de contexto} são linguagens onde todas as regras de formação são do tipo $S \rightarrow \gamma$, onde $\gamma$ é uma sequência composta por terminais e não-terminais. Isto na prática significa que a substituição de um não-terminal é sempre feita independente do contexto onde é encontrado. Linguagens deste tipo são equivalentes em poder expressivo a \emph{autômatos de pilha}. Elas compõem a base teórica para a maioria das linguagens de programação. Exemplos: \emph{parênteses aninhados}, $a^nb^n$.
+
+{\bf Linguagens sensíveis a contexto} são linguagens onde todas as regras de formação são do tipo $\alpha S\beta\rightarrow \alpha\gamma\beta$, onde $\alpha$, $\gamma$ e $\beta$ são sequências compostas por terminais e não-terminais. Elas diferem das linguagens livres de contexto por definir -- exatamente -- contexto para que um não-terminal S seja substituído por uma sequência $\gamma$. Apesar de terem um escopo bem mais amplo, gramáticas deste tipo ainda são passíveis de ser computadas usando um \emph{autômato linearmente limitado}. Exemplos: \emph{squares} (\emph{DogDog, CatCat, WikiWiki}), $a^nb^nc^n$.
+
+{\bf Linguagens recursivamente enumeráveis} não definem restrições para as regras de produção. Portanto, qualquer sequência de terminais e não-terminais $\alpha$ pode ser substituída por outra $\beta$. Linguagens assim são reconhecíveis por uma \emph{máquina de Turing}. Entretanto, diferente dos tipos anteriores, quando apresentada a uma sequência que não faça parte da linguagem, não há garantia de parada da máquina, definindo o que é chamado na teoria de conjunto \emph{semi-decidível}.
+
+
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+\section{Expressões regulares}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Expressões regulares são sequências de caracteres que definem linguagens regulares. Alguns caracteres são interpretados literalmente, enquanto outros são considerados metacaracteres que controlam como dois trechos da expressão se relacionam.
+
+Sequências vazias são regulares.
+
+Caracteres unitários são expressões regulares. E.g. \emph{a}.
+
+Expressões regulares podem ser concatenadas para formar novas expressões. E.g. se $e_1$ reconhece \emph{a} e $e_2$ reconhece \emph{b}, então $e_1e_2$ reconhece \emph{ab}.
+
+Expressões regulares podem ser alternadas para formar novas expressões. E.g. se $e_1$ reconhece \emph{a} e $e_2$ reconhece \emph{b}, então $e_1|e_2$ reconhece \emph{a} e \emph{b}.
+
+Pode-se aplicar o fecho Kleene para formar novas expressões. E.g. se $e_1$ reconhece \emph{a}, então $e_1*$ reconhece \emph{a}, \emph{aa}, \emph{aaa}... etc., bem como string vazia.
+
+Perceba que é possível definir outros operadores comuns, como $?$ e $+$. Mas é possível defini-los a partir das operações descritas acima. O operador $e_1?$ pode ser definido como a alternância entre $e_1$ e uma string vazia. O operarador $e_1+$ pode ser definido como $e_1e_1*$.
+
+A precedência natural dos operadores, da mais fraca para a mais forte, é: alternância, concatenação, repetição. Assim, uma expressão como $ab|cd*$ é interpretada como exibido na Figura ~\ref{fig:abcd_parse_tree}.
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[scale=0.33]{figures/abcd_parse_tree.png}
+  \caption{Árvore de avaliação para expressão $ab|cd*$}
+  \label{fig:abcd_parse_tree}
+\end{figure}
+
+É possível agrupar sub-expressões usando parênteses, tal qual é feito com expressões aritméticas. 
 
 \backmatter
 %\citeoption{abnt-options4}
