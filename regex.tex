@@ -94,13 +94,6 @@
     \hfill À minha esposa, Jacqueline.
   \vfill
 
-% ----------------------------------------------------------
-% Agradecimentos
-% ----------------------------------------------------------
-
-\pretextualchapter{Agradecimentos}
-
-Texto de agradecimento.
 
 % ----------------------------------------------------------
 % Epigrafe
@@ -127,11 +120,11 @@ Texto de agradecimento.
 
 Na teoria, expressões regulares constituem uma notação para definir linguagens regulares em termos de operações recursivas simples. São equivalentes a autômatos finitos em seu poder expressivo. Na prática entretanto, enquanto ferramentas extremamente populares, as expressões regulares modernas afastaram-se bastante da teoria que as originou. 
 
-A maior parte das mudanças aconteceu para permiti-las alcançar um poder expressão maior. Entretanto, esta conveniência veio a custo de tornar o \emph{match} um problema mais difícil computacionalmente do que a teoria descreve. Na maior parte das linguagens modernas o \emph{match} de \emph{regexes} (como são comumente conhecidas) é um problema NP-completo. Além disso, por particularidades de como são implementadas, mesmo expressões que poderiam ser reconhecidas em tempo polinomial são resolvidas com soluções exponenciais. 
+A maior parte das mudanças aconteceu para permiti-las alcançar um poder de expressão maior. Entretanto, esta conveniência veio a custo de tornar o \emph{match} um problema mais difícil computacionalmente do que a teoria descreve. Na maior parte das linguagens modernas o \emph{match} de \emph{regexes} (como são comumente conhecidas) é um problema NP-completo. Além disso, por particularidades de como são implementadas, mesmo expressões que poderiam ser reconhecidas em tempo polinomial são resolvidas com soluções exponenciais. 
 
-Este trabalho visa analisar as armadilhas comuns no desenvolvimento de expressões regulares, realizando benchmarks entre diversas implementações populares, apontando funcionalidades que impediriam sua execução polinomial. Também sugere uma implementação simples e didática que tem desempenho superior às bibliotecas-padrão de muitas linguagens.
+Este trabalho visa analisar as armadilhas comuns no desenvolvimento de expressões regulares, realizando benchmarks entre diversas implementações populares, apontando funcionalidades que impediriam sua execução polinomial. Também sugere uma implementação simples e didática que tem desempenho em pior caso ordens de grandeza superior às bibliotecas-padrão de muitas linguagens.
 
-\noindent {Palavras-chave}: Teoria da computação. Expressões regulares. Linguagens regulares. Autômatos finitos. Complexidade computacional.. Algoritmos. NP-completo.
+\noindent {Palavras-chave}: Teoria da computação. Expressões regulares. Linguagens regulares. Autômatos finitos. Complexidade computacional. Algoritmos. NP-completo.
 
 % ----------------------------------------------------------
 % Abstract
@@ -143,12 +136,12 @@ In theory, regular expressions are a notation to define regular languages in ter
 
 Most of the changes happened to allow them to reach a greater expressive power. This convenience, however came at the cost of making the match a computationally harder problem than what theory describes. In most of the modern languages, the regex match (as it is commonly known) is a NP-complete problem. Besides, the way they are implemented makes even expressions that could be recognized in polynomial time to be solved with exponential algorithms.
 
-This work aims to analyze the common pitfalls in regular expressions development, measuring performance with benchmarks of the most popular implementations, pointing the features that could not be implemented in polynomial time. Also it suggests a simple and didactic implementation which has superior performance than many language's standard libraries.
+This work aims to analyze the common pitfalls in regular expressions development, measuring performance with benchmarks of the most popular implementations, pointing the features that could not be implemented in polynomial time. Also it suggests a simple and didactic implementation which has superior worst-case performance than many language's standard libraries.
 
 \noindent {Keywords}: Computation theory. Regular expressions. Regular languages. Finite automata. Computational complexity. Algorithms. NP-complete.
 
 \listadefiguras
-\listadetabelas
+%\listadetabelas
 
 \sumario
 
