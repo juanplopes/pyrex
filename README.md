@@ -6,4 +6,4 @@ Por isso, minha recomendação:
 
     sudo apt-get install texlive-full abntex
     
-To generate the PDF, run ```update```.
+Para gerar o PDF, execute ```./update```.
