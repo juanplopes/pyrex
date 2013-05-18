@@ -29,10 +29,10 @@
             {Departamento de Informática e Ciência da Computação}
 
 \autor{Juan}{Lopes}
-\titulo{Expressões Regulares em P}
+\titulo{Uma Implementação de Expressões Regulares em PTIME}
 
-\orientador{titulação} % rotulo
-           {[nome de]}{[sobrenome]} % {nome}{sobrenome}
+\orientador{Prof} % rotulo
+           {Paulo Eustáquio Duarte}{Pinto} % {nome}{sobrenome}
            {[afiliação]} % afiliacao
 
 \coorientador{titulação} % rotulo
@@ -110,10 +110,10 @@ Texto de agradecimento.
 
   \vfill\vfill\vfill\vfill
   \begin{flushright}
-    Simplicity is a great virtue but it requires\\
-    hard work to achieve it and education to appreciate it.\\
-    And to make matters worse: complexity sells better.\\
-    \textsl{Edsger W. Dijkstra}
+     Simplicity is a great virtue but it requires hard work\\
+     to achieve it and education to appreciate it. And to \\
+     make matters worse: complexity sells better.\\
+    \textsl{-- Edsger W. Dijkstra}
   \end{flushright}
   \vfill
 
@@ -213,10 +213,10 @@ O capítulo 5 expõe as conclusões e contribuições deste trabalho, bem como a
 Segundo Noam Chomsky \cite{bib:Chomsky57}, uma linguagem formal pode ser classificada em um de quatro tipos baseados na capacidade expressiva das gramáticas formais que a expressam:
 
 \begin{lcircp}
-    \item {\bf Tipo 3}: linguagens regulares
-    \item {\bf Tipo 2}: linguagens livres de contexto
-    \item {\bf Tipo 1}: linguagens sensíveis a contexto
     \item {\bf Tipo 0}: linguagens recursivamente enumeráveis (ou irrestritas)
+    \item {\bf Tipo 1}: linguagens sensíveis a contexto
+    \item {\bf Tipo 2}: linguagens livres de contexto
+    \item {\bf Tipo 3}: linguagens regulares
 \end{lcircp}
 
 Cada conjunto é propriamente incluso no seu conjunto superior na hierarquia, como pode ser visto na Figura ~\ref{fig:chomsky}.
@@ -241,30 +241,42 @@ Cada conjunto é propriamente incluso no seu conjunto superior na hierarquia, co
 \section{Expressões regulares}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Expressões regulares são sequências de caracteres que definem linguagens regulares. Alguns caracteres são interpretados literalmente, enquanto outros são considerados metacaracteres que controlam como dois trechos da expressão se relacionam.
+Expressões regulares são sequências de caracteres que definem linguagens regulares. Estas sequências obedecem a algumas regras de criação. Alguns caracteres são interpretados literalmente, enquanto outros são considerados metacaracteres que controlam como os trechos da expressão se relacionam.
 
-Sequências vazias são regulares.
+Por definição:
 
-Caracteres unitários são expressões regulares. E.g. \emph{a}.
+\begin{lcircp}
+    \item Sequências vazias são expressões regulares.
+    \item Caracteres unitários são expressões regulares. E.g. \emph{a}.
+    \item Expressões regulares podem ser concatenadas para formar novas expressões. E.g. se $e_1$ reconhece \emph{a} e $e_2$ reconhece \emph{b}, então $e_1e_2$ reconhece \emph{ab}.
+    \item Expressões regulares podem ser alternadas para formar novas expressões. E.g. se $e_1$ reconhece \emph{a} e $e_2$ reconhece \emph{b}, então $e_1|e_2$ reconhece \emph{a} e \emph{b}.
+    \item Pode-se aplicar o fecho Kleene para formar novas expressões. E.g. se $e_1$ reconhece \emph{a}, então $e_1*$ reconhece \emph{a}, \emph{aa}, \emph{aaa}... etc., bem como string vazia.
+\end{lcircp}
 
-Expressões regulares podem ser concatenadas para formar novas expressões. E.g. se $e_1$ reconhece \emph{a} e $e_2$ reconhece \emph{b}, então $e_1e_2$ reconhece \emph{ab}.
+Perceba que é possível definir outros operadores comuns, como $?$ e $+$. Mas é possível fazê-lo a partir das operações descritas acima. O operador $e_1?$ pode ser definido como a alternância entre $e_1$ e uma string vazia. O operarador $e_1+$ pode ser definido como $e_1e_1*$.
 
-Expressões regulares podem ser alternadas para formar novas expressões. E.g. se $e_1$ reconhece \emph{a} e $e_2$ reconhece \emph{b}, então $e_1|e_2$ reconhece \emph{a} e \emph{b}.
-
-Pode-se aplicar o fecho Kleene para formar novas expressões. E.g. se $e_1$ reconhece \emph{a}, então $e_1*$ reconhece \emph{a}, \emph{aa}, \emph{aaa}... etc., bem como string vazia.
-
-Perceba que é possível definir outros operadores comuns, como $?$ e $+$. Mas é possível defini-los a partir das operações descritas acima. O operador $e_1?$ pode ser definido como a alternância entre $e_1$ e uma string vazia. O operarador $e_1+$ pode ser definido como $e_1e_1*$.
+Outros operadores sobre caracteres como o $.$ (qualquer caractere) e as classes de caractere (e.g. $[a-zA-Z]$) são trivialmente implementados usando alternação de expressões.
 
 A precedência natural dos operadores, da mais fraca para a mais forte, é: alternância, concatenação, repetição. Assim, uma expressão como $ab|cd*$ é interpretada como exibido na Figura ~\ref{fig:abcd_parse_tree}.
 
 \begin{figure}[ht]
   \centering
-  \includegraphics[scale=0.33]{figures/abcd_parse_tree.png}
+  \includegraphics[scale=0.4]{figures/abcd_parse_tree.png}
   \caption{Árvore de avaliação para expressão $ab|cd*$}
   \label{fig:abcd_parse_tree}
 \end{figure}
 
-É possível agrupar sub-expressões usando parênteses, tal qual é feito com expressões aritméticas. 
+É possível agrupar sub-expressões utilizando parênteses, tal qual é feito com expressões aritméticas. Assim $a(b|c)d*$ tem um sentido completamente diferente de $ab|cd*$.
+
+Estas operações, apesar de bastante incompletas, definem inequivocamente expressões regulares. É possível representar qualquer linguagem regular utilizando apenas estes operadores. Mais importante: é teóricamente possível reconhecer qualquer sequência nesta linguagem com apenas uma passagem pela entrada (sem \emph{backtracking}). 
+
+Novas implementações de expressões regulares adicionaram novos operadores que tornam a sintaxe mais concisa. Porém, essas adições normalmente não alteram o poder expressivo das regexes. No entanto, existem adições que adicionam poder expressivo, como é o caso das \emph{backreferences}, que permitem o reconhecimento de algumas linguagens não-regulares. \emph{Backreferences} consiste em referências \emph{submatches} reconhecias anteriormente.
+
+Por exemplo, uma linguagem composta por sequências de caracteres repetidas, como \emph{DogDog} ou \emph{CatCat}. É possível definir uma expressão regular $/(.*)\backslash 1/$ que reconhece esta linguagem. o $\backslash 1$ instrui ao motor de reconhecimento a esperar uma nova sequência exatamente igual à obtida pelo reconhecimento do primeiro grupo $(.*)$.
+
+Esta linguagem não apenas cai fora do conjunto das linguagens regulares, como também não é uma linguagem livre de contexto.
+
+Tal poder expressivo tem seu preço. Match de backreferences é um problema NP-completo, logo, os melhores algoritmos conhecidos ainda tem pior caso exponencial. É possível, porém, escrever algoritmos polinomiais para expressões que não fazem uso de backreferences. No entanto, pela diferente natureza dos dois tipos de algoritmos, normalmente as linguagens implementam apenas um deles, fazendo com que algumas expressões que originalmente poderiam ser avaliadas em tempo polinomial serem penalizadas sem necessidade.
 
 \backmatter
 %\citeoption{abnt-options4}
