@@ -3,6 +3,8 @@
 \usepackage[brazil]{babel}  % adequacao para o portugues Brasil
 \usepackage{cmap}           % Mapear caracteres especiais no PDF
 \usepackage[utf8]{inputenc} % Determina a codificacao utiizada
+                        
+\usepackage{array}
                             % (conversão automática dos acentos)
 \usepackage{listings}
 \usepackage{makeidx}        % Cria o indice
@@ -158,7 +160,7 @@ Expressões regulares fazem parte do ferramental da maioria das linguagens e pla
 
 Seu extensivo uso vem precedido por uma forte base teórica na área de autômatos finitos, introduzida nos anos 40 por McCulloch e Pitts \cite{bib:McCulloch43} e formalizada na década seguinte por Kleene \cite{bib:Kleene56}.
 
-Expressões regulares e autômatos finitos compartilham uma relação estreita. São equivalentes em poder expressivo, e a conversão do primeiro para o segundo é trivial, como pode ser visto na Figura \ref{fig:exemplo_automato}. Ken Thompson demonstrou isso em sua implementação no final dos anos 60 \cite{bib:Thompson68}, enquanto desenvolvia o editor de texto \emph{QED}. As mesmas expressões regulares foram, posteriormente, portadas para os mais conhecidos \emph{ed} e \emph{grep}, integrantes do sistema operacional Unix.
+Expressões regulares e autômatos finitos compartilham uma relação estreita. São equivalentes em poder expressivo, e a conversão do primeiro para o segundo é trivial, como pode ser visto na figura \ref{fig:exemplo_automato}. Ken Thompson demonstrou isso em sua implementação no final dos anos 60 \cite{bib:Thompson68}, enquanto desenvolvia o editor de texto \emph{QED}. As mesmas expressões regulares foram, posteriormente, portadas para os mais conhecidos \emph{ed} e \emph{grep}, integrantes do sistema operacional Unix.
 
 \begin{figure}[ht]
   \centering
@@ -171,7 +173,7 @@ Desde então, conforme as implementações foram evoluindo, muitas funcionalidad
 
 Uma das consequências mais notáveis desta evolução não planejada é que o reconhecimento de strings da linguagem, um problema com solução linear originalmente, ganhou soluções exponenciais em um grande número de implementações modernas, que inclui muitas das mais usadas. Talvez a funcionalidade mais perigosa neste sentido sejam as backreferences, que não só impedem soluções polinomiais como tornam o problema de reconhecimento NP-completo. Entretanto, mesmo nas expressões que poderiam ser reconhecidas estritamente com autômatos finitos, certas particularidades de implementação as tornam potencialmente exponenciais, no pior caso \cite{bib:Cox07}.
 
-A Figura \ref{fig:benchmark1} mostra o crescimento no tempo de execução entre a implementação da biblioteca padrão da linguagem Python e a implementação proposta neste projeto, usando o método de Thompson. 
+A figura \ref{fig:benchmark1} mostra o crescimento no tempo de execução entre a implementação da biblioteca padrão da linguagem Python e a implementação proposta neste projeto, usando o método de Thompson. 
 
 \begin{figure}[ht]
   \centering
@@ -202,9 +204,9 @@ Deseja-se mostrar com esse projeto que o problema de reconhecimento de expressõ
 
 O projeto está divido em cinco capítulos. O capítulo 2 trata da base teórica por trás das expressões regulares, contando sua história, passando pelo método de construção do autômato de Thompson, e exibindo um algoritmo trivial (porém ineficiente) para sua solução.
 
-O capítulo 3 descreve poder das implementações modernas de expressão regular, mostrando recursos avançados, como \emph{zero-width assertions} e \emph{backreferences}. Mostra também exemplos de expressões que reconhecem gramáticas não-regulares, exibindo o distanciamento entre estas e a teoria original. Por fim, é mostrado um benchmark comparando a performance entre as diversas implementações, que evidenciam uma diferença fundamental na forma como o problema é abordado em cada uma delas.
+O capítulo 3 descreve a implementação sugerida por este trabalho, discutindo certos aspectos específicos desta implementação que não tenham sido abordados na parte de teoria. 
 
-No capítulo 4 é proposta uma implementação de expressões regulares utilizando o método de Thompson. Os resultados teóricos e práticos desta implementação são discutidos e comparados com resultados anteriores.
+O capítulo 4 aborda as diferenças entre as implementações modernas e a implementação proposta neste trabalho. Começa descrevendo o poder das implementações modernas de expressão regular, mostrando recursos avançados, como \emph{zero-width assertions} e \emph{backreferences}. Prova a NP-completude do \emph{match} nestas implementações. Mostra também exemplos de expressões que reconhecem gramáticas não-regulares, exibindo o distanciamento entre estas e a teoria original. Por fim, é mostrado um benchmark comparando as diversas implementações, que evidenciam uma diferença fundamental na forma como o problema é abordado em cada uma delas.
 
 O capítulo 5 expõe as conclusões e contribuições deste trabalho, bem como as dificuldades encontradas durante o projeto. Também serão listadas e descritas as funcionalidades não implementadas, possivelmente sugerindo formas eficientes de implementá-las, ou mesmo formas diferentes de simular o autômato que melhorem a eficiência geral da execução.
 
@@ -314,7 +316,7 @@ Segundo Noam Chomsky \cite{bib:Chomsky57}, uma linguagem formal pode ser classif
     \item {\bf Tipo 3}: linguagens regulares
 \end{lcircp}
 
-Cada conjunto é propriamente incluso no seu conjunto superior na hierarquia, como pode ser visto na Figura \ref{fig:chomsky}.
+Cada conjunto é propriamente incluso no seu conjunto superior na hierarquia, como pode ser visto na figura~\ref{fig:chomsky}.
 
 \begin{figure}[ht]
   \centering
@@ -393,7 +395,7 @@ Perceba que é possível definir outros operadores comuns, como $?$ e $+$. Mas �
 
 Outros operadores sobre caracteres como o $.$ (qualquer caractere) e as classes de caractere (e.g. $[a-zA-Z]$) são trivialmente implementados usando alternação de expressões.
 
-A precedência natural dos operadores, da mais fraca para a mais forte, é: alternância, concatenação, repetição. Assim, uma expressão como $ab|cd*$ é interpretada como exibido na Figura \ref{fig:abcd_parse_tree}.
+A precedência natural dos operadores, da mais fraca para a mais forte, é: alternância, concatenação, repetição. Assim, uma expressão como $ab|cd*$ é interpretada como exibido na figura~\ref{fig:abcd_parse_tree}.
 
 \begin{figure}[ht]
   \centering
@@ -439,7 +441,7 @@ Por exemplo:
   \label{fig:exemplo_automato_numerado}
 \end{figure}
 
-O autômato na Figura~\ref{fig:exemplo_automato_numerado} pode ser descrito por $M=(\{1,2,3,4\}, \{a,b,c\}, 1, \delta, \{4\})$, onde $\delta$ é definida pela tabela de transições:
+O autômato na figura~\ref{fig:exemplo_automato_numerado} pode ser descrito por $M=(\{1,2,3,4\}, \{a,b,c\}, 1, \delta, \{4\})$, onde $\delta$ é definida pela tabela de transições:
 
 \begin{center}
 	\begin{tabular}{ c || c | c | c }
@@ -456,7 +458,7 @@ O autômato na Figura~\ref{fig:exemplo_automato_numerado} pode ser descrito por 
 	\end{tabular}
 \end{center}
 
-Este autômato é \emph{não determinístico}, pois um mesmo input (c) pode gerar múltiplas transições no estado 2. Outra forma de representar autômatos não determínisticos é introduzindo a entrada $\epsilon$, como pode ser visto na Figura~\ref{fig:exemplo_automato_epsilon}. Perceba que este autômato \emph{não é equivalente} ao definido anteriormente. Ele aceita uma entrada $b$ que o primeiro não aceita.
+Este autômato é \emph{não determinístico}, pois um mesmo input (c) pode gerar múltiplas transições no estado 2. Outra forma de representar autômatos não determínisticos é introduzindo a entrada $\epsilon$, como pode ser visto na figura~\ref{fig:exemplo_automato_epsilon}. Perceba que este autômato \emph{não é equivalente} ao definido anteriormente. Ele aceita uma entrada $b$ que o primeiro não aceita.
 
 \begin{figure}[ht]
   \centering
@@ -468,7 +470,7 @@ Este autômato é \emph{não determinístico}, pois um mesmo input (c) pode gera
 
 Autômatos podem ser utilizados para reconhecer linguagens regulares. É possível construir um autômato que, dada uma linguagem, termina em estados de aceite ou não, dependendo da palavra que for oferecida como entrada.
 
-O autômato descrito na Figura~\ref{fig:exemplo_automato_epsilon}, por exemplo, reconhece uma linguagem finita definida por $L = \{ac, aca, b, ba\}$. A linguagem que um autômato finito reconhece é \emph{sempre regular}. E \emph{toda linguagem regular} pode ser reconhecida com autômatos finitos \cite{bib:Kleene56}.
+O autômato descrito na figura~\ref{fig:exemplo_automato_epsilon}, por exemplo, reconhece uma linguagem finita definida por $L = \{ac, aca, b, ba\}$. A linguagem que um autômato finito reconhece é \emph{sempre regular}. E \emph{toda linguagem regular} pode ser reconhecida com autômatos finitos \cite{bib:Kleene56}.
 
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 \section{Método de Construção de Thompson}
@@ -478,6 +480,36 @@ Pela equivalência entre linguagens regulares e autômatos finitos. É útil pod
 
 Na época em que foi escrito, o artigo descrevia como gerar código de máquina para um IBM 7094. Isto era necessário por restrições de hardware da época. Hoje não é mais estritamente necessário. Este trabalho irá se limitar a descrever como construir o autômato a partir da expressão regular.
 
+O método consite em construir o autômato recursivamente através da análise da árvore sintática da expressão, procedimento que precisa ser efetuado antes do começo da construção do autômato. No artigo original de Thompson, este passo era feito construindo a expressão em notação \emph{infixa}. Entretanto, para permitir extensibilidade do formato da expressão, iremos definir completamente a gramática da expressão regular que aceitaremos.
+
+\subsection{Analise sintática}
+
+O primeiro passo para a construção do autômato é analisar sintaticamente a expressão, construindo a árvore sintática. 
+
+Podemos definir uma EBNF simples que representa a linguagem formada pelas expressões regulares.
+
+\begin{verbatim}
+<option>     ::= <sequence> { "|" <sequence> }*
+<sequence>   ::= <repetition> { <repetition> }*
+<repetition> ::= <primary> { "*" | "?" | "+" }*
+<primary>    ::= "." | <literal> | "(" <option> ")"
+\end{verbatim}
+
+Assim, podemos fazer parse da expressão facilmente. A expressão $(a|a)+b$, por exemplo, seria avaliada como a árvore descrita na figura~\ref{fig:aab_parse_tree}.
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[scale=0.4]{figures/aab_parse_tree.png}
+  \caption{Árvore de avaliação para expressão $(a|a)+b$}
+  \label{fig:aab_parse_tree}
+\end{figure}
+
+Utilizando a EBNF, esta árvore pode ser produzida por diversos tipos de ferramentas presentes em várias linguagens. Exemplos notáveis incluem o YACC (\emph{Yet Another Compiler Compiler}) e o JAVACC (\emph{Java Compiler Compiler}).
+
+Com esta árvore de avaliação é possível fazer a conversão para o autômato de forma bastante trivial, como será discutido nas próximas seções.
+
+\subsection{Notação}
+
 Iremos assumir uma notação diferente para representação do autômato, que irá facilitar a construção. Para fins de praticidade, todo estado $q_i \in Q$ será de um entre três tipos possíveis:
 
 \begin{lcircp}
@@ -486,24 +518,143 @@ Iremos assumir uma notação diferente para representação do autômato, que ir
     \item Um estado de \emph{aceite}, que não possui qualquer transição.
 \end{lcircp}
 
-O diagrama de estados também será alterado para facilitar a visualização como pode ser visto na Figura~\ref{fig:nova_notacao}.
+A figura~\ref{fig:nova_notacao} mostra como podem ser representados os estados desta nova notação no diagrama de estados.
 
 \begin{figure}[ht]
   \centering
-  \includegraphics[scale=0.25]{figures/nova_notacao.png}
-  \caption{Mesmo autômato representado com as duas notações}
+  \includegraphics[scale=0.5]{figures/nova_notacao.png}
+  \caption{Representação de estados na nova notação}
   \label{fig:nova_notacao}
 \end{figure}
 
+Esta representação facilita a visualização por omitir as transições $\epsilon$ e ressaltar a diferença entre os estados de consumo e os estados de decisão. Um exemplo de conversão para a nova notação pode ser visto na figura~\ref{fig:exemplo_nova_notacao}.
 
+\begin{figure}[ht]
+  \centering
+  \includegraphics[scale=0.25]{figures/exemplo_nova_notacao.png}
+  \caption{Mesmo autômato representado com as duas notações}
+  \label{fig:exemplo_nova_notacao}
+\end{figure}
 
+\subsection{Construção}
+
+A construção do autômato se dá pela conversão recursiva de cada um dos nós na árvore por uma construção de autômato predeterminada. Cada uma destas construções tem apenas um estado de entrada e todas as transições que não apontem para um nó dentro da própria construção, apontam para um único nó de saída.
+
+A tabela a seguir mostra a conversão para cada tipo de nó. Para fins de notação, as letras maiúsculas representam autômatos complexos produzidos em passos anteriores, mas que seguem a mesma regra definida no parágrafo anterior.
+
+\begin{center}
+	\begin{tabular}{ c | c | c }
+		{\bf Tipo} & {\bf Expressão} & {\bf Construção} \\
+		\hline
+		\hline
+		Literal & $a$ & \includegraphics[scale=0.3]{figures/thompson_literal.png} \\ 
+		\hline
+		Sequência & $ST$ & \includegraphics[scale=0.3]{figures/thompson_sequence.png} \\ 
+		\hline
+		Opção & $S|T$ & \includegraphics[scale=0.3]{figures/thompson_option.png} \\ 
+		\hline
+		Kleene+ & $S+$ & \includegraphics[scale=0.3]{figures/thompson_plus.png} \\ 
+		\hline
+		Opcional & $S?$ & \includegraphics[scale=0.3]{figures/thompson_question.png} \\ 
+		\hline
+		Kleene* & $S*$ & \includegraphics[scale=0.3]{figures/thompson_kleene.png} \\ 
+		\hline
+	\end{tabular}
+\end{center}
+
+Uma das vantagens desta forma de construir é que ela pode ser escrita como uma sequência de instruções para serem interpretadas por uma máquina virtual. Cada um dos três tipos de estados definidos pela notação na seção anterior podem ser substituídos por uma entre três instruções. Estados de consumo como instruções \emph{CONSUME}, estados de decisão como instruções \emph{JUMP} e estados de aceite como instruções \emph{MATCH}.
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[scale=0.25]{figures/exemplo_automato_completo.png}
+  \caption{Exemplo completo de autômato para a expressão $(a|a)+b$}
+  \label{fig:exemplo_automato_completo}
+\end{figure}
+
+Por exemplo, o autômato representado pela figura~\ref{fig:exemplo_automato_completo} pode ser reescrito como as instruções:
+
+\begin{verbatim}
+0000: JUMP +1 OR +3
+0001: CONSUME 'a'
+0002: JUMP +2
+0003: CONSUME 'a'
+0004: JUMP +1 OR -4
+0005: CONSUME 'b'
+0006: MATCH!
+\end{verbatim}
+
+As instruções \emph{JUMP} são os que representam o não-determinismo destes autômatos, pois ao serem executadas, podem mudar para qualquer um dos rótulos para os quais apontam. Existem diversas formas de simular a execução desses programas não-determinísticos usando uma máquina de Turing determínistica. E é exatamente neste ponto onde a maior parte das implementações torna-se exponencial desnecessariamente.
 
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 \section{Simulação do Autômato}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+Simular a execução de um autômato não-determinístico utilizando uma máquina determinística é um problema por si só complicado. Existem potencialmente exponenciais caminhos possíveis num autômato não-determinístico \cite{bib:Rabin59}.
+
+Dentre as opções para simulação da execução do autômato, estão:
+
+\begin{lcircp}
+    \item \emph{Backtracking}: tentar todos os caminhos possíveis, voltando para a última escolha feita em caso de falha.
+    \item \emph{Backtracking com memoização}.
+    \item \emph{Conversão para DFA}: converter para um autômato determinístico antes de executar.
+    \item \emph{Simulação paralela}: simular a execução de todos os estados simultaneamente.
+\end{lcircp}
+
+Cada uma destas opções tem caracteristicas próprias. Suas vantagens e desvantagens serão discutidas separadamente.
+
+\subsection{Bactracking}
+
+Backtracking é talvez a forma mais trivial de implementar a simulação de autômatos não determinísticos. Consiste basicamente em ao ser apresentado a uma escolha, decidir por uma delas, mas manter uma pilha de escolhas feitas para retroceder e escolher novamente caso não tenha sucesso.
+
+\emph{Vantagem}: Este método é o mais fácil de implementar, pois como a chamada de subrotinas na maior parte das linguagens já implementa uma pilha, uma simples recursão é o suficiente para implementar esta técnica.
+
+\emph{Desvantagem}: Pela natureza do autômato, cada escolha pode gerar vários fluxos independentes, então uma sequência de n escolhas (assumindo que sejam binárias) pode gerar até $2^n$ fluxos diferentes. Além disso, esta técnica requer múltiplas passagens pela mesma string, o que é trivial se ela estiver em memória, mas complicado se estiver vindo de um fluxo de rede ou pipes do sistema.
+
+\subsection{Backtracking com Memoization}
+
+O maior problema de usar backtracking talvez seja a quantidade de fluxos diferentes que a implementação pode alcançar. Entretanto, para o problema de match, a resposta é invariante se definirmos em termos de $s_i, q_j$ tal que $s_i \in S, q_j \in Q$, onde $S$ é a entrada e $Q$ o conjunto de estados do autômato.
+
+Definindo assim, se $n = |S|, m = |Q|$, então existem apenas $n \times m$ possíveis configurações para o problema, que podem ser devidamente memoizadas. Então um problema que era $O(2^n)$ torna-se $O(n\times m)$.
+
+\emph{Vantagem}: Esta técnica é tão fácil de implementar quanto o backtracking puro, mas tem uma complexidade bem menor.
+
+\emph{Desvantagem}: Ainda é necessário passar multiplas vezes pela mesma string.
+
+\subsection{Conversão para DFA}
+
+Autômatos finitos determinísticos são muito mais fáceis de simular, visto que se aproximam muito mais intimiamente aos computadores que conhecemos atualmente. 
+
+É sabido que autômatos finitos determinísticos (DFA) e não-determinísticos (NFA) são equivalentes em termos de poder expressivo. É possível converter entre um e outro com métodos conhecidos. Entretanto, cada um deles faz concessões em termos de recursos utilizados.
+
+Um NFA com m estados, quando convertido para uma DFA pode ter ate $2^m$ estados. Em termos de memória utilizada, NFAs são exponencialmente mais expressivos que DFAs \cite{bib:Calabro05}. Entretanto, DFAs tem execução com menor complexidade que NFAs. Para uma entrada com n caracteres, NFAs podem ser simulados em $O(n \times m)$, enquanto DFAs em $O(m)$.
+
+A conversão entre os dois se dá através do algoritmo conhecido como \emph{Rabin-Scott powerset construction} \cite{bib:Rabin59}. Que consiste basicamente em simular a execução paralela do autômato para todas as entradas possíveis.
+
+\emph{Vantagem}: Depois de construído o DFA, ele pode ser usado para reconhecer qualquer string em $O(m)$.
+
+\emph{Desvantagem}: A construção do DFA tem complexidades de tempo e espaço exponenciais. E é bem menos simples de implementar que backtracking.
+
+\subsection{Simulação paralela}
+
+
+
+%======================================================================================
+\chapter{Implementação}
+%======================================================================================
+
 TBD
 
+%======================================================================================
+\chapter{Análise dos Resultados}
+%======================================================================================
+
+TBD
+
+%======================================================================================
+\chapter{Conclusão}
+%======================================================================================
+
+TBD
 
 \backmatter
 
