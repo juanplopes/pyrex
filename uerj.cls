@@ -546,7 +546,7 @@
     \ifthenelse{\boolean{appendixannex}}{}{
       \addcontentsline{toc}{#1}{%
         \ifnum #2>\c@secnumdepth
-        \else \protect\numberline{\csname the#1\endcsname}\fi#6\normalsize{#7}}%
+        \else \protect\numberline{\csname the#1\endcsname}\fi#6{\normalsize{#7}}}%
     }
   \else
     \def\@svsechd{%

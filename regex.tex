@@ -224,30 +224,38 @@ A operação básica entre palavras é a \emph{concatenação}. Por exemplo, se 
 
 Linguagens são conjuntos, portanto mesma notação de conjuntos é utilizada para linguagens. Por exemplo, $A \cup B$ representa a união de linguagens A e B, assim como $w \in A$ é uma proposição afirma que a palavra $w$ está presente na linguagem A.
 
-Uma operação importante em linguagens é o fecho Kleene ($L^*$), que pode ser definido recursivamente.
+É possível concatenar linguagens. Dadas linguagens $L_1$ e $L_2$,
 
-Dados:
+\begin{equation*}
+	L_1L_2 = \{w_1w_2 | w_1 \in L_1, w_2 \in L_2\}
+\end{equation*}
+
+E.g.: se $A = \{a, aa\}$ e $B = \{b, bb\}$, então $AB = \{ab, aab, abb, aabb\}$.
+
+
+Com base na concatenação, uma operação importante em linguagens é o fecho Kleene ($L^*$), que pode ser definido como:
 
 \begin{equation*}
 	L^0 = \{\epsilon\}
 \end{equation*}
 \begin{equation*}
-	L^i = \{w_1w_2 | w_1 \in L^{i-1}, w_2 \in L\}
+	L^i = L^{i-1}L
 \end{equation*}
 \begin{equation*}
 	L^* = \bigcup_{i \in \mathbb{N}} L^i
 \end{equation*}
 
+E.g.: se $A = \{a, aa\}$, então $A^* = \{\epsilon, a, aa, aaa, \ldots\}$.
 
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-\section{Gramáticas Formais}
+\section{Gramáticas Gerativas}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Uma das formas de representar linguagens formais é através de gramáticas gerativas. O termo ``gramática formal'' é comumente utilizado para referir-se a elas. No entanto, existem outras formas de representar gramáticas formais além deste. Este trabalho irá se limitar à definição mais comum.
 
 Gramáticas gerativas são sistemas de reescrita, i.e. a partir de um símbolo inicial, é possível usar as regras de reescrita para produzir todas as palavras de uma linguagem. Esta operação é, de certa forma, o problema dual de reconhecer uma palavra como parte da linguagem através de um autômato \cite{bib:Ruohonen09}.
 
-Uma gramática é formada por uma tupla $(N, \Sigma, P, S)$. Onde:
+Uma gramática é formada por uma tupla $G = (N, \Sigma, P, S)$. Onde:
 
 \begin{lcircp}
     \item N é o conjunto de símbolos não terminais. Eles não fazem parte da linguagem original, então precisam ser sempre substituídos para alcançar um símbolo válido na linguagem.
@@ -409,7 +417,63 @@ Esta linguagem não apenas cai fora do conjunto das linguagens regulares, como t
 Tal poder expressivo tem seu preço. Match de backreferences é um problema NP-completo, logo, os melhores algoritmos conhecidos ainda tem pior caso exponencial. É possível, porém, escrever algoritmos polinomiais para expressões que não fazem uso de backreferences. No entanto, pela diferente natureza dos dois tipos de algoritmos, normalmente as linguagens implementam apenas um deles, fazendo com que algumas expressões que originalmente poderiam ser avaliadas em tempo polinomial serem penalizadas sem necessidade.
 
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-\section{Construção do Autômato}
+\section{Autômatos Finitos}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Autômatos finitos representam um modelo matemático de computação. Eles representam máquinas abstratas que podem se encontram em apenas um de um número finito de estados. Autômatos não possuem memória. Mas apenas estritamente falando, pois o estado atual do autômato representa sua memória. Um autômato muda de estado como reação a um estímulo externo. Formalmente, autômatos finitos são uma tupla $M = (Q, \Sigma, q_0, \delta, A)$, onde:
+
+\begin{lcircp}
+    \item Q é o conjunto de estados do autômato. Sempre finito.
+    \item $\Sigma$ é o alfabeto aceito pelo autômato.
+    \item $q_0$ é o estado inicial do autômato. $q_0 \in Q$.
+    \item $\delta$ é a função de transição, que mapeia cada $(q_i, a) \in Q \times \Sigma$ a um subconjunto de Q. Se esse subconjunto tem apenas zero ou um elementos, o autômato é \emph{deterministico}, caso contrário, ele é \emph{não-determinístico}.
+    \item A é o conjunto de estados de aceite. $A \subseteq Q$.
+\end{lcircp}
+
+Por exemplo:
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[scale=0.3]{figures/exemplo_automato_numerado.png}
+  \caption{Diagrama de estados de um autômato não-determinístico}
+  \label{fig:exemplo_automato_numerado}
+\end{figure}
+
+O autômato na Figura~\ref{fig:exemplo_automato_numerado} pode ser descrito por $M=(\{1,2,3,4\}, \{a,b,c\}, 1, \delta, \{4\})$, onde $\delta$ é definida pela tabela de transições:
+
+\begin{center}
+	\begin{tabular}{ c || c | c | c }
+		{\bf $\delta$} & {\bf a} & {\bf b} & {\bf c} \\
+		\hline 
+		\hline 
+		1 & 2 & 3 &  \\ 
+		\hline 
+		2 &   &   & 2, 4 \\ 
+		\hline 
+		3 & 4 &   &  \\ 
+		\hline 
+		4 &   &   &  \\ 
+	\end{tabular}
+\end{center}
+
+Este autômato é \emph{não determinístico}, pois um mesmo input (c) pode gerar múltiplas transições no estado 2. Outra forma de representar autômatos não determínisticos é introduzindo a entrada $\epsilon$, como pode ser visto na Figura~\ref{fig:exemplo_automato_epsilon}. Perceba que este autômato \emph{não é equivalente} ao definido anteriormente. Ele aceita uma entrada $b$ que o primeiro não aceita.
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[scale=0.3]{figures/exemplo_automato_epsilon.png}
+  \caption{Diagrama de estados de um autômato não-determinístico com entrada $\epsilon$}
+  \label{fig:exemplo_automato_epsilon}
+\end{figure}
+
+
+Autômatos podem ser utilizados para reconhecer linguagens regulares. É possível construir um autômato que, dada uma linguagem, termina em estados de aceite ou não, dependendo da palavra que for oferecida como entrada.
+
+O autômato descrito na Figura~\ref{fig:exemplo_automato_epsilon}, por exemplo, reconhece uma linguagem finita definida por $L = \{ac, aca, b, ba\}$.
+
+A linguagem que um autômato finito reconhece é sempre \emph{regular}. E toda linguagem regular pode ser reconhecida com autômatos finitos.
+
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+\section{Método de Construção do Thompson}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 TBD
