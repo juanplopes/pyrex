@@ -439,7 +439,7 @@
     \phantomsection\addcontentsline{toc}{chapter}
       {\normalfont\nobreak
         {\protect\numberline{}}\nobreak
-        {\bf \@chapapp}\space\thechapter\nobreak
+        {\bf\@chapapp}\space\thechapter\nobreak
         {\normalfont{\space\space--\space\space#1}}
       }
   \else
@@ -508,11 +508,11 @@
 \newcommand\section{\@startsection {section}{1}{\z@}% #1 #2 #3
                                    {-2\baselineskip}% #4
                                    {\baselineskip}% #5
-                                   {\protect\normalfont\protect\normalsize\bfseries}}%#6
+                                   {\protect\normalfont\protect\normalsize}}%#6
 \newcommand\subsection{\@startsection{subsection}{2}{\z@}%
                                      {-2\baselineskip}%
                                      {\baselineskip}%
-                                     {\protect\normalfont\protect\normalsize\noexpand}}
+                                     {\protect\normalfont\protect\normalsize\itshape\noexpand}}
 \newcommand\subsubsection{\@startsection{subsubsection}{3}{\z@}%
                                      {-2\baselineskip}%
                                      {\baselineskip}%

@@ -78,6 +78,7 @@
 \makeindex
 
 \begin{document}
+
 \frontmatter
 \capa
 \folhaderosto
@@ -215,21 +216,38 @@ O capítulo 5 expõe as conclusões e contribuições deste trabalho, bem como a
 \section{Linguagens Formais}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Uma linguagem formal é um conjunto de símbolos -- potencialmente infinito -- que pode estar restrito a um número de regras específicas a eles. Estes símbolos são construídos a partir da combinação de um conjunto finito de elementos da linguagem chamado \emph{alfabeto}. 
-
-Por ser tratar de conjuntos, a notação clássica dos mesmos é utilizada para linguagens. E.g. $A \cup B$ representa a união de linguagens A e B, assim como $A \supset B$ é uma proposição que afirma que a linguagem A contém todos os símbolos da linguagem B. $w \in A$ afirma que o símbolo $w$ está presente na linguagem A.
-
 Linguagens formais é um tema que mistura elementos da ciência da computação, matemática e linguística. Seu papel na computação é fundamental pela relação de seus problemas com os descritos pela teoria da computação.
+
+Uma \emph{linguagem formal} é um conjunto -- potencialmente infinito -- de \emph{palavras}, que por sua vez são combinações de elementos de um conjunto finito de símbolos chamado \emph{alfabeto}.
+
+A operação básica entre palavras é a \emph{concatenação}. Por exemplo, se $w_1 = aaa$ e $w_2=bbb$, então $w_1w_2 = aaabbb$. Concatenação é associativa: $(w_1w_2)w_3 = w_1(w_2w_3)$; porém não comutativa: $w_1w_2 \neq w_2w_1$.
+
+Linguagens são conjuntos, portanto mesma notação de conjuntos é utilizada para linguagens. Por exemplo, $A \cup B$ representa a união de linguagens A e B, assim como $w \in A$ é uma proposição afirma que a palavra $w$ está presente na linguagem A.
+
+Uma operação importante em linguagens é o fecho Kleene ($L^*$), que pode ser definido recursivamente.
+
+Dados:
+
+\begin{equation*}
+	L^0 = \{\epsilon\}
+\end{equation*}
+\begin{equation*}
+	L^i = \{w_1w_2 | w_1 \in L^{i-1}, w_2 \in L\}
+\end{equation*}
+\begin{equation*}
+	L^* = \bigcup_{i \in \mathbb{N}} L^i
+\end{equation*}
+
 
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 \section{Gramáticas Formais}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Uma das formas de representar linguagens formais é através de gramáticas gerativas. O termo ``gramática formal'' é comumente utilizado para referir-se a gramáticas gerativas. Entretanto, existem outras formas de representar gramáticas formais além deste. Este trabalho irá se limitar à definição mais comum.
+Uma das formas de representar linguagens formais é através de gramáticas gerativas. O termo ``gramática formal'' é comumente utilizado para referir-se a elas. No entanto, existem outras formas de representar gramáticas formais além deste. Este trabalho irá se limitar à definição mais comum.
 
-Gramáticas gerativas são sistemas de reescrita, i.e. a partir de um símbolo inicial, é possível usar as regras de reescrita para produzir todos os símbolos de uma linguagem. Esta operação é, de certa forma, o problema dual de reconhecer um símbolo como parte da linguagem através de um autômato \cite{bib:Ruohonen09}.
+Gramáticas gerativas são sistemas de reescrita, i.e. a partir de um símbolo inicial, é possível usar as regras de reescrita para produzir todas as palavras de uma linguagem. Esta operação é, de certa forma, o problema dual de reconhecer uma palavra como parte da linguagem através de um autômato \cite{bib:Ruohonen09}.
 
-Uma gramática é formada pela quádrupla: $(N, \Sigma, P, S)$. Onde:
+Uma gramática é formada por uma tupla $(N, \Sigma, P, S)$. Onde:
 
 \begin{lcircp}
     \item N é o conjunto de símbolos não terminais. Eles não fazem parte da linguagem original, então precisam ser sempre substituídos para alcançar um símbolo válido na linguagem.
@@ -238,7 +256,11 @@ Uma gramática é formada pela quádrupla: $(N, \Sigma, P, S)$. Onde:
     \item S é o símbolo inicial do sistema de reescrita. $S \in N$.
 \end{lcircp}
 
-Um exemplo de gramática é a que define expressões da forma $a^nb^n$:
+Um exemplo de gramática é a que define expressões da forma $a^nb^n, n>0$:
+
+\begin{equation*}
+	N = \{S\}; \Sigma = \{a,b\}
+\end{equation*}
 
 \begin{equation*}
 	S \rightarrow aSb
@@ -247,7 +269,14 @@ Um exemplo de gramática é a que define expressões da forma $a^nb^n$:
 	S \rightarrow ab
 \end{equation*}
 
-Perceba que todas as regras do lado esquerdo possuem apenas um símbolo não terminal. Se fôssemos escrever uma gramática para expressões na forma $a^nb^nc^n$, precisaríamos de uma gramática mais rebuscada:
+Iniciando do símbolo S, é possível começar com a regra $ab$ ou $aSb$. A primeira já forma uma palavra na linguagem que queremos descrever ($ab$), a segunda possui um símbolo não terminal. A partir dele é possível gerar as palavras na linguagem: $aabb$, $aaabbb$, etc...
+
+Perceba que na gramática todas as regras do lado esquerdo possuem apenas um símbolo não terminal. Se fôssemos escrever uma gramática para expressões na forma $a^nb^nc^n$, precisaríamos de uma gramática mais rebuscada:
+
+\begin{equation*}
+	N = \{S, T\}; \Sigma = \{a,b,c\}
+\end{equation*}
+
 
 \begin{equation*}
 	S \rightarrow aTSc
@@ -373,7 +402,7 @@ Representando apenas linguagens regulares, as expressões regulares representam 
 
 Novas implementações de expressões regulares adicionaram novos operadores que tornam a sintaxe mais concisa. Porém, essas adições normalmente não alteram o poder expressivo das regexes. No entanto, existem adições que adicionam poder expressivo, como é o caso das \emph{backreferences}, que permitem o reconhecimento de algumas linguagens não-regulares. \emph{Backreferences} consiste em referências \emph{submatches} reconhecias anteriormente.
 
-Por exemplo, uma linguagem composta por símbolos repetidos, como \emph{DogDog} ou \emph{CatCat}. É possível definir uma expressão regular $/(.*)\backslash 1/$ que reconhece esta linguagem. o $\backslash 1$ instrui ao motor de reconhecimento a esperar um novo símbolo exatamente igual ao obtido pelo reconhecimento do primeiro grupo $(.*)$.
+Por exemplo, uma linguagem composta por palavras repetidas, como \emph{DogDog} ou \emph{CatCat}. É possível definir uma expressão regular $/(.*)\backslash 1/$ que reconhece esta linguagem. o $\backslash 1$ instrui ao motor de reconhecimento a esperar uma nova palavra exatamente igual à obtido pelo reconhecimento do primeiro grupo $(.*)$.
 
 Esta linguagem não apenas cai fora do conjunto das linguagens regulares, como também não é uma linguagem livre de contexto.
 
