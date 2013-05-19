@@ -508,7 +508,7 @@
 \newcommand\section{\@startsection {section}{1}{\z@}% #1 #2 #3
                                    {-2\baselineskip}% #4
                                    {\baselineskip}% #5
-                                   {\protect\normalfont\protect\normalsize}}%#6
+                                   {\protect\normalfont\protect\large}}%#6
 \newcommand\subsection{\@startsection{subsection}{2}{\z@}%
                                      {-2\baselineskip}%
                                      {\baselineskip}%
@@ -540,13 +540,13 @@
     \begingroup
       \@hangfrom{\hskip #3\relax\@svsec}
       \interlinepenalty\@M
-      \ifnum #2=2 #6{#8}\else #6{#8}\fi%solucao temporaria para \uline(?!?!)
+      \ifnum #2=2 #6{\bfseries #8}\else \bfseries #6{\bfseries #8}\fi%solucao temporaria para \uline(?!?!)
 %      \interlinepenalty\@M #6{#8}
     \endgroup
     \ifthenelse{\boolean{appendixannex}}{}{
       \addcontentsline{toc}{#1}{%
         \ifnum #2>\c@secnumdepth
-        \else \protect\numberline{\csname the#1\endcsname}\fi#6{#7}}%
+        \else \protect\numberline{\csname the#1\endcsname}\fi#6\normalsize{#7}}%
     }
   \else
     \def\@svsechd{%
