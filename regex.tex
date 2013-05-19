@@ -222,7 +222,7 @@ Uma \emph{linguagem formal} é um conjunto -- potencialmente infinito -- de \emp
 
 A operação básica entre palavras é a \emph{concatenação}. Por exemplo, se $w_1 = aaa$ e $w_2=bbb$, então $w_1w_2 = aaabbb$. Concatenação é associativa: $(w_1w_2)w_3 = w_1(w_2w_3)$; porém não comutativa: $w_1w_2 \neq w_2w_1$.
 
-Linguagens são conjuntos, portanto mesma notação de conjuntos é utilizada para linguagens. Por exemplo, $A \cup B$ representa a união de linguagens A e B, assim como $w \in A$ é uma proposição afirma que a palavra $w$ está presente na linguagem A.
+Linguagens são conjuntos, portanto a mesma notação de conjuntos é utilizada para elas. Por exemplo, $A \cup B$ representa a união de linguagens A e B, assim como $w \in A$ é uma proposição afirma que a palavra $w$ está presente na linguagem A.
 
 É possível concatenar linguagens. Dadas linguagens $L_1$ e $L_2$,
 
@@ -468,15 +468,35 @@ Este autômato é \emph{não determinístico}, pois um mesmo input (c) pode gera
 
 Autômatos podem ser utilizados para reconhecer linguagens regulares. É possível construir um autômato que, dada uma linguagem, termina em estados de aceite ou não, dependendo da palavra que for oferecida como entrada.
 
-O autômato descrito na Figura~\ref{fig:exemplo_automato_epsilon}, por exemplo, reconhece uma linguagem finita definida por $L = \{ac, aca, b, ba\}$.
-
-A linguagem que um autômato finito reconhece é sempre \emph{regular}. E toda linguagem regular pode ser reconhecida com autômatos finitos.
+O autômato descrito na Figura~\ref{fig:exemplo_automato_epsilon}, por exemplo, reconhece uma linguagem finita definida por $L = \{ac, aca, b, ba\}$. A linguagem que um autômato finito reconhece é \emph{sempre regular}. E \emph{toda linguagem regular} pode ser reconhecida com autômatos finitos \cite{bib:Kleene56}.
 
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-\section{Método de Construção do Thompson}
+\section{Método de Construção de Thompson}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-TBD
+Pela equivalência entre linguagens regulares e autômatos finitos. É útil poder converter entre um e outro pela facilidade de lidar com cada um deles em situações específicas. Ken Thompson \cite{bib:Thompson68} descreveu um método para construir autômatos a partir de expressões regulares.
+
+Na época em que foi escrito, o artigo descrevia como gerar código de máquina para um IBM 7094. Isto era necessário por restrições de hardware da época. Hoje não é mais estritamente necessário. Este trabalho irá se limitar a descrever como construir o autômato a partir da expressão regular.
+
+Iremos assumir uma notação diferente para representação do autômato, que irá facilitar a construção. Para fins de praticidade, todo estado $q_i \in Q$ será de um entre três tipos possíveis:
+
+\begin{lcircp}
+    \item Um estado de \emph{consumo}, que possui exatamente uma transição possível dada por um caractere $a \in \Sigma$.
+    \item Um estado de \emph{decisão}, que possui uma ou duas transições $\epsilon$ para estados distintos.
+    \item Um estado de \emph{aceite}, que não possui qualquer transição.
+\end{lcircp}
+
+O diagrama de estados também será alterado para facilitar a visualização como pode ser visto na Figura~\ref{fig:nova_notacao}.
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[scale=0.25]{figures/nova_notacao.png}
+  \caption{Mesmo autômato representado com as duas notações}
+  \label{fig:nova_notacao}
+\end{figure}
+
+
+
 
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 \section{Simulação do Autômato}
@@ -551,6 +571,9 @@ TBD
 	\vline
 \end{center}
 
+\newpage
+\section{Gráfico}
+
 \begin{figure}[ht]
   \centering
   \includegraphics[scale=0.5]{figures/benchmark1.png}
@@ -558,7 +581,7 @@ TBD
 
 \section{Código fonte}
 
-\begin{lstlisting}[language=python]
+\begin{verbatim}
 import re, pyrex
 
 from timeit import timeit
@@ -566,12 +589,13 @@ from timeit import timeit
 r1 = re.compile('(a?a)+b')
 r2 = pyrex.rex('(a?a)+b')
 
-time = lambda r, i: timeit(lambda: r.match('a'*i), number=1)*1e6
+def time(r, i):
+    return timeit(lambda: r.match('a'*i), number=1)*1e6
 
 for i in xrange(1, 41):
     print '{}\t{:8.0f}\t{:8.0f}'.format(
         i, time(r1, i), time(r2, i))
-\end{lstlisting}
+\end{verbatim}
 
 \bibliography{bibliografia}
 
