@@ -57,8 +57,8 @@ class TestPyrex(unittest.TestCase):
     def test_article_specially_crafted_regex(self, n=100):
         self.assertEqual((0, n), pyrex.rex('a?'*n+'a'*n).match('a'*n))
 
-    def test_regex_source(self, n=100):
-        self.assertEqual('0000: CONSUME a\n0001: JUMP (1, 2)\n0002: CONSUME b\n0003: YAY_MATCH!', str(pyrex.rex('ab?')))
+    def test_regex_source(self):
+        self.assertEqual('0000: CONSUME a\n0001: JUMP (1, 2)\n0002: CONSUME b\n0003: MATCH!', str(pyrex.rex('ab?')))
 
 
         

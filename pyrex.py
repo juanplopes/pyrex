@@ -31,7 +31,10 @@ def rex(pattern):
     def primary():
         token = tokens.popleft()
         if token == '.': return [None]
-        if token == '(': return (option(), tokens.popleft())[0]
+        if token == '(': 
+            e = option()
+            tokens.popleft() #)
+            return e
         if token not in '?*+)|': return [token]
         raise Exception('Not expected: "{}"'.format(token))
 
@@ -72,13 +75,13 @@ class Machine(object):
             addnext(i, i, 0)
             A, B, V = B, A, set()
             answer = reduce(best, advance(i, c), answer)           
-            
+
         return answer
        
     def source(self):
         for s in self.states:
             yield ('JUMP ' if isinstance(s, tuple) else 'CONSUME ') + str(s)
-        yield 'YAY_MATCH!'
+        yield 'MATCH!'
        
     def __repr__(self):
         return '\n'.join('{:04d}: {}'.format(i, s) for i, s in enumerate(self.source()))
