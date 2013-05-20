@@ -214,6 +214,8 @@ O capítulo 5 expõe as conclusões e contribuições deste trabalho, bem como a
 \chapter{Fundamentação Teórica}
 %======================================================================================
 
+Neste capítulo será introduzida um pouco da base teórica que guiou a implementação deste projeto.
+
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 \section{Linguagens Formais}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -661,12 +663,69 @@ A figura~\ref{fig:nfa_simultaneo} mostra a execução do autômato gerado para a
 
 Neste capítulo será apresentada a implementação da biblioteca \emph{PyRex} (expressões regulares em Python).
 
-O objetivo principal da implementação foi a simplicidade. Não foram usadas a mais eficientes técnicas, e sim as que reduzissem a complexidade da implementação. Entretanto, o algoritmo utilizado foi eficiente o bastante para comprovar o ponto deste trabalho.
+\section{Considerações Iniciais}
 
-A linguagem escolhida para implementar o projeto foi Python. É uma linguagem de máquina virtual, tal qual a linguagem Java. Entretanto, sua máquina virtual não tem as otimizações em tempo de execução que as implementações mais famosas de Java tem. Além disso, sua resolução dinâmica de tipos a faz ter uma performance inferior a outras linguagens como C++ ou Java. Mesmo assim, pela reduzida quantidade de caracteres especiais em sua sintaxe, os programas escritos nela são em geral mais legíveis e simples.
+Este projeto visava alcançar uma implementação completamente polinomial para expressões regulares. Alcançado o primeiro objetivo, o foco da implementação foi a simplicidade. Foram evitados truques de implementação que a tornasse mais rápida em detrimento da legibilidade. Todas as escolhas foram para reduzir a complexidade da implementação. Mesmo assim, o algoritmo utilizado foi eficiente o bastante para comprovar o ponto deste trabalho.
 
-Por isso, toda a implementação do PyRex tem cerca de 70 linhas de código (excluindo as linhas em branco) e cerca de 2.5KiB. Esta implementação abrange desde o parse da expressão regular até a simulação do autômato retornando inclusive a região do match da expressão regular.
+A linguagem escolhida para implementar o projeto foi Python. É uma linguagem de máquina virtual, tal qual a linguagem Java. Entretanto, sua máquina virtual não tem as otimizações em tempo de execução que as implementações mais famosas de Java tem. Além disso, sua resolução dinâmica de tipos a faz ter uma performance inferior a outra linguagens com resolução estática de tipos. 
 
+Mesmo assim, pela reduzida quantidade de caracteres especiais em sua sintaxe, os programas escritos nela são em geral mais legíveis e simples. Por isso, toda a implementação do PyRex tem cerca de 70 linhas de código (excluindo as linhas em branco) e cerca de 2.5KiB. Esta implementação abrange desde o parse da expressão regular até a simulação do autômato retornando inclusive a região do match da expressão regular.
+
+O projeto foi implementado utilizando apenas as bibliotecas padrão disponíveis no Python 2.7, porém ele também funciona no Python 3.0 e superiores.
+
+\section{Funcionalidades Implementadas}
+
+Foi escolhido um conjunto de funcionalidades que fosse capaz de mostrar o ponto de falha das implementações modernas de expressões regulares e ainda assim ser simples o suficiente para ter uma implementação que pudesse ser explicada em alguns minutos.
+
+Assim, foi implementado o match de:
+
+\begin{lcircp}
+    \item Literais (e.g. $a$)
+    \item Sequências (e.g. $ab$)
+    \item Alternâncias (e.g. $ab|cd$)
+    \item Agrupamentos (e.g. $a(bc)d$)
+    \item Expressão opcional (e.g. $a?$)
+    \item Kleene* (e.g. $a*$)
+    \item Kleene+ (e.g. $a+$)
+\end{lcircp}
+
+Estas funcionalidades são bem próximas as definidas por Thompson \cite{bib:Thompson68} em seu artigo e definem inequivocamente gramáticas regulares.
+
+\section{Estrutura do Código}
+
+O código está dividido em basicamente duas partes: um \emph{parser} e um \emph{matcher}.
+
+O parser é responsável por receber uma string com a expressão regular, analisá-la sintaticamente e retornar um objeto (o matcher) capaz de reconhecer strings que façam parte da linguagem regular definida.
+
+O matcher contém informações do autômato gerado e contém funções que sabem simular a execução do autômato. Ele é implementado como uma classe Python com um método \emph{match}, além da sobrecarga do operador \emph{\_\_repr\_\_} do Python, que provê uma visualização útil do objeto em tempo de debugging.
+
+O parser é implementado pela função \emph{rex}. E o matcher pela classe \emph{Machine}.
+
+
+\section{Análise sintática}
+
+Análise sintática é feita pela função \emph{rex}. Ela implementa um parser recursivo descendente rudimentar. A BNF está descrita abaixo:
+
+\begin{verbatim}
+<option>     ::= <sequence> { "|" <sequence> }*
+<sequence>   ::= { <repetition> }*
+<repetition> ::= <primary> { "*" | "?" | "+" }*
+<primary>    ::= "." | <literal> | "(" <option> ")"
+\end{verbatim}
+
+É importante chamar atenção ao detalhe da regra \emph{sequence} que permite strings vazias. Esta é uma mudança que permite strings vazias como expressão regular (o que é útil em alguns casos). Entretanto, esta mesma mudança permite expressões regulares do tipo $a||b$. O que não chega a constituir um erro.
+
+A implementação é bastante simplista, usa uma instância da classe \emph{deque} como pilha e chamadas recursivas para implementar as regras. Para cada uma das quatro regras defindas pela BNF, há um método aninhado em \emph{rex} para representá-la.
+
+O tratamento de erros é simples porém eficiente. Sempre que um caractere não esperado é encontrado na entrada, ele é reportado.
+
+\section{Representação do Autômato}
+
+TBD
+
+\section{Simulação do Autômato}
+
+TBD
 
 
 %======================================================================================
