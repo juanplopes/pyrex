@@ -608,7 +608,7 @@ Backtracking é talvez a forma mais trivial de implementar a simulação de aut�
 
 \emph{Vantagem}: Este método é o mais fácil de implementar, pois como a chamada de subrotinas na maior parte das linguagens já implementa uma pilha, uma simples recursão é o suficiente para implementar esta técnica.
 
-\emph{Desvantagem}: Pela natureza do autômato, cada escolha pode gerar vários fluxos independentes, então uma sequência de n escolhas (assumindo que sejam binárias) pode gerar até $2^n$ fluxos diferentes. Além disso, esta técnica requer múltiplas passagens pela mesma string, o que é trivial se ela estiver em memória, mas complicado se estiver vindo de um fluxo de rede ou pipes do sistema.
+\emph{Desvantagem}: Pela natureza do autômato, cada escolha pode gerar vários fluxos independentes, então uma sequência de n escolhas (assumindo que sejam binárias) pode gerar até $2^n$ fluxos diferentes. Além disso, esta técnica requer múltiplas passagens pela mesma string, o que é trivial se ela estiver em memória, mas complicado se estiver vindo de um fluxo de rede ou pipes do sistema. E por fim, a pilha reservada para chamadas de métodos é compartilhada com outros recursos e limitada em diversos ambientes, impossibilitando, por exemplo, o match de strings muito grandes.
 
 \subsection{Backtracking com Memoization}
 
@@ -618,7 +618,7 @@ Definindo assim, se $n = |S|, m = |Q|$, então existem apenas $n \times m$ poss�
 
 \emph{Vantagem}: Esta técnica é tão fácil de implementar quanto o backtracking puro, mas tem uma complexidade bem menor.
 
-\emph{Desvantagem}: Ainda é necessário passar multiplas vezes pela mesma string.
+\emph{Desvantagem}: Ainda é necessário passar multiplas vezes pela mesma string. E a pilha ainda pode ser um fator limitante.
 
 \subsection{Conversão para DFA}
 
@@ -636,7 +636,24 @@ A conversão entre os dois se dá através do algoritmo conhecido como \emph{Rab
 
 \subsection{Simulação paralela}
 
+Uma forma de simular a execução de autômatos é, sempre que confrontado com uma decisão, escolher as duas simultaneamente, e manter fluxos paralelos sendo executados. 
 
+Inicialmente, pode parecer que esta solução pode levar a um conjunto de até $2^n$ fluxos executando simultaneamente, porém, como um autômato tem um número finito de estados, existem no máximo $m$ fluxos simultâneos para cada caractere. Eventualmente, múltiplas decisões podem colidir num mesmo estado, eliminando assim o caráter exponencial da avaliação. Assim, para uma entrada com n caracteres avaliada contra um autômato de m estados, no pior caso, a complexidade de tempo é de $O(n \times m)$.
+
+O objetivo é que durante a execução, seja lido um caractere por vez. Então, antes de cada execução é preciso avaliar todas as transições $\epsilon$ e deixar todos os fluxos em espera posicionados em estados do tipo \emph{consumo}.
+
+A figura~\ref{fig:nfa_simultaneo} mostra a execução do autômato gerado para a expressão regular $(a|a)+b$ contra a entrada $aa$.
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[scale=0.5]{figures/nfa_simultaneo.png}
+  \caption{Passos do \emph{match} da expressão $(a|a)+b$ contra a entrada \emph{aab}}
+  \label{fig:nfa_simultaneo}
+\end{figure}
+
+\emph{Vantagem}: Tem tempo de execução polinomial ($O(n \times m)$). Só precisa ler a entrada uma vez. Não requer uso de pilha.
+
+\emph{Desvantagem}: Precisa de memória adicional para guardar os estados executados ($O(m)$). Em comparação com execução com DFA puro, é mais lento.
 
 %======================================================================================
 \chapter{Implementação}
