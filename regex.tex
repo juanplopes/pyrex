@@ -211,7 +211,7 @@ O capítulo 4 aborda as diferenças entre as implementações modernas e a imple
 O capítulo 5 expõe as conclusões e contribuições deste trabalho, bem como as dificuldades encontradas durante o projeto. Também serão listadas e descritas as funcionalidades não implementadas, possivelmente sugerindo formas eficientes de implementá-las, ou mesmo formas diferentes de simular o autômato que melhorem a eficiência geral da execução.
 
 %======================================================================================
-\chapter{Base Teórica}
+\chapter{Fundamentação Teórica}
 %======================================================================================
 
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -574,12 +574,12 @@ Uma das vantagens desta forma de construir é que ela pode ser escrita como uma 
 Por exemplo, o autômato representado pela figura~\ref{fig:exemplo_automato_completo} pode ser reescrito como as instruções:
 
 \begin{verbatim}
-0000: JUMP +1 OR +3
-0001: CONSUME 'a'
-0002: JUMP +2
-0003: CONSUME 'a'
-0004: JUMP +1 OR -4
-0005: CONSUME 'b'
+0000: JUMP (1, 3)
+0001: CONSUME a
+0002: JUMP (2,)
+0003: CONSUME a
+0004: JUMP (1, -4)
+0005: CONSUME b
 0006: MATCH!
 \end{verbatim}
 
@@ -659,7 +659,15 @@ A figura~\ref{fig:nfa_simultaneo} mostra a execução do autômato gerado para a
 \chapter{Implementação}
 %======================================================================================
 
-TBD
+Neste capítulo será apresentada a implementação da biblioteca \emph{PyRex} (expressões regulares em Python).
+
+O objetivo principal da implementação foi a simplicidade. Não foram usadas a mais eficientes técnicas, e sim as que reduzissem a complexidade da implementação. Entretanto, o algoritmo utilizado foi eficiente o bastante para comprovar o ponto deste trabalho.
+
+A linguagem escolhida para implementar o projeto foi Python. É uma linguagem de máquina virtual, tal qual a linguagem Java. Entretanto, sua máquina virtual não tem as otimizações em tempo de execução que as implementações mais famosas de Java tem. Além disso, sua resolução dinâmica de tipos a faz ter uma performance inferior a outras linguagens como C++ ou Java. Mesmo assim, pela reduzida quantidade de caracteres especiais em sua sintaxe, os programas escritos nela são em geral mais legíveis e simples.
+
+Por isso, toda a implementação do PyRex tem cerca de 70 linhas de código (excluindo as linhas em branco) e cerca de 2.5KiB. Esta implementação abrange desde o parse da expressão regular até a simulação do autômato retornando inclusive a região do match da expressão regular.
+
+
 
 %======================================================================================
 \chapter{Análise dos Resultados}
@@ -749,7 +757,7 @@ TBD
 
 \section{Código fonte}
 
-\begin{verbatim}
+\begin{lstlisting}[language=python]
 import re, pyrex
 
 from timeit import timeit
@@ -763,7 +771,9 @@ def time(r, i):
 for i in xrange(1, 41):
     print '{}\t{:8.0f}\t{:8.0f}'.format(
         i, time(r1, i), time(r2, i))
-\end{verbatim}
+\end{lstlisting}
+
+   
 
 \bibliography{bibliografia}
 

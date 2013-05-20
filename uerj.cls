@@ -461,11 +461,11 @@
   \vspace*{\capituloespacoantes}%  \vspace*{50\p@}%
   {\parindent \z@ \raggedright \normalfont
     \ifnum \c@secnumdepth >\m@ne
-      {\bf\MakeUppercase{\@chapapp}\space\thechapter}
+      {\scshape\large\@chapapp\space\thechapter}\\
       \capitulonumtituloestilo
     \fi
     \interlinepenalty\@M
-    {\normalfont{\space--\space\space#1}}
+    {\scshape\huge #1}
     \capitulotitulotextoestilo%\par\nobreak
     \vskip \capituloespacodepois%    \vskip 40\p@
   }}
