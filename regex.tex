@@ -224,20 +224,56 @@ Linguagens formais é um tema que mistura elementos da ciência da computação,
 
 Uma \emph{linguagem formal} é um conjunto -- potencialmente infinito -- de \emph{palavras}, que por sua vez são combinações de elementos de um conjunto finito de símbolos chamado \emph{alfabeto}.
 
-A operação básica entre palavras é a \emph{concatenação}. Por exemplo, se $w_1 = aaa$ e $w_2=bbb$, então $w_1w_2 = aaabbb$. Concatenação é associativa: $(w_1w_2)w_3 = w_1(w_2w_3)$; porém não comutativa: $w_1w_2 \neq w_2w_1$.
+\subsection{Palavra}
 
-Linguagens são conjuntos, portanto a mesma notação de conjuntos é utilizada para elas. Por exemplo, $A \cup B$ representa a união de linguagens A e B, assim como $w \in A$ é uma proposição afirma que a palavra $w$ está presente na linguagem A.
+Palavras são combinações entre os elementos de um alfabeto. Por exemplo, com um alfabeto $\Sigma = \{0, 1\}$, é possível formar palavras que representam números binários.
+
+Uma palavra é representada pelos símbolos que a compõem. Logo, 01101 é uma palavra formada pelos símbolos do alfabeto descrito anteriormente. Uma palavra especial, denotada $\epsilon$ (às vezes $\lambda$) representa uma palavra vazia.
+
+Dado um alfabeto com $k$ símbolos, é possível formar até $k^n$ palavras de tamanho $n$. Logo, existem
+
+\begin{equation*}
+	\mathlarger \sum^{n}_{i=0} k^i = \frac{k^{n+1}-1}{k-1}
+\end{equation*}
+
+palavras de até $n$ caracteres num alfabeto com $k$ símbolos.
+
+O conjunto formado por todas as palavras de um alfabeto é infinito, porém enumerável. Uma possível estratégia é numerá-los primeiro por seu tamanho, então por sua ordem lexicográfica.
+
+A operação básica entre palavras é a \emph{concatenação}. Por exemplo, 
+
+\begin{alignat*}{3}
+w_1 = aaa &\wedge w_2=bbb  &\rightarrow w_1w_2 &= aaabbb \\
+w_1 = aaa &\wedge w_2=\epsilon  &\rightarrow w_1w_2 &= aaa \\
+w_1 = \epsilon &\wedge w_2=bbb  &\rightarrow w_1w_2 &= bbb \\
+\end{alignat*}
+
+Concatenação é associativa, então 
+
+\begin{equation*}
+(w_1w_2)w_3 = w_1(w_2w_3),
+\end{equation*}
+
+porém não comutativa, logo
+
+\begin{equation*}
+w_1w_2 \neq w_2w_1.
+\end{equation*}
+
+\subsection{Linguagem}
+
+Linguagens são conjuntos de palavras sobre algum alfabeto. A mesma notação de conjuntos é utilizada para elas. Por exemplo, $A \cup B$ representa a linguagem formada pela união de todas as palavras de A e B, assim como $w \in A$ é uma proposição afirma que a palavra $w$ está presente na linguagem A.
 
 É possível concatenar linguagens. Dadas linguagens $L_1$ e $L_2$,
 
 \begin{equation*}
-	L_1L_2 = \{w_1w_2 | w_1 \in L_1, w_2 \in L_2\}
+	L_1L_2 = \{w_1w_2 \mid w_1 \in L_1, w_2 \in L_2\}
 \end{equation*}
 
 E.g.: se $A = \{a, aa\}$ e $B = \{b, bb\}$, então $AB = \{ab, aab, abb, aabb\}$.
 
 
-Com base na concatenação, uma operação importante em linguagens é o fecho Kleene ($L^*$), que pode ser definido como:
+Com base na concatenação, uma operação importante em linguagens é o fecho Kleene (ou fecho de concatenação, $L^*$), que pode ser definido recursivamente como:
 
 \begin{equation*}
 	L^0 = \{\epsilon\}
@@ -251,28 +287,34 @@ Com base na concatenação, uma operação importante em linguagens é o fecho K
 
 E.g.: se $A = \{a, aa\}$, então $A^* = \{\epsilon, a, aa, aaa, \ldots\}$.
 
+Existem duas formas principais para se definir linguagens formais. \emph{Gramáticas gerativas}, que geram elementos da linguagem a partir de sistemas de reescrita; e \emph{Autômatos}, que reconhecem elementos da linguagem. 
+
+Além destas, existem diversas outras formas de definir linguagens. As próprias expressões regulares denotam linguagens formais. Outra forma bastante é comum é através da sintaxe de geração de conjuntos, e.g. $L=\{a^n \mid n \in \mathbb{N}\}$.
+
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 \section{Gramáticas Gerativas}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Uma das formas de representar linguagens formais é através de gramáticas gerativas. O termo ``gramática formal'' é comumente utilizado para referir-se a elas. No entanto, existem outras formas de representar gramáticas formais além deste. Este trabalho irá se limitar à definição mais comum.
+Uma das formas de representar linguagens formais é através de gramáticas gerativas. O termo ``gramática formal'' é comumente utilizado para referir-se a elas. No entanto, existem outras formas de representar gramáticas formais além deste.
 
 Gramáticas gerativas são sistemas de reescrita, i.e. a partir de um símbolo inicial, é possível usar as regras de reescrita para produzir todas as palavras de uma linguagem. Esta operação é, de certa forma, o problema dual de reconhecer uma palavra como parte da linguagem através de um autômato \cite{bib:Ruohonen09}.
 
-Uma gramática é formada por uma tupla $G = (N, \Sigma, P, S)$. Onde:
+Uma gramática gerativa é formada por uma tupla $G = (N, \Sigma, P, S)$. Onde:
 
 \begin{lcircp}
     \item N é o conjunto de símbolos não terminais. Eles não fazem parte da linguagem original, então precisam ser sempre substituídos para alcançar um símbolo válido na linguagem.
     \item $\Sigma$ é o conjunto de símbolos terminais da linguagem. Também conhecido como alfabeto.
-    \item P é o conjunto de regras de produção, geralmente na forma $\alpha \rightarrow \beta$, onde $\alpha$ e $\beta$ são sequências de símbolos terminais e não-terminais.
+    \item P é o conjunto de regras de produção, geralmente na forma $\alpha \rightarrow \beta \mid \alpha, \beta \in N \cup \Sigma$.
     \item S é o símbolo inicial do sistema de reescrita. $S \in N$.
 \end{lcircp}
 
 Um exemplo de gramática é a que define expressões da forma $a^nb^n, n>0$:
 
 \begin{equation*}
-	N = \{S\}; \Sigma = \{a,b\}
+	G = ({\{S\}, \{a,b\}, P, S})
 \end{equation*}
+
+Onde P é definido por:
 
 \begin{equation*}
 	S \rightarrow aSb
@@ -286,9 +328,10 @@ Iniciando do símbolo S, é possível começar com a regra $ab$ ou $aSb$. A prim
 Perceba que na gramática todas as regras do lado esquerdo possuem apenas um símbolo não terminal. Se fôssemos escrever uma gramática para expressões na forma $a^nb^nc^n$, precisaríamos de uma gramática mais rebuscada:
 
 \begin{equation*}
-	N = \{S, T\}; \Sigma = \{a,b,c\}
+	G = (\{S, T\}, \{a,b,c\}, P, S)
 \end{equation*}
 
+Onde P é definido por:
 
 \begin{equation*}
 	S \rightarrow aTSc
@@ -309,13 +352,13 @@ O fato desta gramática definir sequências de símbolos à esquerda com mais de
 \section{Hierarquia de Chomsky}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Segundo Noam Chomsky \cite{bib:Chomsky57}, uma linguagem formal pode ser classificada em um de quatro tipos baseados na capacidade expressiva das gramáticas formais que a expressam:
+Segundo Noam Chomsky \cite{bib:Chomsky57}, uma gramática formal pode ser classificada em um de quatro tipos baseados em sua capacidade expressiva:
 
 \begin{lcircp}
-    \item {\bf Tipo 0}: linguagens recursivamente enumeráveis (ou irrestritas)
-    \item {\bf Tipo 1}: linguagens sensíveis a contexto
-    \item {\bf Tipo 2}: linguagens livres de contexto
-    \item {\bf Tipo 3}: linguagens regulares
+    \item {\bf Tipo 0}: gramáticas recursivamente enumeráveis (ou irrestritas)
+    \item {\bf Tipo 1}: gramáticas sensíveis a contexto
+    \item {\bf Tipo 2}: gramáticas livres de contexto
+    \item {\bf Tipo 3}: gramáticas regulares
 \end{lcircp}
 
 Cada conjunto é propriamente incluso no seu conjunto superior na hierarquia, como pode ser visto na figura~\ref{fig:chomsky}.
@@ -327,40 +370,42 @@ Cada conjunto é propriamente incluso no seu conjunto superior na hierarquia, co
   \label{fig:chomsky}
 \end{figure}
 
-\subsection{Linguagens Regulares}
+\subsection{Gramáticas Regulares}
 
-Linguagens regulares são aquelas cujas regras de formação são na forma $S \rightarrow aT$ ou $S \rightarrow a$, onde \emph{S} e \emph{T} são não-terminais e \emph{a} é um terminal na linguagem. Estas linguagens são equivalentes em poder de expressão a \emph{autômatos finitos}. 
+Gramáticas regulares são aquelas cujas regras de formação são na forma $S \rightarrow a$ ou $S \rightarrow aT$, onde \emph{S} e \emph{T} são não-terminais e \emph{a} é um terminal na linguagem. Estas linguagens são equivalentes em poder de expressão a \emph{autômatos finitos}. 
+
+Opcionalmente a regra $S \rightarrow aT$ pode ser substituída por $S \rightarrow Ta$, mas nunca as duas podem ocorrer na mesma gramática. Se a primeira ocorre, a gramática é conhecida como \emph{regular à direita}. Caso contrário, é \emph{regular à esquerda}.
 
 Alguns autores também incluem regras do tipo $S \rightarrow \epsilon$, desde que S não apareça do lado direito de nenhuma regra.
 
 Exemplos de linguagens regulares incluem: endereços de email, repetição de caracteres ($a^n$), repetição independente de dois caracteres ($a^nb^m$).
 
-\subsection{Linguagens Livres de Contexto}
+\subsection{Gramáticas Livres de Contexto}
 
-Linguagens livres de contexto são linguagens onde todas as regras de formação são do tipo $S \rightarrow \gamma$, onde \emph{S} é um não-terminal e $\gamma$ é uma sequência composta por terminais e não-terminais. 
+Gramáticas livres de contexto são aquelas onde todas as regras de formação são do tipo $S \rightarrow \gamma$, onde \emph{S} é um não-terminal e $\gamma$ é uma sequência composta por terminais e não-terminais. 
 
 Isto na prática significa que a substituição de um não-terminal é sempre feita independente do contexto onde é encontrado. Linguagens deste tipo são equivalentes em poder expressivo a \emph{autômatos de pilha}. Elas compõem a base teórica para a maioria das linguagens de programação. 
 
 Entre alguns exemplos clássicos de linguagens livres de contexto figuram: parênteses aninhados, repetição condicionada de dois caracteres ($a^nb^n$), expressões aritméticas.
 
-\subsection{Linguagens Sensíveis a Contexto}
-Linguagens sensíveis a contexto são linguagens onde todas as regras de formação são do tipo $\alpha S\beta\rightarrow \alpha\gamma\beta$, onde $\alpha$, $\gamma$ e $\beta$ são sequências compostas por terminais e não-terminais. Elas diferem das linguagens livres de contexto por definir -- exatamente -- contexto para que um não-terminal S seja substituído por uma sequência $\gamma$. 
+\subsection{Gramáticas Sensíveis a Contexto}
+Gramáticas sensíveis a contexto são aquelas onde todas as regras de formação são do tipo $\alpha S\beta\rightarrow \alpha\gamma\beta$, onde $\alpha$, $\gamma$ e $\beta$ são sequências compostas por terminais e não-terminais. Elas diferem das gramáticas livres de contexto por definir -- exatamente -- contexto para que um não-terminal S seja substituído por uma sequência $\gamma$. 
 
 Apesar de terem um escopo bem mais amplo, gramáticas deste tipo ainda são passíveis de ser computadas usando um \emph{autômato linearmente limitado}. 
 
-Exemplos: \emph{squares} (\emph{DogDog, CatCat, WikiWiki...}), \emph{matching triplets} ($a^nb^nc^n$).
+Exemplos de liguagens sensíveis a contexto: \emph{squares} (\emph{DogDog, CatCat, WikiWiki...}), \emph{matching triplets} ($a^nb^nc^n$).
 
-\subsection{Linguagens Recursivamente Enumeráveis}
+\subsection{Gramáticas Recursivamente Enumeráveis}
 
-Linguagens recursivamente enumeráveis não definem restrições para as regras de produção. Portanto, qualquer sequência de terminais e não-terminais $\alpha$ pode ser substituída por outra $\beta$. Linguagens assim são reconhecíveis por uma \emph{máquina de Turing}. 
+Gramáticas recursivamente enumeráveis não definem restrições para as regras de produção. Portanto, qualquer sequência de terminais e não-terminais $\alpha$ pode ser substituída por outra $\beta$. Gramáticas assim são reconhecíveis por uma \emph{máquina de Turing}. 
 
-Diferente dos tipos anteriores, quando apresentada a uma sequência que não faça parte da linguagem, não há garantia de parada da máquina, definindo o que é chamado na teoria de conjunto \emph{semi-decidível}.
+Diferente dos tipos anteriores, quando apresentada a uma sequência que não faça parte da linguagem, não há garantia de parada da máquina, definindo o que é chamado de \emph{conjunto semi-decidível}.
 
 Um dos exemplos mais notáveis de linguagens recursivamente enumeráveis que não são sensíveis a contexto é a sintaxe de templates do C++ \cite{bib:Veldhuizen03}.
 
 \subsection{Tabela de Referência}
 
-É possível resumir os tipos de linguagens da hierarquia de Chomsky numa tabela de referência quanto à máquina que a processa e os tipos de regras que aceita.
+É possível resumir os tipos de gramáticas da hierarquia de Chomsky numa tabela de referência quanto à máquina que a processa e os tipos de regras que aceita.
 
 \begin{center}
 	\begin{tabular}{ c | c | c | c }
@@ -460,7 +505,9 @@ O autômato na figura~\ref{fig:exemplo_automato_numerado} pode ser descrito por 
 	\end{tabular}
 \end{center}
 
-Este autômato é \emph{não determinístico}, pois um mesmo input (c) pode gerar múltiplas transições no estado 2. Outra forma de representar autômatos não determínisticos é introduzindo a entrada $\epsilon$, como pode ser visto na figura~\ref{fig:exemplo_automato_epsilon}. Perceba que este autômato \emph{não é equivalente} ao definido anteriormente. Ele aceita uma entrada $b$ que o primeiro não aceita.
+Este autômato é \emph{não determinístico}, pois um mesmo input (c) pode gerar múltiplas transições no estado 2. 
+
+Outra forma de representar autômatos não determínisticos é introduzindo a entrada $\epsilon$, como pode ser visto na figura~\ref{fig:exemplo_automato_epsilon}. Perceba que este autômato \emph{não é equivalente} ao definido anteriormente. Ele aceita uma entrada $b$ que o primeiro não aceita.
 
 \begin{figure}[ht]
   \centering
@@ -470,7 +517,7 @@ Este autômato é \emph{não determinístico}, pois um mesmo input (c) pode gera
 \end{figure}
 
 
-Autômatos podem ser utilizados para reconhecer linguagens regulares. É possível construir um autômato que, dada uma linguagem, termina em estados de aceite ou não, dependendo da palavra que for oferecida como entrada.
+Autômatos podem ser utilizados para reconhecer linguagens regulares. É possível construir um autômato que, dada uma linguagem, termina em estados de aceite somente se a palavra fizer parte da linguagem representada.
 
 O autômato descrito na figura~\ref{fig:exemplo_automato_epsilon}, por exemplo, reconhece uma linguagem finita definida por $L = \{ac, aca, b, ba\}$. A linguagem que um autômato finito reconhece é \emph{sempre regular}. E \emph{toda linguagem regular} pode ser reconhecida com autômatos finitos \cite{bib:Kleene56}.
 
@@ -501,7 +548,7 @@ Assim, podemos fazer parse da expressão facilmente. A expressão $(a|a)+b$, por
 
 \begin{figure}[ht]
   \centering
-  \includegraphics[scale=0.4]{figures/aab_parse_tree.png}
+  \includegraphics[scale=0.5]{figures/aab_parse_tree.png}
   \caption{Árvore de avaliação para expressão $(a|a)+b$}
   \label{fig:aab_parse_tree}
 \end{figure}
@@ -542,6 +589,8 @@ Esta representação facilita a visualização por omitir as transições $\epsi
 
 A construção do autômato se dá pela conversão recursiva de cada um dos nós na árvore por uma construção de autômato predeterminada. Cada uma destas construções tem apenas um estado de entrada e todas as transições que não apontem para um nó dentro da própria construção, apontam para um único nó de saída.
 
+Em uma implementação otimizada, este passo pode ser substituído por geração de código de máquina (como no artigo original). Entretanto, para fins didáticos, abordaremos algumas representações úteis do autômato gerado.
+
 A tabela a seguir mostra a conversão para cada tipo de nó. Para fins de notação, as letras maiúsculas representam autômatos complexos produzidos em passos anteriores, mas que seguem a mesma regra definida no parágrafo anterior.
 
 \begin{center}
@@ -549,32 +598,35 @@ A tabela a seguir mostra a conversão para cada tipo de nó. Para fins de notaç
 		{\bf Tipo} & {\bf Expressão} & {\bf Construção} \\
 		\hline
 		\hline
-		Literal & $a$ & \includegraphics[scale=0.3]{figures/thompson_literal.png} \\ 
+		Literal & $a$ & \includegraphics[scale=0.25]{figures/thompson_literal.png} \\ 
 		\hline
-		Sequência & $ST$ & \includegraphics[scale=0.3]{figures/thompson_sequence.png} \\ 
+		Sequência & $ST$ & \includegraphics[scale=0.25]{figures/thompson_sequence.png} \\ 
 		\hline
-		Opção & $S|T$ & \includegraphics[scale=0.3]{figures/thompson_option.png} \\ 
+		Opção & $S|T$ & \includegraphics[scale=0.25]{figures/thompson_option.png} \\ 
 		\hline
-		Kleene+ & $S+$ & \includegraphics[scale=0.3]{figures/thompson_plus.png} \\ 
+		Kleene+ & $S+$ & \includegraphics[scale=0.25]{figures/thompson_plus.png} \\ 
 		\hline
-		Opcional & $S?$ & \includegraphics[scale=0.3]{figures/thompson_question.png} \\ 
+		Opcional & $S?$ & \includegraphics[scale=0.25]{figures/thompson_question.png} \\ 
 		\hline
-		Kleene* & $S*$ & \includegraphics[scale=0.3]{figures/thompson_kleene.png} \\ 
+		Kleene* & $S*$ & \includegraphics[scale=0.25]{figures/thompson_kleene.png} \\ 
 		\hline
 	\end{tabular}
 \end{center}
 
-Uma das vantagens desta forma de construir é que ela pode ser escrita como uma sequência de instruções para serem interpretadas por uma máquina virtual. Cada um dos três tipos de estados definidos pela notação na seção anterior podem ser substituídos por uma entre três instruções. Estados de consumo como instruções \emph{CONSUME}, estados de decisão como instruções \emph{JUMP} e estados de aceite como instruções \emph{MATCH}.
+Para converter um autômato usando estas regras, basta percorrer a árvore de avaliação de baixo para cima, inicialmente transformando todos os literais e recursivamente usando-os como insumo para os nós superiores. A figura~\ref{fig:exemplo_automato_completo} mostra um exemplo de conversão utilizando a expressão $(a|a)+b$.
 
 \begin{figure}[ht]
   \centering
-  \includegraphics[scale=0.25]{figures/exemplo_automato_completo.png}
+  \includegraphics[scale=0.33]{figures/exemplo_automato_completo.png}
   \caption{Exemplo completo de autômato para a expressão $(a|a)+b$}
   \label{fig:exemplo_automato_completo}
 \end{figure}
 
+Uma das vantagens desta forma de construir é que ela pode ser escrita como uma sequência de instruções para serem interpretadas por uma máquina virtual. Cada um dos três tipos de estados definidos pela notação na seção anterior podem ser substituídos por uma entre três instruções. Estados de consumo como instruções \emph{CONSUME}, estados de decisão como instruções \emph{JUMP} e estados de aceite como instruções \emph{MATCH}.
+
 Por exemplo, o autômato representado pela figura~\ref{fig:exemplo_automato_completo} pode ser reescrito como as instruções:
 
+\nopagebreak 
 \begin{verbatim}
 0000: JUMP (1, 3)
 0001: CONSUME a
@@ -600,11 +652,12 @@ Dentre as opções para simulação da execução do autômato, estão:
     \item \emph{Backtracking com memoização}.
     \item \emph{Conversão para DFA}: converter para um autômato determinístico antes de executar.
     \item \emph{Simulação paralela}: simular a execução de todos os estados simultaneamente.
+	\item \emph{Conversão preguiçosa para DFA}: semelhante a execução paralela, mas construindo um cache dos estados alcançados
 \end{lcircp}
 
 Cada uma destas opções tem caracteristicas próprias. Suas vantagens e desvantagens serão discutidas separadamente.
 
-\subsection{Bactracking}
+\subsection{Backtracking}
 
 Backtracking é talvez a forma mais trivial de implementar a simulação de autômatos não determinísticos. Consiste basicamente em ao ser apresentado a uma escolha, decidir por uma delas, mas manter uma pilha de escolhas feitas para retroceder e escolher novamente caso não tenha sucesso.
 
@@ -634,7 +687,7 @@ A conversão entre os dois se dá através do algoritmo conhecido como \emph{Rab
 
 \emph{Vantagem}: Depois de construído o DFA, ele pode ser usado para reconhecer qualquer string em $O(m)$.
 
-\emph{Desvantagem}: A construção do DFA tem complexidades de tempo e espaço exponenciais. E é bem menos simples de implementar que backtracking.
+\emph{Desvantagem}: A construção do DFA tem complexidades de tempo e espaço exponenciais. E é bem mais complexa do que o backtracking puro.
 
 \subsection{Simulação paralela}
 
@@ -656,6 +709,18 @@ A figura~\ref{fig:nfa_simultaneo} mostra a execução do autômato gerado para a
 \emph{Vantagem}: Tem tempo de execução polinomial ($O(n \times m)$). Só precisa ler a entrada uma vez. Não requer uso de pilha.
 
 \emph{Desvantagem}: Precisa de memória adicional para guardar os estados executados ($O(m)$). Em comparação com execução com DFA puro, é mais lento.
+
+\subsection{Conversão preguiçosa para DFA}
+
+O maior perigo da conversão completa para DFA é o potencial explosivo que a geração do autômato determinístico tem. Até $2^n$ estados podem ser gerados, e tempo proporcional a isso será gasto. Por outro lado, a simulação parelela parece gastar uma quantidade linear de memória e tempo polinomial para simular o autômato.
+
+Para a maior parte dos autômatos reais, dificilmente a quantidade de estados no DFA será tão grande. Por isso, uma aproximação combinada entre as duas abordagens poderia trazer vantagens.
+
+Durante a simulação paralela, os estados ativados simultaneamente correspondem exatamente a um estado no respectivo DFA. A realizar cache destes estados (porém mantendo uma política de gerência de memória, descartando os mais antigos) a implementação estará mantendo a complexidade de execução da simulação paralela, porém aumentando as chances de eventualmente gerar o DFA completamente.
+
+\emph{Vantagem}: Tem tempo de execução linear no caso médio ($O(n)$). Só precisa ler a entrada uma vez. Não requer uso de pilha.
+
+\emph{Desvantagem}: Pior caso ainda é $O(n \times m)$. Precisa de memória adicional para guardar os estados executados e o cache de estados do DFA. Implementação consideravelmente mais complexa.
 
 %======================================================================================
 \chapter{Implementação}
