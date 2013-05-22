@@ -31,10 +31,7 @@ def rex(pattern):
     def primary():
         token = tokens.popleft()
         if token == '.': return [None]
-        if token == '(': 
-            e = option()
-            tokens.popleft() #)
-            return e
+        if token == '(': return [option(), tokens.popleft()][0]
         if token not in '?*+)|': return [token]
         raise Exception('Not expected: "{}"'.format(token))
 
