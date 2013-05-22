@@ -36,8 +36,10 @@ def rex(pattern):
         raise Exception('Not expected: "{}"'.format(token))
 
     e = option()
-    if not tokens: return Machine(e)
-    raise Exception('Not expected: "{}"'.format(''.join(tokens)))
+    if tokens: 
+        raise Exception('Not expected: "{}"'.format(''.join(tokens)))
+
+    return Machine(e)
                 
 class Machine(object):
     def __init__(self, states):
