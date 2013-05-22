@@ -5,16 +5,18 @@
 \usepackage[utf8]{inputenc} % Determina a codificacao utiizada
                         
 \usepackage{array}
-                            % (conversão automática dos acentos)
+                      
+\usepackage{DejaVuSansMono}
 \usepackage{listings}
 \usepackage{makeidx}        % Cria o indice
 \usepackage{hyperref}       % Controla a formacao do indice
 \usepackage{indentfirst}    % Indenta o primeiro paragrafo de cada secao.
-\usepackage{color}          % Controle das cores
+\usepackage{xcolor}
 \usepackage{graphicx}       % Inclusao de graficos
 \usepackage{amsmath,amssymb}        % pacote matemático
 \usepackage{pdfpages}
 \usepackage[top=3cm, bottom=2cm, left=3cm, right=2cm]{geometry}
+\usepackage{chngcntr}
 
 \usepackage[frame=no,gride=no,algline=yes,font=default]{uerjformat}
 \usepackage[alf]{abntcite}
@@ -76,11 +78,42 @@
   bookmarksdepth=4
 }
 
+\definecolor{mygreen}{rgb}{0,0.6,0}
+\definecolor{mygray}{rgb}{0.5,0.5,0.5}
+\definecolor{mymauve}{rgb}{0.58,0,0.82}
+
+\lstset{ %
+  backgroundcolor=\color{white}, 
+  basicstyle=\scriptsize\ttfamily,       
+  captionpos=b,                 
+  commentstyle=\color{mygreen}, 
+  deletekeywords={...},         
+  escapeinside={\%*}{*)},       
+  extendedchars=true,           
+  keepspaces=true,              
+  frame=single,
+  keywordstyle=\bfseries\color{blue},    
+  morekeywords={*,...},         
+  numbers=left,
+  numbersep=5pt,                
+  numberstyle=\scriptsize\color{mygray},
+  rulecolor=\color{black},        
+  showspaces=false,               
+  showstringspaces=false,         
+  showtabs=false,                 
+  stepnumber=2,                   
+  stringstyle=\color{mymauve},    
+  tabsize=2,    
+  language=python,                 
+  title=\lstname                 
+}
 
 \makeindex
 
 \begin{document}
 
+\counterwithout{lstlisting}{chapter}
+\renewcommand*{\lstlistingname}{Listagem}
 \frontmatter
 \capa
 \folhaderosto
@@ -558,6 +591,7 @@ Utilizando a EBNF, esta árvore pode ser produzida por diversos tipos de ferrame
 Com esta árvore de avaliação é possível fazer a conversão para o autômato de forma bastante trivial, como será discutido nas próximas seções.
 
 \subsection{Notação}
+\label{sec:Notacao}
 
 Iremos assumir uma notação diferente para representação do autômato, que irá facilitar a construção. Para fins de praticidade, todo estado $q_i \in Q$ será de um entre três tipos possíveis:
 
@@ -726,15 +760,15 @@ Durante a simulação paralela, os estados ativados simultaneamente correspondem
 \chapter{Implementação}
 %======================================================================================
 
-Neste capítulo será apresentada a implementação da biblioteca \emph{PyRex} (expressões regulares em Python).
+Neste capítulo será apresentada a implementação da biblioteca \emph{PyRex} (expressões regulares em Python). A implementação na íntegra pode ser visualizada no apêndice~\ref{app:full_source}.
 
 \section{Considerações Iniciais}
 
-Este projeto visava alcançar uma implementação completamente polinomial para expressões regulares. Alcançado o primeiro objetivo, o foco da implementação foi a simplicidade. Foram evitados truques de implementação que a tornasse mais rápida em detrimento da legibilidade. Todas as escolhas foram para reduzir a complexidade da implementação. Mesmo assim, o algoritmo utilizado foi eficiente o bastante para comprovar o ponto deste trabalho.
+Este projeto visava alcançar uma implementação completamente polinomial para expressões regulares. Alcançado o primeiro objetivo, o foco da implementação foi a simplicidade. Foram evitados truques de implementação que a tornassem mais rápida em detrimento da legibilidade. Todas as escolhas foram para reduzir a complexidade da implementação. Mesmo assim, o algoritmo utilizado foi eficiente o bastante para comprovar o ponto deste trabalho.
 
-A linguagem escolhida para implementar o projeto foi Python. É uma linguagem de máquina virtual, tal qual a linguagem Java. Entretanto, sua máquina virtual não tem as otimizações em tempo de execução que as implementações mais famosas de Java tem. Além disso, sua resolução dinâmica de tipos a faz ter uma performance inferior a outra linguagens com resolução estática de tipos. 
+A linguagem escolhida para implementar o projeto foi Python. É uma linguagem de máquina virtual, tal qual o Java. Entretanto, sua máquina virtual não tem as otimizações em tempo de execução que as implementações mais famosas de Java tem. Além disso, sua resolução dinâmica de tipos a faz ter uma performance inferior a outra linguagens com resolução estática de tipos. 
 
-Mesmo assim, pela reduzida quantidade de caracteres especiais em sua sintaxe, os programas escritos nela são em geral mais legíveis e simples. Por isso, toda a implementação do PyRex tem cerca de 70 linhas de código (excluindo as linhas em branco) e cerca de 2.5KiB. Esta implementação abrange desde o parse da expressão regular até a simulação do autômato retornando inclusive a região do match da expressão regular.
+Mesmo assim, pela reduzida quantidade de caracteres especiais em sua sintaxe, os programas escritos nela são em geral mais legíveis e simples. Por isso, toda a implementação do PyRex tem 85 linhas de código (contando o espaços em branco) e cerca de 2.5KiB. Esta implementação abrange desde o parse da expressão regular até a simulação do autômato retornando inclusive a região do match da expressão regular.
 
 O projeto foi implementado utilizando apenas as bibliotecas padrão disponíveis no Python 2.7, porém ele também funciona no Python 3.0 e superiores.
 
@@ -778,15 +812,70 @@ Análise sintática é feita pela função \emph{rex}. Ela implementa um parser 
 <primary>    ::= "." | <literal> | "(" <option> ")"
 \end{verbatim}
 
-É importante chamar atenção ao detalhe da regra \emph{sequence} que permite strings vazias. Esta é uma mudança que permite strings vazias como expressão regular (o que é útil em alguns casos). Entretanto, esta mesma mudança permite expressões regulares do tipo $a||b$. O que não chega a constituir um erro.
+É importante chamar atenção ao detalhe da regra \emph{sequence} que permite strings vazias. Esta é uma mudança que permite strings vazias como expressão regular (o que é útil em alguns casos). Entretanto, esta mesma mudança permite expressões regulares do tipo $a||b$. O que não chega a constituir um erro. A listagem~\ref{lst:sequence} mostra a implementação desta regra.
+
+\vspace{0.5cm}
+\begin{lstlisting}[caption={Implementação da regra \emph{sequence}},label=lst:sequence]
+def sequence():
+    e = []
+    while tokens and tokens[0] not in '|)':
+        e += repetition()
+    return e
+\end{lstlisting}
 
 A implementação é bastante simplista, usa uma instância da classe \emph{deque} como buffer de tokens e chamadas recursivas para implementar as regras. Para cada uma das quatro regras defindas pela BNF, há um método aninhado em \emph{rex} para representá-la.
 
-O tratamento de erros é simples porém eficiente. Sempre que um caractere não esperado é encontrado na entrada, ele é reportado.
+O tratamento de erros é simples porém eficiente. Sempre que um caractere não esperado é encontrado na entrada, ele é reportado. Um dos mecanismos pode ser observado no código principal do parser (listagem~\ref{lst:main_parser}), onde após consumir todos os caracteres possíveis, se ainda existir remanescentes na entrada, uma exceção é lançada.
+
+\vspace{0.5cm}
+\begin{lstlisting}[caption={Implementação top-level do parser},label=lst:main_parser]
+e = option()
+if tokens: 
+    raise Exception('Not expected: "{}"'.format(''.join(tokens)))
+
+return Machine(e)
+\end{lstlisting}
 
 \section{Representação do Autômato}
 
-TBD
+Durante o parse, a expressão regular é transformada numa representação do autômato relacionado. Este autômato é representado como um \emph{array de objetos}, onde cada posição do array representa um estado do autômato.
+
+Como definido na seção~\ref{sec:Notacao} (página~\pageref{sec:Notacao}), a notação utilizada neste autômato prevê três tipos de estado: consumo, decisão e aceite. Estados de consumo são representados pelo caractere que consomem. Estados de decisão são representados por uma tupla de inteiros que informam quantos estados à frente ou atrás deve-se `pular'. Estados de aceite não precisam de representação, pois sempre ocorrem no final do autômato (segundo esta notação).
+
+A figura~\ref{fig:exemplo_automato_puro} e as listagens \ref{lst:automaton_array} e \ref{lst:automaton_instr} representam a expressão regular $(a|a)+b$. Apenas a forma em array é armazenada na instância da classe Machine para execução. Entretanto, a forma em instruções pode ser gerada através do método \emph{\_\_repr\_\_} da mesma classe.
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[scale=0.4]{figures/exemplo_automato_puro.png}
+  \caption{Representação do autômato como diagrama de estados}
+  \label{fig:exemplo_automato_puro}
+\end{figure}
+
+
+{
+  \lstset{%
+    basicstyle=\ttfamily\normalsize,
+  }
+  \begin{lstlisting}[caption={Representação do autômato como array},label=lst:automaton_array]
+	[(1, 3), 'a', (2,), 'a', (1, -4), 'b']
+  \end{lstlisting}
+}
+
+{
+  \lstset{%
+    basicstyle=\ttfamily\normalsize,
+  }
+  \begin{lstlisting}[caption={Representação do autômato como instruções},label=lst:automaton_instr]
+0000: JUMP (1, 3)
+0001: CONSUME a
+0002: JUMP (2,)
+0003: CONSUME a
+0004: JUMP (1, -4)
+0005: CONSUME b
+0006: MATCH!
+  \end{lstlisting}
+}
+
 
 \section{Simulação do Autômato}
 
@@ -808,6 +897,97 @@ TBD
 \backmatter
 
 \appendix
+
+\postextualchapter{Código-fonte da biblioteca PyRex}\label{app:full_source}
+
+\begin{lstlisting}[language=python]
+\label{app:full_source}
+from collections import deque
+from functools import reduce
+
+def rex(pattern):
+    tokens = deque(pattern)
+
+    def walk(chars):
+        while tokens and tokens[0] in chars:
+            yield tokens.popleft()
+
+    def option():
+        e = sequence()
+        for token in walk('|'):
+            e2 = sequence()
+            e = [(1, len(e)+2)] + e + [(len(e2)+1,)] + e2
+        return e        
+
+    def sequence():
+        e = []
+        while tokens and tokens[0] not in '|)':
+            e += repetition()
+        return e
+        
+    def repetition():
+        e = primary()
+        for token in walk('?*+'):
+            if token in '+*': e = e + [(1, -len(e))]
+            if token in '?*': e = [(1, len(e)+1)] + e
+        return e
+        
+    def primary():
+        token = tokens.popleft()
+        if token == '.': return [None]
+        if token == '(': return [option(), tokens.popleft()][0]
+        if token not in '?*+)|': return [token]
+        raise Exception('Not expected: "{}"'.format(token))
+
+    e = option()
+    if tokens: 
+        raise Exception('Not expected: "{}"'.format(''.join(tokens)))
+
+    return Machine(e)
+                
+class Machine(object):
+    def __init__(self, states):
+        self.states = states
+        
+    def match(self, string):
+        A, B, V = deque(), deque(), set()
+             
+        def best(a, b):
+            if not a or not b: return a or b
+            return a if a[0]<b[0] or a[0]==b[0] and a[1]>b[1] else b
+                
+        def addnext(start, i, j):
+            if j==len(self.states): return (start, i)
+            if j in V or V.add(j): return
+
+            state = self.states[j]
+            if isinstance(state, tuple):
+                return reduce(best, (addnext(start, i, j+k) for k in state))
+            else:
+                B.append((start, j))
+        
+        def advance(i, c):
+            while A:
+                start, j = A.popleft()
+                if self.states[j] in (None, c):
+                    yield addnext(start, i+1, j+1)
+        
+        answer = None
+        for i, c in enumerate(string):
+            addnext(i, i, 0)
+            A, B, V = B, A, set()
+            answer = reduce(best, advance(i, c), answer)           
+
+        return answer
+       
+    def source(self):
+        for s in self.states:
+            yield ('JUMP ' if isinstance(s, tuple) else 'CONSUME ') + str(s)
+        yield 'MATCH!'
+       
+    def __repr__(self):
+        return '\n'.join('{:04d}: {}'.format(i, s) for i, s in enumerate(self.source()))
+\end{lstlisting}   
 
 %======================================================================================
 \postextualchapter{Benchmark em Python: re, pyrex}
@@ -897,6 +1077,7 @@ for i in xrange(1, 41):
         i, time(r1, i), time(r2, i))
 \end{lstlisting}
 
+     
    
 
 \bibliography{bibliografia}

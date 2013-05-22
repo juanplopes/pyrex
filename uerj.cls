@@ -724,7 +724,6 @@
 \renewcommand\theequation {\@arabic\c@equation}
 
 \newcounter{figure}%[chapter]
-\renewcommand \thefigure {\@arabic\c@figure}
 
 \def\fps@figure{tbp}
 \def\ftype@figure{1}
