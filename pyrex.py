@@ -35,7 +35,6 @@ def rex(pattern):
         if token not in '?*+)|': return [token]
         raise Exception('Not expected: "{}"'.format(token))
 
-
     e = option()
     if not tokens: return Machine(e)
     raise Exception('Not expected: "{}"'.format(''.join(tokens)))
@@ -49,7 +48,7 @@ class Machine(object):
              
         def best(a, b):
             if not a or not b: return a or b
-            return a if a[0] < b[0] or a[0] == b[0] and a[1] > b[1] else b
+            return a if a[0]<b[0] or a[0]==b[0] and a[1]>b[1] else b
                 
         def addnext(start, i, j):
             if j==len(self.states): return (start, i)
@@ -57,7 +56,7 @@ class Machine(object):
 
             state = self.states[j]
             if isinstance(state, tuple):
-                return reduce(best, (addnext(start, i, j+incr) for incr in state))
+                return reduce(best, (addnext(start, i, j+k) for k in state))
             else:
                 B.append((start, j))
         
