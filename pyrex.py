@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from collections import deque
 from functools import reduce
 
@@ -45,12 +46,12 @@ class Machine(object):
     def __init__(self, states):
         self.states = states
         
-    def match(self, string):
+    def matcher(self, string):
         A, B, V = deque(), deque(), set()
              
         def best(a, b):
             if not a or not b: return a or b
-            return a if a[0]<b[0] or a[0]==b[0] and a[1]>b[1] else b
+            return a if (a[1]-a[0], -a[0]) > (b[1]-b[0], -b[0]) else b
                 
         def addnext(start, i, j):
             if j==len(self.states): return (start, i)
@@ -71,11 +72,14 @@ class Machine(object):
         answer = None
         for i, c in enumerate(string):
             addnext(i, i, 0)
+            yield answer, B
             A, B, V = B, A, set()
-            answer = reduce(best, advance(i, c), answer)           
-
-        return answer
-       
+            answer = reduce(best, advance(i, c), answer)
+        yield answer, B
+        
+    def match(self, string):
+        return reduce(lambda answer, s: s[0], self.matcher(string), None)
+     
     def source(self):
         for s in self.states:
             yield ('JUMP ' if isinstance(s, tuple) else 'CONSUME ') + str(s)
@@ -83,4 +87,3 @@ class Machine(object):
        
     def __repr__(self):
         return '\n'.join('{:04d}: {}'.format(i, s) for i, s in enumerate(self.source()))
-        
