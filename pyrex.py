@@ -49,12 +49,12 @@ class Machine(object):
     def matcher(self, string):
         A, B, V = deque(), deque(), set()
             
-        def addnext(start, i, j):
+        def addnext(start, j):
             if j==len(self.states): return 1
             if j in V or V.add(j): return 0
 
             if isinstance(self.states[j], tuple):
-                return sum(addnext(start, i, j+k) for k in self.states[j])
+                return sum(addnext(start, j+k) for k in self.states[j])
 
             B.append((start, j))
             return 0
@@ -64,13 +64,13 @@ class Machine(object):
         
         answer = None
         for i, c in enumerate(string):
-            addnext(i, i, 0)
+            addnext(i, 0)
             yield answer, B
             
             A, B, V = B, deque(), set()
 
             for start, j in A:
-                if matches(j, c) and addnext(start, i+1, j+1):
+                if matches(j, c) and addnext(start, j+1):
                     answer = max(answer, (start, i+1), key=key)
             
         yield answer, B
