@@ -47,34 +47,34 @@ class Machine(object):
         self.states = states
         
     def matcher(self, string):
-        A, B, V = deque(), deque(), set()
+        A, B, V = deque(), deque(), [-1]*(len(self.states))
              
         def best(a, b):
             if not a or not b: return a or b
             return a if (a[1]-a[0], -a[0]) > (b[1]-b[0], -b[0]) else b
                 
         def addnext(start, i, j):
-            if j==len(self.states): return (start, i)
-            if j in V or V.add(j): return
+            if j==len(self.states): return True
+            if V[j] == i: return False
+            V[j] = i
 
             state = self.states[j]
             if isinstance(state, tuple):
-                return reduce(best, (addnext(start, i, j+k) for k in state))
+                return any([addnext(start, i, j+k) for k in state])
             else:
                 B.append((start, j))
-        
-        def advance(i, c):
-            while A:
-                start, j = A.popleft()
-                if self.states[j] in (None, c):
-                    yield addnext(start, i+1, j+1)
         
         answer = None
         for i, c in enumerate(string):
             addnext(i, i, 0)
             yield answer, B
-            A, B, V = B, A, set()
-            answer = reduce(best, advance(i, c), answer)
+            
+            A, B = B, deque()
+
+            for start, j in A:
+                if self.states[j] in (None, c) and addnext(start, i+1, j+1):
+                    answer = best(answer, (start, i+1))
+            
         yield answer, B
         
     def match(self, string):

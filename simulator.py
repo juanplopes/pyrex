@@ -9,7 +9,7 @@ except NameError: pass
 
 def simulate(machine, string):
     for i, (answer, state) in enumerate(machine.matcher(string)):
-        print('Best so far: ' + str(answer))
+        print('Best answer: ' + (string[answer[0]:answer[1]] + ' ' + str(answer) if answer else '<none>'))
         print('Input: ' + string)
         print('       ' + i*' ' + '^' + ' (' + str(i) + ')')
         print()
