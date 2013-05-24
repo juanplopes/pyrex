@@ -47,33 +47,31 @@ class Machine(object):
         self.states = states
         
     def matcher(self, string):
-        A, B, V = deque(), deque(), [-1]*(len(self.states))
-             
-        def best(a, b):
-            if not a or not b: return a or b
-            return a if (a[1]-a[0], -a[0]) > (b[1]-b[0], -b[0]) else b
-                
+        A, B, V = deque(), deque(), set()
+            
         def addnext(start, i, j):
-            if j==len(self.states): return True
-            if V[j] == i: return False
-            V[j] = i
+            if j==len(self.states): return 1
+            if j in V or V.add(j): return 0
 
-            state = self.states[j]
-            if isinstance(state, tuple):
-                return any([addnext(start, i, j+k) for k in state])
-            else:
-                B.append((start, j))
+            if isinstance(self.states[j], tuple):
+                return sum(addnext(start, i, j+k) for k in self.states[j])
+
+            B.append((start, j))
+            return 0
+        
+        key = lambda a: (a[1]-a[0], -a[0]) if a else (0, 0)
+        matches = lambda j, c: self.states[j] in (None, c)
         
         answer = None
         for i, c in enumerate(string):
             addnext(i, i, 0)
             yield answer, B
             
-            A, B = B, deque()
+            A, B, V = B, deque(), set()
 
             for start, j in A:
-                if self.states[j] in (None, c) and addnext(start, i+1, j+1):
-                    answer = best(answer, (start, i+1))
+                if matches(j, c) and addnext(start, i+1, j+1):
+                    answer = max(answer, (start, i+1), key=key)
             
         yield answer, B
         
