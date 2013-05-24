@@ -9,16 +9,15 @@ except NameError: pass
 
 def simulate(machine, string):
     for i, (answer, state) in enumerate(machine.matcher(string)):
+        print('Best so far: ' + str(answer))
         print('Input: ' + string)
         print('       ' + i*' ' + '^' + ' (' + str(i) + ')')
+        print()
         
-        per_line = {j: str((start, i))+' >' for start, j in state}
-    
-        if answer:
-            per_line[len(machine.states)] = str(answer) + ' >'
+        per_line = {item: str(start)+' >' for start, item in state}
         
         for j, line in enumerate(machine.source()):
-            print('{:>12}{:04d}: {}'.format(per_line.get(j, ''), j, line))
+            print('{:>5}{:04d}: {}'.format(per_line.get(j, ''), j, line))
 
         print('-----')
         input()
