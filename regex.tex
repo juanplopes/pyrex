@@ -836,7 +836,7 @@ if tokens:
 return Machine(e)
 \end{lstlisting}
 
-\section{Representação do Autômato}
+\section{Representação}
 
 Durante o parse, a expressão regular é transformada numa representação do autômato relacionado. Este autômato é representado como um \emph{array de objetos}, onde cada posição do array representa um estado do autômato.
 
@@ -877,7 +877,47 @@ A figura~\ref{fig:exemplo_automato_puro} e as listagens \ref{lst:automaton_array
 }
 
 
-\section{Simulação do Autômato}
+\section{Simulação}
+
+A simulação é executada pelos métodos \emph{matcher} e \emph{match} da classe \emph{Machine}. A diferença entre os dois é que o primeiro retorna um iterador que exibe o estado da execução do autômato para cada caractere da entrada. O segundo apenas retorna o resultado do match no final. Na implementação, o método \emph{match} utiliza o método \emph{matcher}, como mostra a listagem~\ref{lst:match}.
+
+\vspace{0.5cm}
+\begin{lstlisting}[caption={Implementação do método \emph{match}},label=lst:match]
+def match(self, string):
+    return reduce(lambda answer, s: s[0], self.matcher(string), None)
+\end{lstlisting}
+
+O método implementado para a simulação do autômato é a \emph{simulação paralela}. Este método foi escolhido por combinar uma complexidade assintótica polinomial com uma facilidade de implementação razoável.
+
+A implementação baseia-se em duas listas, A e B, que em todo momento representam o conjunto de estados \emph{de consumo} alcançados até o início da avaliação do caractere atual (A) e o conjunto de estados que a avaliação do caractere atual irá alcançar (B). Após a avaliação de cada caractere estas listas são invertidas. É importante ressaltar que um mesmo estado nunca entra na lista B duas vezes. Esta verificação é efetuada pelo array V, que controla o índice do último caractere onde cada estado entrou na lista de estados. Inicialmente, esta lista está preenchida com valores -1.
+
+Como apenas estados de consumo entram nas listas de estados para participar do ciclo de consumo (por razões óbvias), é preciso avaliar todos os estados de decisão antes do início do ciclo de consumo. A listagem \ref{lst:addnext} mostra a implementação do método \emph{addnext} que adiciona estados à próxima lista de consumo (B), resolvendo estados de decisão em seus respectivos próximos estados de consumo. Este método também retorna o número de vezes que o estado de aceite foi alcançado.
+
+\vspace{0.5cm}
+\begin{lstlisting}[caption={Implementação do método \emph{addnext}},label=lst:addnext]
+def addnext(start, i, j):
+    if j==self.n: return 1
+    if V[j] == i: return 0
+    V[j] = i
+
+    if isinstance(self.states[j], tuple):
+        return sum(addnext(start, i, j+k) for k in self.states[j])
+
+    B.append((start, j))
+    return 0
+\end{lstlisting}
+
+Cada ciclo de consumo é marcado por uma série de passos
+
+Como é costumeiro na implementação de expressões regulares, o match é realizado caso qualquer substring do input faça match. O método de simulação paralela leva vantagem por necessitar de pouca alteração para suportar este modo de execução.
+
+
+
+\section{Modo de uso}
+
+TBD
+
+\section{Visualização e Testes}
 
 TBD
 
