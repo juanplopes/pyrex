@@ -62,11 +62,11 @@ class Machine(object):
             return 0
         
         def key(a): return (a[1]-a[0], -a[0]) if a else (0, 0)
-        
+
         answer = None
         for i, c in enumerate(string):
             addnext(i, i, 0)
-            yield answer, B
+            yield i, answer, B
             
             A, B = B, A
             del B[:]
@@ -75,7 +75,7 @@ class Machine(object):
                 if self.states[j] in (None, c) and addnext(start, i+1, j+1):
                     answer = max(answer, (start, i+1), key=key)
             
-        yield answer, B
+        yield len(string), answer, B
         
     def match(self, string):
         return reduce(lambda answer, s: s[0], self.matcher(string), None)
