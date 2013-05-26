@@ -100,8 +100,9 @@
   rulecolor=\color{black},        
   showspaces=false,               
   showstringspaces=false,         
-  showtabs=false,                 
-  stepnumber=2,                   
+  showtabs=false,   
+  firstnumber=1,     
+  stepnumber=1,                   
   stringstyle=\color{mymauve},    
   tabsize=2,    
   language=python,                 
@@ -334,12 +335,12 @@ Gramáticas gerativas são sistemas de reescrita, i.e. a partir de um símbolo i
 
 Uma gramática gerativa é formada por uma tupla $G = (N, \Sigma, P, S)$. Onde:
 
-\begin{lcircp}
+\begin{itemize}
     \item N é o conjunto de símbolos não terminais. Eles não fazem parte da linguagem original, então precisam ser sempre substituídos para alcançar um símbolo válido na linguagem.
     \item $\Sigma$ é o conjunto de símbolos terminais da linguagem. Também conhecido como alfabeto.
     \item P é o conjunto de regras de produção, geralmente na forma $\alpha \rightarrow \beta \mid \alpha, \beta \in N \cup \Sigma$.
     \item S é o símbolo inicial do sistema de reescrita. $S \in N$.
-\end{lcircp}
+\end{itemize}
 
 Um exemplo de gramática é a que define expressões da forma $a^nb^n, n>0$:
 
@@ -387,12 +388,12 @@ O fato desta gramática definir sequências de símbolos à esquerda com mais de
 
 Segundo Noam Chomsky \cite{bib:Chomsky57}, uma gramática formal pode ser classificada em um de quatro tipos baseados em sua capacidade expressiva:
 
-\begin{lcircp}
+\begin{itemize}
     \item {\bf Tipo 0}: gramáticas recursivamente enumeráveis (ou irrestritas)
     \item {\bf Tipo 1}: gramáticas sensíveis a contexto
     \item {\bf Tipo 2}: gramáticas livres de contexto
     \item {\bf Tipo 3}: gramáticas regulares
-\end{lcircp}
+\end{itemize}
 
 Cada conjunto é propriamente incluso no seu conjunto superior na hierarquia, como pode ser visto na figura~\ref{fig:chomsky}.
 
@@ -463,13 +464,13 @@ Expressões regulares são sequências de caracteres que definem linguagens regu
 
 Por definição:
 
-\begin{lcircp}
+\begin{itemize}
     \item Sequências vazias são expressões regulares.
     \item Caracteres unitários são expressões regulares. E.g. \emph{a}.
     \item Expressões regulares podem ser concatenadas para formar novas expressões. E.g. se $e_1$ reconhece \emph{a} e $e_2$ reconhece \emph{b}, então $e_1e_2$ reconhece \emph{ab}.
     \item Expressões regulares podem ser alternadas para formar novas expressões. E.g. se $e_1$ reconhece \emph{a} e $e_2$ reconhece \emph{b}, então $e_1|e_2$ reconhece \emph{a} e \emph{b}.
     \item Pode-se aplicar o fecho Kleene para formar novas expressões. E.g. se $e_1$ reconhece \emph{a}, então $e_1*$ reconhece \emph{a}, \emph{aa}, \emph{aaa}... etc., bem como string vazia.
-\end{lcircp}
+\end{itemize}
 
 Perceba que é possível definir outros operadores comuns, como $?$ e $+$. Mas é possível fazê-lo a partir das operações descritas acima. O operador $e_1?$ pode ser definido como a alternância entre $e_1$ e uma string vazia. O operarador $e_1+$ pode ser definido como $e_1e_1*$.
 
@@ -504,13 +505,13 @@ Tal poder expressivo tem seu preço. Match de backreferences é um problema NP-c
 
 Autômatos finitos representam um modelo matemático de computação. Eles representam máquinas abstratas que podem se encontram em apenas um de um número finito de estados. Autômatos não possuem memória. Mas apenas estritamente falando, pois o estado atual do autômato representa sua memória. Um autômato muda de estado como reação a um estímulo externo. Formalmente, autômatos finitos são uma tupla $M = (Q, \Sigma, q_0, \delta, A)$, onde:
 
-\begin{lcircp}
+\begin{itemize}
     \item Q é o conjunto de estados do autômato. Sempre finito.
     \item $\Sigma$ é o alfabeto aceito pelo autômato.
     \item $q_0$ é o estado inicial do autômato. $q_0 \in Q$.
     \item $\delta$ é a função de transição, que mapeia cada $(q_i, a) \in Q \times \Sigma$ a um subconjunto de Q. Se esse subconjunto tem apenas zero ou um elementos, o autômato é \emph{deterministico}, caso contrário, ele é \emph{não-determinístico}.
     \item A é o conjunto de estados de aceite. $A \subseteq Q$.
-\end{lcircp}
+\end{itemize}
 
 Por exemplo:
 
@@ -595,11 +596,11 @@ Com esta árvore de avaliação é possível fazer a conversão para o autômato
 
 Iremos assumir uma notação diferente para representação do autômato, que irá facilitar a construção. Para fins de praticidade, todo estado $q_i \in Q$ será de um entre três tipos possíveis:
 
-\begin{lcircp}
+\begin{itemize}
     \item Um estado de \emph{consumo}, que possui exatamente uma transição possível dada por um caractere $a \in \Sigma$.
     \item Um estado de \emph{decisão}, que possui uma ou duas transições $\epsilon$ para estados distintos.
     \item Um estado de \emph{aceite}, que não possui qualquer transição.
-\end{lcircp}
+\end{itemize}
 
 A figura~\ref{fig:nova_notacao} mostra como podem ser representados os estados desta nova notação no diagrama de estados.
 
@@ -681,13 +682,13 @@ Simular a execução de um autômato não-determinístico utilizando uma máquin
 
 Dentre as opções para simulação da execução do autômato, estão:
 
-\begin{lcircp}
+\begin{itemize}
     \item \emph{Backtracking}: tentar todos os caminhos possíveis, voltando para a última escolha feita em caso de falha.
     \item \emph{Backtracking com memoização}.
     \item \emph{Conversão para DFA}: converter para um autômato determinístico antes de executar.
     \item \emph{Simulação paralela}: simular a execução de todos os estados simultaneamente.
 	\item \emph{Conversão preguiçosa para DFA}: semelhante a execução paralela, mas construindo um cache dos estados alcançados
-\end{lcircp}
+\end{itemize}
 
 Cada uma destas opções tem caracteristicas próprias. Suas vantagens e desvantagens serão discutidas separadamente.
 
@@ -768,7 +769,7 @@ Este projeto visava alcançar uma implementação completamente polinomial para 
 
 A linguagem escolhida para implementar o projeto foi Python. É uma linguagem de máquina virtual, tal qual o Java. Entretanto, sua máquina virtual não tem as otimizações em tempo de execução que as implementações mais famosas de Java tem. Além disso, sua resolução dinâmica de tipos a faz ter uma performance inferior a outra linguagens com resolução estática de tipos. 
 
-Mesmo assim, pela reduzida quantidade de caracteres especiais em sua sintaxe, os programas escritos nela são em geral mais legíveis e simples. Por isso, toda a implementação do PyRex tem 85 linhas de código (contando as em branco) e cerca de 2.5KiB. Esta implementação abrange desde o parse da expressão regular até a simulação do autômato retornando inclusive a região do match da expressão regular.
+Mesmo assim, pela reduzida quantidade de caracteres especiais em sua sintaxe, os programas escritos nela são em geral mais legíveis e simples. Por isso, toda a implementação do PyRex tem menos de 90 linhas de código (contando as em branco) e menos de 3KiB. Esta implementação abrange desde o parse da expressão regular até a simulação do autômato retornando inclusive a região do match da expressão regular.
 
 O projeto foi implementado utilizando apenas as bibliotecas padrão disponíveis no Python 2.7, porém ele também funciona no Python 3.0 e superiores.
 
@@ -778,7 +779,7 @@ Foi escolhido um conjunto de funcionalidades que fosse capaz de mostrar o ponto 
 
 Assim, foi implementado o match de:
 
-\begin{lcircp}
+\begin{itemize}
     \item Literais (e.g. $a$)
     \item Sequências (e.g. $ab$)
     \item Alternâncias (e.g. $ab|cd$)
@@ -786,7 +787,7 @@ Assim, foi implementado o match de:
     \item Expressão opcional (e.g. $a?$)
     \item Kleene* (e.g. $a*$)
     \item Kleene+ (e.g. $a+$)
-\end{lcircp}
+\end{itemize}
 
 Estas funcionalidades são bem próximas as definidas por Thompson \cite{bib:Thompson68} em seu artigo e definem inequivocamente gramáticas regulares.
 
@@ -828,7 +829,7 @@ A implementação é bastante simplista, usa uma instância da classe \emph{dequ
 O tratamento de erros é simples porém eficiente. Sempre que um caractere não esperado é encontrado na entrada, ele é reportado. Um dos mecanismos pode ser observado no código principal do parser (listagem~\ref{lst:main_parser}), onde após consumir todos os caracteres possíveis, se ainda existir remanescentes na entrada, uma exceção é lançada.
 
 \vspace{0.5cm}
-\begin{lstlisting}[caption={Implementação top-level do parser},label=lst:main_parser]
+\begin{lstlisting}[caption={Exemplo de tratamento de erros no parser},label=lst:main_parser]
 e = option()
 if tokens: 
     raise Exception('Not expected: "{}"'.format(''.join(tokens)))
@@ -856,16 +857,16 @@ A figura~\ref{fig:exemplo_automato_puro} e as listagens \ref{lst:automaton_array
   \lstset{%
     basicstyle=\ttfamily\normalsize,
   }
-  \begin{lstlisting}[caption={Representação do autômato como array},label=lst:automaton_array]
+\begin{lstlisting}[caption={Representação do autômato como array},label=lst:automaton_array]
 	[(1, 3), 'a', (2,), 'a', (1, -4), 'b']
-  \end{lstlisting}
+\end{lstlisting}
 }
 
 {
   \lstset{%
     basicstyle=\ttfamily\normalsize,
   }
-  \begin{lstlisting}[caption={Representação do autômato como instruções},label=lst:automaton_instr]
+\begin{lstlisting}[caption={Representação do autômato como instruções},label=lst:automaton_instr]
 0000: JUMP (1, 3)
 0001: CONSUME a
 0002: JUMP (2,)
@@ -873,13 +874,13 @@ A figura~\ref{fig:exemplo_automato_puro} e as listagens \ref{lst:automaton_array
 0004: JUMP (1, -4)
 0005: CONSUME b
 0006: MATCH!
-  \end{lstlisting}
+\end{lstlisting}
 }
 
 
 \section{Simulação}
 
-A simulação é executada pelos métodos \emph{matcher} e \emph{match} da classe \emph{Machine}. A diferença entre os dois é que o primeiro retorna um iterador que exibe o estado da execução do autômato para cada caractere da entrada. O segundo apenas retorna o resultado do match no final. Na implementação, o método \emph{match} utiliza o método \emph{matcher}, como mostra a listagem~\ref{lst:match}.
+A simulação é executada pelos métodos \emph{matcher} e \emph{match} da classe \emph{Machine}. A diferença entre os dois é que o primeiro retorna um iterador que avalia o estado da execução do autômato para cada caractere da entrada. O segundo apenas retorna o resultado do match no final. Na implementação, o método \emph{match} utiliza o método \emph{matcher}, como mostra a listagem~\ref{lst:match}.
 
 \vspace{0.5cm}
 \begin{lstlisting}[caption={Implementação do método \emph{match}},label=lst:match]
@@ -889,9 +890,17 @@ def match(self, string):
 
 O método implementado para a simulação do autômato é a \emph{simulação paralela}. Este método foi escolhido por combinar uma complexidade assintótica polinomial com uma facilidade de implementação razoável.
 
-A implementação baseia-se em duas listas, A e B, que em todo momento representam o conjunto de estados \emph{de consumo} alcançados até o início da avaliação do caractere atual (A) e o conjunto de estados que a avaliação do caractere atual irá alcançar (B). Após a avaliação de cada caractere estas listas são invertidas. É importante ressaltar que um mesmo estado nunca entra na lista B duas vezes. Esta verificação é efetuada pelo array V, que controla o índice do último caractere onde cada estado entrou na lista de estados. Inicialmente, esta lista está preenchida com valores -1.
+Como é costumeiro na implementação de expressões regulares, o match é realizado caso qualquer substring do input faça match. O método de simulação paralela leva vantagem por necessitar de pouca alteração para suportar este modo de execução.
 
-Como apenas estados de consumo entram nas listas de estados para participar do ciclo de consumo (por razões óbvias), é preciso avaliar todos os estados de decisão antes do início do ciclo de consumo. A listagem \ref{lst:addnext} mostra a implementação do método \emph{addnext} que adiciona estados à próxima lista de consumo (B), resolvendo estados de decisão em seus respectivos próximos estados de consumo. Este método também retorna o número de vezes que o estado de aceite foi alcançado.
+A implementação baseia-se em ciclos de consumo, onde um conjunto de estados iniciais passam simultâneamente por uma transição pelo mesmo caractere $c$ para um conjunto de estados sequentes.
+
+Para representar os estados, utilizamos duas listas, A e B, que em todo momento representam o conjunto de estados \emph{de consumo} alcançados até o início da avaliação do caractere atual (A) e o conjunto de estados que a avaliação do caractere atual irá alcançar (B). Após a avaliação de cada caractere estas listas são invertidas. 
+
+Cada estado nestas listas vem acompanhado da posição na string original onde o match começou. Esta informação é criada quando o estado inicial é colocado na lista para cada um dos caracteres. Ela é então copiada cada vez que o estado é resolvido e avança para seus sucessores. Na lista, o estado é representado por uma tupla $(start, j)$, onde $start$ representa a posição na entrada onde o match começou e $j$ é o índice do estado.
+
+É importante ressaltar que um mesmo estado nunca entra na lista B duas vezes no mesmo ciclo de consumo. Esta verificação é efetuada pelo array V, que controla o índice do último caractere onde cada estado entrou na lista de estados. Inicialmente, esta lista está preenchida com valores -1.
+
+Como apenas estados de consumo entram nas listas de estados para participar do ciclo de consumo (por razões óbvias), é preciso avaliar todos os estados de decisão antes do início do ciclo de consumo. A listagem \ref{lst:addnext} mostra a implementação do método \emph{addnext} que adiciona estados à próxima lista de consumo (B), resolvendo recursivamente estados de decisão em seus respectivos próximos estados de consumo. Este método também retorna o número de vezes que o estado de aceite foi alcançado.
 
 \vspace{0.5cm}
 \begin{lstlisting}[caption={Implementação do método \emph{addnext}},label=lst:addnext]
@@ -907,19 +916,39 @@ def addnext(start, i, j):
     return 0
 \end{lstlisting}
 
-Cada ciclo de consumo é marcado por uma série de passos
+Assim, cada ciclo de consumo é marcado pelos passos:
 
-Como é costumeiro na implementação de expressões regulares, o match é realizado caso qualquer substring do input faça match. O método de simulação paralela leva vantagem por necessitar de pouca alteração para suportar este modo de execução.
+\begin{itemize}
+    \item Iniciar novo fluxo no estado inicial com o caractere atual
+    \item Inverter as listas de consumo, limpando a lista de próximo (B).
+    \item Avaliar o consumo do caractere atual adicionando os estados subsequentes na lista de próximo.
+\end{itemize}
 
+A listagem~\ref{lst:matcher} mostra a implementação destes passos. A linha 5 adiciona um novo fluxo começando no caractere $i$. As linhas 8 e 9 invertem as listas de consumo. Finalmente, as linhas 11-13 avaliam os estados de consumo contra a entrada, avançam os estados devidos, além de atualizar a melhor resposta, caso algum desses estados alcance o estado de aceite.
 
+\vspace{0.5cm}
+\begin{lstlisting}[caption={Implementação do método \emph{matcher}},label=lst:matcher]
+def key(a): return (a[1]-a[0], -a[0]) if a else (0, 0)
 
-\section{Modo de uso}
+answer = None
+for i, c in enumerate(string):
+    addnext(i, i, 0)
+    yield answer, B
+    
+    A, B = B, A
+    del B[:]
 
-TBD
+    for start, j in A:
+        if self.states[j] in (None, c) and addnext(start, i+1, j+1):
+            answer = max(answer, (start, i+1), key=key)
+            
+yield answer, B
+\end{lstlisting}
 
-\section{Visualização e Testes}
+\section{Visualização}
 
-TBD
+Valendo-se da implementação do método \emph{matcher} foi possível construir uma visualização passo-a-passo da execução do algoritmo, que visa ajudar na compreensão do mesmo. Trata-se de uma ferramenta de linha de comando (também escrita em Python) que utiliza o PyRex.
+
 
 
 %======================================================================================
@@ -941,6 +970,7 @@ TBD
 \postextualchapter{Código-fonte da Biblioteca PyRex}\label{app:full_source}
 
 \begin{lstlisting}[language=python]
+# -*- coding: utf-8 -*-
 from collections import deque
 from functools import reduce
 
@@ -987,38 +1017,41 @@ def rex(pattern):
 class Machine(object):
     def __init__(self, states):
         self.states = states
+        self.n = len(states)
         
-    def match(self, string):
-        A, B, V = deque(), deque(), set()
-             
-        def best(a, b):
-            if not a or not b: return a or b
-            return a if a[0]<b[0] or a[0]==b[0] and a[1]>b[1] else b
-                
+    def matcher(self, string):
+        A, B, V = list(), list(), [-1]*len(self.states)
+            
         def addnext(start, i, j):
-            if j==len(self.states): return (start, i)
-            if j in V or V.add(j): return
+            if j==self.n: return 1
+            if V[j] == i: return 0
+            V[j] = i
 
-            state = self.states[j]
-            if isinstance(state, tuple):
-                return reduce(best, (addnext(start, i, j+k) for k in state))
-            else:
-                B.append((start, j))
+            if isinstance(self.states[j], tuple):
+                return sum(addnext(start, i, j+k) for k in self.states[j])
+
+            B.append((start, j))
+            return 0
         
-        def advance(i, c):
-            while A:
-                start, j = A.popleft()
-                if self.states[j] in (None, c):
-                    yield addnext(start, i+1, j+1)
+        def key(a): return (a[1]-a[0], -a[0]) if a else (0, 0)
         
         answer = None
         for i, c in enumerate(string):
             addnext(i, i, 0)
-            A, B, V = B, A, set()
-            answer = reduce(best, advance(i, c), answer)           
+            yield answer, B
+            
+            A, B = B, A
+            del B[:]
 
-        return answer
-       
+            for start, j in A:
+                if self.states[j] in (None, c) and addnext(start, i+1, j+1):
+                    answer = max(answer, (start, i+1), key=key)
+            
+        yield answer, B
+        
+    def match(self, string):
+        return reduce(lambda answer, s: s[0], self.matcher(string), None)
+     
     def source(self):
         for s in self.states:
             yield ('JUMP ' if isinstance(s, tuple) else 'CONSUME ') + str(s)
