@@ -3,3 +3,4 @@ makeindex regex || exit 1
 bibtex regex || exit 1
 pdflatex regex || exit 1
 pdflatex regex || exit 1
+rm -f *.bbl *.ind *.dvi *.log *.idx *.ilg *.blg *.aux *.out *.lyx *.toc *.lof *.lot *.lol *.acn *.acr *.alg *.glg *.glo *.gls *.xdy *.loa

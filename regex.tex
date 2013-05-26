@@ -23,8 +23,8 @@
 \newcommand{\formato}[1]{\begin{flushleft}{#1}\end{flushleft}}
 \newcommand{\BibTeX}{{{Bib}}\TeX}
 
-\logo{uerj/logo_uerj_cinza.png}
-\marcadagua{uerj/marcadagua_uerj_cinza.png}{1}{160}{255}
+\logo{figures/logo_uerj_cinza.png}
+\marcadagua{figures/marcadagua_uerj_cinza.png}{1}{160}{255}
 
 
 \instituicao{Universidade do Estado do Rio de Janeiro}
@@ -155,7 +155,7 @@ Na teoria, expressões regulares constituem uma notação para definir linguagen
 
 A maior parte das mudanças aconteceu para permiti-las alcançar um poder de expressão maior. Entretanto, esta conveniência veio a custo de tornar o \emph{match} um problema mais difícil computacionalmente do que a teoria descreve. Na maior parte das linguagens modernas o \emph{match} de \emph{regexes} (como são comumente conhecidas) é um problema NP-completo. Além disso, por particularidades de como são implementadas, mesmo expressões que poderiam ser reconhecidas em tempo polinomial são resolvidas com soluções exponenciais. 
 
-Este trabalho visa analisar as armadilhas comuns no desenvolvimento de expressões regulares, realizando benchmarks entre diversas implementações populares, apontando funcionalidades que impediriam sua execução polinomial. Também sugere uma implementação simples e didática que tem, no pior caso, desempenho ordens de grandeza superior às bibliotecas-padrão de muitas linguagens.
+Este trabalho visa analisar as armadilhas comuns no desenvolvimento de expressões regulares, realizando benchmarks entre diversas implementações populares, apontando funcionalidades que impediriam sua execução polinomial. Também sugere uma implementação simples e didática que tem desempenho em pior caso ordens de grandeza superior às bibliotecas-padrão de muitas linguagens.
 
 \noindent {Palavras-chave}: Teoria da computação. Expressões regulares. Linguagens regulares. Autômatos finitos. Complexidade computacional. Algoritmos. NP-completo.
 
@@ -933,7 +933,7 @@ def key(a): return (a[1]-a[0], -a[0]) if a else (0, 0)
 answer = None
 for i, c in enumerate(string):
     addnext(i, i, 0)
-    yield answer, B
+    yield i, answer, B
     
     A, B = B, A
     del B[:]
@@ -941,13 +941,13 @@ for i, c in enumerate(string):
     for start, j in A:
         if self.states[j] in (None, c) and addnext(start, i+1, j+1):
             answer = max(answer, (start, i+1), key=key)
-            
-yield answer, B
+    
+yield len(string), answer, B
 \end{lstlisting}
 
 \section{Visualização}
 
-Valendo-se da implementação do método \emph{matcher} foi possível construir uma visualização passo-a-passo da execução do algoritmo, que visa ajudar na compreensão do mesmo. Trata-se de uma ferramenta de linha de comando (também escrita em Python) que utiliza o PyRex.
+Valendo-se da implementação do método \emph{matcher} foi possível construir uma visualização em modo texto, passo-a-passo, da execução do algoritmo, que visa ajudar na compreensão. Trata-se de uma ferramenta de linha de comando (também escrita em Python) que utiliza o PyRex .
 
 
 
@@ -1038,7 +1038,7 @@ class Machine(object):
         answer = None
         for i, c in enumerate(string):
             addnext(i, i, 0)
-            yield answer, B
+            yield i, answer, B
             
             A, B = B, A
             del B[:]
@@ -1047,7 +1047,7 @@ class Machine(object):
                 if self.states[j] in (None, c) and addnext(start, i+1, j+1):
                     answer = max(answer, (start, i+1), key=key)
             
-        yield answer, B
+        yield len(string), answer, B
         
     def match(self, string):
         return reduce(lambda answer, s: s[0], self.matcher(string), None)
