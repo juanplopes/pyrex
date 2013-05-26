@@ -949,7 +949,70 @@ yield len(string), answer, B
 
 Valendo-se da implementação do método \emph{matcher} foi possível construir uma visualização em modo texto, passo-a-passo, da execução do algoritmo, que visa ajudar na compreensão. Trata-se de uma ferramenta de linha de comando (também escrita em Python) que utiliza o PyRex .
 
+É possível chamar o visualizador com o comando \emph{./view.py (regex) (input)}, e.g.:
 
+\begin{verbatim}
+./view a+b+c+ aabbbcccc
+\end{verbatim}
+
+No exemplo, a execução do programa iria mostrar os passos do match desta expressão regular. Alguns passos da execução podem ser vistos nas figuras~\ref{fig:exemplo_view_passo_3} e \ref{fig:exemplo_view_passo_6}.
+
+\begin{figure}[ht]
+  \centering
+\begin{verbatim}
+Best answer: <none>
+Input: aabbbcccc
+          ^ (3)
+
+  3 >0000: CONSUME a
+     0001: JUMP (1, -1)
+  0 >0002: CONSUME b
+     0003: JUMP (1, -1)
+  0 >0004: CONSUME c
+     0005: JUMP (1, -1)
+     0006: MATCH!
+\end{verbatim}
+  \caption{Exemplo de visualização lendo o 4º caractere da string}
+  \label{fig:exemplo_view_passo_3}
+\end{figure}
+
+Esta forma de exibir mostra o estado atual de todos os fluxos executando pelo autômato. O número exibido ao lado de cada instrução é o índice da entrada onde aquele fluxo começou. No exemplo em específico, há três fluxos estão executando: 
+
+\begin{itemize}
+\item{O que começa com cada caractere da string (3)}
+\item{O que continua lendo caracteres b da entrada, enquanto houver. (0)}
+\item{O que está pronto para ler caracteres c, quando começarem. (0)}
+\end{itemize}
+
+\begin{figure}[ht]
+  \centering
+\begin{verbatim}
+Best answer: aabbbc (0, 6)
+Input: aabbbcccc
+             ^ (6)
+
+  6 >0000: CONSUME a
+     0001: JUMP (1, -1)
+     0002: CONSUME b
+     0003: JUMP (1, -1)
+  0 >0004: CONSUME c
+     0005: JUMP (1, -1)
+     0006: MATCH!
+\end{verbatim}
+  \caption{Exemplo de tela lendo o 7º caractere da string}
+  \label{fig:exemplo_view_passo_6}
+\end{figure}
+
+Neste momento, já existe um match para a string (visto que já existem caracteres c lidos). O melhor match até o momento é mostrado na linha \emph{Best answer}. Este valor é atualizado a cada passo. Além disso, os seguintes estados estão ativos:
+
+\begin{itemize}
+\item{O que começa com cada caractere da string (6)}
+\item{O que continua lendo caracteres c da entrada, enquanto houver. (0)}
+\end{itemize}
+
+A ferramenta utiliza o método matcher, que retorna um iterador que, a cada iteração retorna uma tupla $(i, answer, state)$, onde $i$ é o índice atual que se está lendo na entrada, $answer$ é a melhor resposta conseguida até o momento e $state$ é a lista de estados atuais, que é composta de várias tuplas $(start, j)$.
+
+O código-fonte completo da ferramenta pode ser visto no apêndice~\ref{app:view_source}.
 
 %======================================================================================
 \chapter{Análise dos Resultados}
@@ -1060,6 +1123,46 @@ class Machine(object):
     def __repr__(self):
         return '\n'.join('{:04d}: {}'.format(i, s) for i, s in enumerate(self.source()))
 \end{lstlisting}   
+
+\postextualchapter{Código-fonte da Visualizador}\label{app:view_source}
+
+\begin{lstlisting}
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+from __future__ import print_function
+import sys, pyrex
+
+try: input = raw_input
+except NameError: pass
+
+def simulate(machine, string):
+    for i, answer, state in machine.matcher(string):
+        best = (string[answer[0]:answer[1]] + ' ' + str(answer) if answer else '<none>')
+        print('Best answer: ' + best)
+        print('Input: ' + string)
+        print('       ' + i*' ' + '^' + ' (' + str(i) + ')')
+        print()
+        
+        per_line = {item: str(start)+' >' for start, item in state}
+        
+        for j, line in enumerate(machine.source()):
+            print('{:>5}{:04d}: {}'.format(per_line.get(j, ''), j, line))
+
+        print('-----')
+        input()
+        
+if __name__ == '__main__':
+    if len(sys.argv) != 3:
+        print('usage: simulator.py <regex> <input>')
+        sys.exit(1)
+        
+    print('-----')
+    print('Matching pattern "{}" against input "{}"'.format(*sys.argv[1:]))
+    print('-----')
+    print()
+    simulate(pyrex.rex(sys.argv[1]), sys.argv[2])
+\end{lstlisting}
 
 %======================================================================================
 \postextualchapter{Benchmark em Python: re, pyrex}
