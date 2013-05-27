@@ -78,7 +78,7 @@ class Machine(object):
         yield len(string), answer, B
         
     def match(self, string):
-        return reduce(lambda answer, s: s[0], self.matcher(string), None)
+        return reduce(lambda answer, s: s[1], self.matcher(string), None)
      
     def source(self):
         for s in self.states:

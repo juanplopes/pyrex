@@ -1,0 +1,13 @@
+#!/usr/bin/env python
+from timeit import timeit
+import os, sys, re
+
+r = re.compile(sys.stdin.readline())
+r.match('warm up')
+
+print 'python'
+for line in iter(sys.stdin.readline, ''):
+    print int(timeit(lambda: r.match(line), number=1)*1e9)
+
+    
+

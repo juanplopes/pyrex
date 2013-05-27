@@ -1,0 +1,19 @@
+#!/usr/bin/env ruby
+
+r = Regexp.new(readline.strip)
+r.match('warm up')
+
+puts 'ruby'
+
+while true
+    starttime = Time.now
+    begin
+        s = readline.strip
+    rescue EOFError
+        break
+    end
+    r.match(s)
+    endtime = Time.now
+    puts "#{((endtime - starttime)*1e9).to_i}"
+end
+

@@ -1,0 +1,16 @@
+#!/usr/bin/env python
+
+from timeit import timeit
+import os, sys
+sys.path.append(os.path.join(os.path.dirname(__file__), '../pyrex'))
+import pyrex
+
+r = pyrex.rex(sys.stdin.readline())
+r.match('warm up')
+
+print 'pyrex'
+for line in iter(sys.stdin.readline, ''):
+    print int(timeit(lambda: r.match(line), number=1)*1e9)
+
+    
+

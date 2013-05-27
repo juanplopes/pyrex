@@ -6,6 +6,7 @@
                         
 \usepackage{array}
                       
+\usepackage{pgfplots}
 \usepackage{DejaVuSansMono}
 \usepackage{listings}
 \usepackage{makeidx}        % Cria o indice
@@ -36,12 +37,12 @@
 \titulo{Uma Implementação de Expressões Regulares em Tempo Polinomial}
 
 \orientador{Prof.} % rotulo
-           {Paulo Eustáquio Duarte}{Pinto, DSc.} % {nome}{sobrenome}
+           {Paulo Eustáquio Duarte}{Pinto} % {nome}{sobrenome}
            {} % afiliacao
 
-\coorientador{titulação} % rotulo
-           {[nome de]}{[sobrenome]} % {nome}{sobrenome}
-           {[afiliação]} % afiliacao
+\coorientador{Profª.} % rotulo
+           {Maria Alice Silveira de}{Brito} % {nome}{sobrenome}
+           {} % afiliacao
 
 
 \grau{Bacharel}
@@ -109,6 +110,13 @@
   title=\lstname                 
 }
 
+\pgfplotsset{
+	width=12cm,
+	every axis legend/.append style={
+	at={(0.5,1.03)},
+	anchor=south}
+}
+
 \makeindex
 
 \begin{document}
@@ -153,9 +161,9 @@
 
 Na teoria, expressões regulares constituem uma notação para definir linguagens regulares em termos de operações recursivas simples. São equivalentes a autômatos finitos em seu poder expressivo. Na prática entretanto, enquanto ferramentas extremamente populares, as expressões regulares modernas afastaram-se bastante da teoria que as originou. 
 
-A maior parte das mudanças aconteceu para permiti-las alcançar um poder de expressão maior. Entretanto, esta conveniência veio a custo de tornar o \emph{match} um problema mais difícil computacionalmente do que a teoria descreve. Na maior parte das linguagens modernas o \emph{match} de \emph{regexes} (como são comumente conhecidas) é um problema NP-completo. Além disso, por particularidades de como são implementadas, mesmo expressões que poderiam ser reconhecidas em tempo polinomial são resolvidas com soluções exponenciais. 
+A maior parte das mudanças aconteceu para permiti-las alcançar um poder de expressão maior. Entretanto, esta conveniência trouxe o custo de tornar o \emph{match} um problema mais difícil computacionalmente do que a teoria descreve. Na maior parte das linguagens modernas o \emph{match} de \emph{regexes} (como são comumente conhecidas) é um problema NP-completo. Além disso, por particularidades nas implementações, mesmo expressões que poderiam ser reconhecidas em tempo polinomial são resolvidas com soluções exponenciais. 
 
-Este trabalho visa analisar as armadilhas comuns no desenvolvimento de expressões regulares, realizando benchmarks entre diversas implementações populares, apontando funcionalidades que impediriam sua execução polinomial. Também sugere uma implementação simples e didática que tem desempenho em pior caso ordens de grandeza superior às bibliotecas-padrão de muitas linguagens.
+O objetivo neste trabalho é analisar as armadilhas comuns no desenvolvimento de expressões regulares, realizando benchmarks entre diversas implementações populares, apontando funcionalidades que impediriam sua execução polinomial. Também sugere uma implementação simples e didática que tem, no pior caso, desempenho nas ordens de grandeza superior às bibliotecas-padrão de muitas linguagens.
 
 \noindent {Palavras-chave}: Teoria da computação. Expressões regulares. Linguagens regulares. Autômatos finitos. Complexidade computacional. Algoritmos. NP-completo.
 
@@ -203,30 +211,39 @@ Expressões regulares e autômatos finitos compartilham uma relação estreita. 
   \label{fig:exemplo_automato}
 \end{figure}
 
-Desde então, conforme as implementações foram evoluindo, muitas funcionalidades foram adicionadas à linguagem de descrição de expressões regulares que as afastaram da teoria original. Enquanto originalmente descreviam linguagens estritamente regulares, a implementação mais difundida atualmente (\emph{PCRE}) é capaz não só de reconhecer qualquer linguagem livre de contexto, como também algumas sensíveis a contexto. \cite{bib:Nikita12}
+Desde então, conforme as implementações foram evoluindo, muitas funcionalidades foram adicionadas à linguagem de descrição de expressões regulares que as afastaram da teoria original. Enquanto originalmente descreviam linguagens estritamente regulares, a implementação mais difundida atualmente (\emph{PCRE}) é capaz não só de reconhecer qualquer linguagem livre de contexto, como também algumas sensíveis ao contexto. \cite{bib:Nikita12}
 
 Uma das consequências mais notáveis desta evolução não planejada é que o reconhecimento de strings da linguagem, um problema com solução linear originalmente, ganhou soluções exponenciais em um grande número de implementações modernas, que inclui muitas das mais usadas. Talvez a funcionalidade mais perigosa neste sentido sejam as backreferences, que não só impedem soluções polinomiais como tornam o problema de reconhecimento NP-completo. Entretanto, mesmo nas expressões que poderiam ser reconhecidas estritamente com autômatos finitos, certas particularidades de implementação as tornam potencialmente exponenciais, no pior caso \cite{bib:Cox07}.
 
 A figura \ref{fig:benchmark1} mostra o crescimento no tempo de execução entre a implementação da biblioteca padrão da linguagem Python e a implementação proposta neste projeto, usando o método de Thompson. 
 
 \begin{figure}[ht]
-  \centering
-  \includegraphics[scale=0.5]{figures/benchmark1.png}
-  \caption{Avaliação da string $a^n$ contra a expressão $(a|a)+b$ (em escala logarítmica)}
-  \label{fig:benchmark1}
+\centering
+\begin{tikzpicture}
+	\begin{semilogyaxis}[xlabel=n, ylabel=tempo (ns), legend columns=5]
+	\addplot table[x=n,y=pyrex] {benchmark/bench1.txt};
+	\addplot table[x=n,y=python] {benchmark/bench1.txt};
+	\addplot table[x=n,y=ruby] {benchmark/bench1.txt};
+	\addplot table[x=n,y=csharp] {benchmark/bench1.txt};
+	\addplot table[x=n,y=java] {benchmark/bench1.txt};
+	\legend{pyrex, python, ruby, csharp, java}
+	\end{semilogyaxis}
+\end{tikzpicture}
+\caption{Tempo de execução (em escala logarítmica) para match de $a^n$ contra $(a?a)+b$}
+\label{fig:benchmark1}
 \end{figure}
 
 Essas implementações tornam o uso de expressões regulares potencialmente inseguro em situações ora triviais. Um usuário mal intencionado pode ser capaz de forçar a execução de uma expressão com caráter exponencial para efetuar um ataque de negação de serviço em um servidor web, por exemplo. 
 
-Muitas vezes a prevenção para esse tipo de ataque pode não ser trivial, e.g. em Java, onde métodos comumente usados contra a entrada do usuário, como \emph{replaceAll} e \emph{split}, da classe \emph{String} são implementados usado expressões regulares vulneráveis a esse tipo de ataque.
+Muitas vezes a prevenção para esse tipo de ataque pode não ser trivial, e.g. em Java, onde métodos comumente usados contra a entrada do usuário, como \emph{replaceAll} e \emph{split}, da classe \emph{String} são implementados com expressões regulares vulneráveis a esse tipo de ataque.
 
-Mesmo em casos onde o usuário mal intencionado não tem acesso a escrever expressões regulares, um erro de programação pode deixar o sistema vulnerável a negação de serviço. Este problema torna-se especialmente notável pelo frequente compartilhamento em repositórios online, que contém muitas expressões vulneráveis \cite{bib:Kirrage13,bib:Weidman10}. 
+Mesmo em casos onde o usuário mal intencionado não tem acesso à escrita de expressões regulares, um erro de programação pode deixar o sistema vulnerável a negação de serviço. Este problema torna-se especialmente notável pelo frequente compartilhamento em repositórios online, que contém muitas expressões vulneráveis \cite{bib:Kirrage13,bib:Weidman10}. 
 
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 \section{Objetivo}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Este projeto tem dois objetivos principais. O primeiro é demonstrar através de testes pontuais e benchmarks os problemas fundamentais nas implementações de expressões regulares em diversas linguagens modernas, provando inclusive a NP-completude do problema de reconhecimento de strings nas linguagens que definem. O segundo objetivo é propor uma implementação didática e minimalista das expressões regulares propostas por Kleene, utilizando o método descrito por Thompson para construção e simulação do autômato. 
+Este projeto tem dois objetivos principais. O primeiro é demonstrar através de testes pontuais e benchmarks os problemas fundamentais nas implementações de expressões regulares em diversas linguagens modernas, provando inclusive a NP-completude do problema de reconhecimento de strings nas linguagens que definem. O segundo objetivo é alcançar uma implementação didática e minimalista das expressões regulares, abordando as propostas por Kleene e utilizando o método descrito por Thompson para construção e simulação do autômato.
 
 A implementação irá deixar de fora certas funcionalidades comuns nos \emph{sabores} mais modernos de expressão regular. Algumas destas funcionalidades podem ser implementadas sem sacrificar eficiência de execução. Outras, introduzem certa complexidade, porém mantendo a execução do algoritmo polinomial. O restante, entretanto, não é possível implementar sem tornar o algoritmo exponencial no pior caso. Todas as funcionalidades intencionalmente excluídas serão listadas e propostas de soluções serão apresentadas quando cabível.
 
@@ -380,22 +397,22 @@ Onde P é definido por:
 	Tb \rightarrow bb
 \end{equation*}
 
-O fato desta gramática definir sequências de símbolos à esquerda com mais de um símbolo a torna especial. Segundo a hiearquia de Chomsky, a primeira gramática é livre de contexto, enquanto a segunda é sensível a contexto.
+O fato desta gramática definir sequências de símbolos à esquerda com mais de um símbolo a torna especial. Segundo a hiearquia de Chomsky, a primeira gramática é livre de contexto, enquanto a segunda é sensível ao contexto.
 
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 \section{Hierarquia de Chomsky}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Segundo Noam Chomsky \cite{bib:Chomsky57}, uma gramática formal pode ser classificada em um de quatro tipos baseados em sua capacidade expressiva:
+Segundo Noam Chomsky \cite{bib:Chomsky57}, uma gramática formal pode ser classificada em um dos quatro tipos baseados em sua capacidade expressiva:
 
 \begin{itemize}
     \item {\bf Tipo 0}: gramáticas recursivamente enumeráveis (ou irrestritas)
-    \item {\bf Tipo 1}: gramáticas sensíveis a contexto
+    \item {\bf Tipo 1}: gramáticas sensíveis ao contexto
     \item {\bf Tipo 2}: gramáticas livres de contexto
     \item {\bf Tipo 3}: gramáticas regulares
 \end{itemize}
 
-Cada conjunto é propriamente incluso no seu conjunto superior na hierarquia, como pode ser visto na figura~\ref{fig:chomsky}.
+Como pode ser visto no diagrama da figura~\ref{fig:chomsky}, cada conjunto é propriamente incluso no seu conjunto superior na hierarquia. Há entretanto uma ligeira exceção, entre a classe das livres de contexto e das sensíveis ao contexto, na situação de geração de empty.
 
 \begin{figure}[ht]
   \centering
@@ -406,7 +423,7 @@ Cada conjunto é propriamente incluso no seu conjunto superior na hierarquia, co
 
 \subsection{Gramáticas Regulares}
 
-Gramáticas regulares são aquelas cujas regras de formação são na forma $S \rightarrow a$ ou $S \rightarrow aT$, onde \emph{S} e \emph{T} são não-terminais e \emph{a} é um terminal na linguagem. Estas linguagens são equivalentes em poder de expressão a \emph{autômatos finitos}. 
+Gramáticas regulares são aquelas cujas regras de produção são na forma $S \rightarrow a$ ou $S \rightarrow aT$, onde \emph{S} e \emph{T} são não-terminais e \emph{a} é um terminal na linguagem. Estas gramáticas são equivalentes em poder de expressão a \emph{autômatos finitos}. 
 
 Opcionalmente a regra $S \rightarrow aT$ pode ser substituída por $S \rightarrow Ta$, mas nunca as duas podem ocorrer na mesma gramática. Se a primeira ocorre, a gramática é conhecida como \emph{regular à direita}. Caso contrário, é \emph{regular à esquerda}.
 
@@ -416,30 +433,30 @@ Exemplos de linguagens regulares incluem: endereços de email, repetição de ca
 
 \subsection{Gramáticas Livres de Contexto}
 
-Gramáticas livres de contexto são aquelas onde todas as regras de formação são do tipo $S \rightarrow \gamma$, onde \emph{S} é um não-terminal e $\gamma$ é uma sequência composta por terminais e não-terminais. 
+Gramáticas livres de contexto são aquelas onde todas as regras de produção são do tipo $S \rightarrow \gamma$, onde \emph{S} é um não-terminal e $\gamma$ é uma sequência composta por terminais e não-terminais. 
 
-Isto na prática significa que a substituição de um não-terminal é sempre feita independente do contexto onde é encontrado. Linguagens deste tipo são equivalentes em poder expressivo a \emph{autômatos de pilha}. Elas compõem a base teórica para a maioria das linguagens de programação. 
+Isto na prática significa que a substituição de um não-terminal é sempre feita independente do contexto onde é encontrado. Gramáticas deste tipo são equivalentes em poder expressivo a \emph{autômatos de pilha}. Elas compõem a base teórica para a maioria das linguagens de programação. 
 
 Entre alguns exemplos clássicos de linguagens livres de contexto figuram: parênteses aninhados, repetição condicionada de dois caracteres ($a^nb^n$), expressões aritméticas.
 
-\subsection{Gramáticas Sensíveis a Contexto}
-Gramáticas sensíveis a contexto são aquelas onde todas as regras de formação são do tipo $\alpha S\beta\rightarrow \alpha\gamma\beta$, onde $\alpha$, $\gamma$ e $\beta$ são sequências compostas por terminais e não-terminais. Elas diferem das gramáticas livres de contexto por definir -- exatamente -- contexto para que um não-terminal S seja substituído por uma sequência $\gamma$. 
+\subsection{Gramáticas Sensíveis ao Contexto}
+Gramáticas sensíveis ao contexto são aquelas onde todas as regras de produção são do tipo $\alpha S\beta\rightarrow \alpha\gamma\beta$, onde $\alpha$, $\gamma$ e $\beta$ são sequências compostas por terminais e não-terminais. Elas diferem das gramáticas livres de contexto por definir -- exatamente -- contexto para que um não-terminal S seja substituído por uma sequência $\gamma$. 
 
 Apesar de terem um escopo bem mais amplo, gramáticas deste tipo ainda são passíveis de ser computadas usando um \emph{autômato linearmente limitado}. 
 
-Exemplos de liguagens sensíveis a contexto: \emph{squares} (\emph{DogDog, CatCat, WikiWiki...}), \emph{matching triplets} ($a^nb^nc^n$).
+Exemplos de liguagens sensíveis ao contexto: \emph{squares} (\emph{DogDog, CatCat, WikiWiki...}), \emph{matching triplets} ($a^nb^nc^n$).
 
 \subsection{Gramáticas Recursivamente Enumeráveis}
 
-Gramáticas recursivamente enumeráveis não definem restrições para as regras de produção. Portanto, qualquer sequência de terminais e não-terminais $\alpha$ pode ser substituída por outra $\beta$. Gramáticas assim são reconhecíveis por uma \emph{máquina de Turing}. 
+As gramáticas para as linguagens recursivamente enumeráveis não apresentam restrições em suas regras, o que faz com que essas linguagens sejam também chamadas de "sem restrição". Portanto, qualquer sequência de terminais e não-terminais $\alpha$ pode ser substituída por outra $\beta$. Gramáticas assim são reconhecíveis por uma \emph{máquina de Turing}. 
 
 Diferente dos tipos anteriores, quando apresentada a uma sequência que não faça parte da linguagem, não há garantia de parada da máquina, definindo o que é chamado de \emph{conjunto semi-decidível}.
 
-Um dos exemplos mais notáveis de linguagens recursivamente enumeráveis que não são sensíveis a contexto é a sintaxe de templates do C++ \cite{bib:Veldhuizen03}.
+Um dos exemplos mais notáveis de linguagens recursivamente enumeráveis que não são sensíveis ao contexto é a sintaxe de templates do C++ \cite{bib:Veldhuizen03}.
 
 \subsection{Tabela de Referência}
 
-É possível resumir os tipos de gramáticas da hierarquia de Chomsky numa tabela de referência quanto à máquina que a processa e os tipos de regras que aceita.
+É possível resumir os tipos de gramáticas da hierarquia de Chomsky numa tabela de referência quanto à máquina que a reconhece e os tipos de regras da gramática que a gera.
 
 \begin{center}
 	\begin{tabular}{ c | c | c | c }
@@ -447,7 +464,7 @@ Um dos exemplos mais notáveis de linguagens recursivamente enumeráveis que nã
 		\hline 
 		0 & Recursivamente enumerável & Máquina de Turing 			 & 
 			$\alpha \rightarrow \beta$ \\ 
-		1 & Sensível a contexto 		& Autômato limitado linearmente & 
+		1 & Sensível ao contexto 		& Autômato limitado linearmente & 
 			$\alpha S\beta\rightarrow \alpha\gamma\beta$\\ 
 		2 & Livre de contexto 			& Autômato de pilha 			 & 
 			$S \rightarrow \gamma$\\ 
@@ -460,7 +477,7 @@ Um dos exemplos mais notáveis de linguagens recursivamente enumeráveis que nã
 \section{Expressões Regulares}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Expressões regulares são sequências de caracteres que definem linguagens regulares. Estas sequências obedecem a algumas regras de criação. Alguns caracteres são interpretados literalmente, enquanto outros são considerados metacaracteres que controlam como os trechos da expressão se relacionam.
+Expressões regulares são sequências de caracteres que denotam linguagens regulares. Estas sequências obedecem a algumas regras de criação. Alguns caracteres são interpretados literalmente, enquanto outros são considerados metacaracteres que controlam como os trechos da expressão se relacionam.
 
 Por definição:
 
@@ -487,17 +504,21 @@ A precedência natural dos operadores, da mais fraca para a mais forte, é: alte
 
 É possível agrupar sub-expressões utilizando parênteses, tal qual é feito com expressões aritméticas. Assim $a(b|c)d*$ tem um sentido completamente diferente de $ab|cd*$.
 
-Estas operações, apesar de bastante incompletas, definem inequivocamente expressões regulares. É possível representar qualquer linguagem regular utilizando apenas estes operadores. Mais importante: é teoricamente possível reconhecer qualquer símbolo nesta linguagem com apenas uma passagem pela entrada (sem \emph{backtracking}). 
+Estas operações, apesar de bastante incompletas, definem inequivocamente expressões regulares. É possível representar qualquer linguagem regular utilizando apenas estes operadores. Mais importante: é teoricamente possível reconhecer qualquer símbolo desta linguagem com apenas uma passagem pela entrada (sem \emph{backtracking}). 
 
-Representando apenas linguagens regulares, as expressões regulares representam um paradoxo sobre si mesmas: elas não são capazes de representar nem a própria linguagem que as define. O grande culpado disso é a presença dos parênteses agrupadores, tornando esta gramática propriamente pertencente ao conjunto das gramáticas livres de contexto.
+Representando apenas linguagens regulares, as expressões regulares conduzem a um paradoxo sobre si mesmas: elas não são capazes de representar nem a própria linguagem que as define. O grande culpado disso é a presença dos parênteses agrupadores, tornando esta gramática propriamente pertencente ao conjunto das gramáticas livres de contexto.
 
-Novas implementações de expressões regulares adicionaram novos operadores que tornam a sintaxe mais concisa. Porém, essas adições normalmente não alteram o poder expressivo das regexes. No entanto, existem adições que adicionam poder expressivo, como é o caso das \emph{backreferences}, que permitem o reconhecimento de algumas linguagens não-regulares. \emph{Backreferences} consiste em referências \emph{submatches} reconhecias anteriormente.
+Novas implementações de expressões regulares adicionaram novos operadores que tornam a sintaxe mais concisa. Porém, essas adições normalmente não alteram o poder expressivo das regexes, sendo encontradas adições que aumentam o poder expressivo, como é o caso das \emph{backreferences}, que permitem o reconhecimento de algumas linguagens não-regulares. \emph{Backreferences} consistem em referências \emph{submatches} reconhecidas anteriormente.
 
-Por exemplo, uma linguagem composta por palavras repetidas, como \emph{DogDog} ou \emph{CatCat}. É possível definir uma expressão regular $/(.*)\backslash 1/$ que reconhece esta linguagem. o $\backslash 1$ instrui ao motor de reconhecimento a esperar uma nova palavra exatamente igual à obtido pelo reconhecimento do primeiro grupo $(.*)$.
+Pode ser observado o exemplo de uma linguagem composta por palavras repetidas, como \emph{DogDog} ou \emph{CatCat}, para qual é possível definir uma expressão regular $/(.*)\backslash 1/$ que reconhece esta linguagem. $\backslash 1$ instrui o motor de reconhecimento a esperar uma nova palavra exatamente igual à obtida pelo reconhecimento do primeiro grupo $(.*)$.
 
 Esta linguagem não apenas cai fora do conjunto das linguagens regulares, como também não é uma linguagem livre de contexto.
 
-Tal poder expressivo tem seu preço. Match de backreferences é um problema NP-completo, logo, os melhores algoritmos conhecidos ainda tem pior caso exponencial. É possível, porém, escrever algoritmos polinomiais para expressões que não fazem uso de backreferences. No entanto, pela diferente natureza dos dois tipos de algoritmos, normalmente as linguagens implementam apenas um deles, fazendo com que algumas expressões que originalmente poderiam ser avaliadas em tempo polinomial serem penalizadas sem necessidade.
+Tal poder expressivo tem seu preço. Match de backreferences é um problema NP-completo, logo, os melhores algoritmos conhecidos ainda tem pior caso exponencial. É possível, porém, escrever algoritmos polinomiais para expressões que não fazem uso de backreferences.
+
+Para suportar backreferences, a implementação mais comum consiste em backtracking com memória das capturas anteriores, o que impede a utilização de \emph{memoization}, técnica que poderia tornar polinomial a complexidade deste tipo de implementação. Mais detalhes sobre os tipos de implementação são discutidos na seção~\ref{sec:simulacao}, na página~\pageref{sec:simulacao}.
+
+Uma outra solução seria utilizar duas implementações, uma garantidamente polinomial e outra possivelmente exponencial, porém este tipo de solução exige grande esforço de engenharia para manter concordantes os resultados das duas implementações. Talvez por este motivo, a solução mais comum entre as linguagens é implementar somente o backtracking, possivelmente utilizando alguma heurística para otimizar casos mais críticos, mantendo o pior caso exponencial.
 
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 \section{Autômatos Finitos}
@@ -531,7 +552,7 @@ O autômato na figura~\ref{fig:exemplo_automato_numerado} pode ser descrito por 
 		\hline 
 		1 & 2 & 3 &  \\ 
 		\hline 
-		2 &   &   & 2, 4 \\ 
+		2 &   &   & 3, 4 \\ 
 		\hline 
 		3 & 4 &   &  \\ 
 		\hline 
@@ -675,7 +696,7 @@ Por exemplo, o autômato representado pela figura~\ref{fig:exemplo_automato_comp
 As instruções \emph{JUMP} são os que representam o não-determinismo destes autômatos, pois ao serem executadas, podem mudar para qualquer um dos rótulos para os quais apontam. Existem diversas formas de simular a execução desses programas não-determinísticos usando uma máquina de Turing determínistica. E é exatamente neste ponto onde a maior parte das implementações torna-se exponencial desnecessariamente.
 
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-\section{Simulação do Autômato}
+\section{Simulação do Autômato}\label{sec:simulacao}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Simular a execução de um autômato não-determinístico utilizando uma máquina determinística é um problema por si só complicado. Existem potencialmente exponenciais caminhos possíveis num autômato não-determinístico \cite{bib:Rabin59}.
@@ -885,7 +906,7 @@ A simulação é executada pelos métodos \emph{matcher} e \emph{match} da class
 \vspace{0.5cm}
 \begin{lstlisting}[caption={Implementação do método \emph{match}},label=lst:match]
 def match(self, string):
-    return reduce(lambda answer, s: s[0], self.matcher(string), None)
+    return reduce(lambda answer, s: s[1], self.matcher(string), None)
 \end{lstlisting}
 
 O método implementado para a simulação do autômato é a \emph{simulação paralela}. Este método foi escolhido por combinar uma complexidade assintótica polinomial com uma facilidade de implementação razoável.
@@ -1018,7 +1039,42 @@ O código-fonte completo da ferramenta pode ser visto no apêndice~\ref{app:view
 \chapter{Análise dos Resultados}
 %======================================================================================
 
-TBD
+Teste
+
+\begin{figure}[ht]
+\centering
+\begin{tikzpicture}
+	\begin{semilogyaxis}[xlabel=n, ylabel=tempo (ns), legend columns=5]
+	\addplot table[x=n,y=pyrex] {benchmark/bench1.txt};
+	\addplot table[x=n,y=python] {benchmark/bench1.txt};
+	\addplot table[x=n,y=ruby] {benchmark/bench1.txt};
+	\addplot table[x=n,y=csharp] {benchmark/bench1.txt};
+	\addplot table[x=n,y=java] {benchmark/bench1.txt};
+	\legend{pyrex, python, ruby, csharp, java}
+	\end{semilogyaxis}
+\end{tikzpicture}
+\caption{Tempo de execução (em escala logarítmica) para match de $a^n$ contra $(a?a)+b$}
+\label{fig:graph_bench_1}
+\end{figure}
+
+\begin{figure}[ht]
+\centering
+\begin{tikzpicture}
+	\begin{semilogyaxis}[xlabel=n, ylabel=tempo (ns), legend columns=5]
+	\addplot table[x=n,y=pyrex] {benchmark/bench2.txt};
+	\addplot table[x=n,y=python] {benchmark/bench2.txt};
+	\addplot table[x=n,y=ruby] {benchmark/bench2.txt};
+	\addplot table[x=n,y=csharp] {benchmark/bench2.txt};
+	\addplot table[x=n,y=java] {benchmark/bench2.txt};
+	\legend{pyrex, python, ruby, csharp, java}
+	\end{semilogyaxis}
+\end{tikzpicture}
+\caption{Tempo de execução (em escala logarítmica) para match de $a^n$ contra $(a?a)+b$}
+\label{fig:graph_bench_2}
+\end{figure}
+
+
+Teste
 
 %======================================================================================
 \chapter{Conclusão}
@@ -1097,7 +1153,7 @@ class Machine(object):
             return 0
         
         def key(a): return (a[1]-a[0], -a[0]) if a else (0, 0)
-        
+
         answer = None
         for i, c in enumerate(string):
             addnext(i, i, 0)
@@ -1113,7 +1169,7 @@ class Machine(object):
         yield len(string), answer, B
         
     def match(self, string):
-        return reduce(lambda answer, s: s[0], self.matcher(string), None)
+        return reduce(lambda answer, s: s[1], self.matcher(string), None)
      
     def source(self):
         for s in self.states:

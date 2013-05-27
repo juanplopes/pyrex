@@ -1,0 +1,6 @@
+#!/bin/bash
+
+javac java_source.java
+java java_source
+rm java_source.class    
+
