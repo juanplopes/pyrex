@@ -524,13 +524,13 @@ Uma outra solução seria utilizar duas implementações, uma garantidamente pol
 \section{Autômatos Finitos}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Autômatos finitos representam um modelo matemático de computação. Eles representam máquinas abstratas que podem se encontram em apenas um de um número finito de estados. Autômatos não possuem memória. Mas apenas estritamente falando, pois o estado atual do autômato representa sua memória. Um autômato muda de estado como reação a um estímulo externo. Formalmente, autômatos finitos são uma tupla $M = (Q, \Sigma, q_0, \delta, A)$, onde:
+Autômatos finitos representam um modelo matemático de computação. Eles representam máquinas abstratas constituídas de um número finito de estados. Formalmente, autômatos finitos são uma tupla $M = (Q, \Sigma, q_0, \delta, A)$, onde:
 
 \begin{itemize}
     \item Q é o conjunto de estados do autômato. Sempre finito.
-    \item $\Sigma$ é o alfabeto aceito pelo autômato.
+    \item $\Sigma$ é o alfabeto da linguagem reconhecida pelo autômato
     \item $q_0$ é o estado inicial do autômato. $q_0 \in Q$.
-    \item $\delta$ é a função de transição, que mapeia cada $(q_i, a) \in Q \times \Sigma$ a um subconjunto de Q. Se esse subconjunto tem apenas zero ou um elementos, o autômato é \emph{deterministico}, caso contrário, ele é \emph{não-determinístico}.
+    \item $\delta$ é a função de transição, que mapeia cada $(q_i, a) \in Q \times \Sigma$ a um subconjunto de Q. Se esse subconjunto tem apenas zero ou um elementos, o autômato é \emph{deterministico}, caso contrário, ele é \emph{não-determinístico}. Cabe notar que para cada autômato não-determinístico, há um autômato determinístico equivalente \cite{bib:Rabin59}.
     \item A é o conjunto de estados de aceite. $A \subseteq Q$.
 \end{itemize}
 
@@ -560,9 +560,9 @@ O autômato na figura~\ref{fig:exemplo_automato_numerado} pode ser descrito por 
 	\end{tabular}
 \end{center}
 
-Este autômato é \emph{não determinístico}, pois um mesmo input (c) pode gerar múltiplas transições no estado 2. 
+Este autômato é \emph{não determinístico}, pois se a máquina reconhecedora estiver no  estado 2 e for lido o símbolo $c$, esse par de parâmetros (estado, entrada) causam na função de transição um resultado com dois estados alternativos, o 3 ou o 4, caracterizando um indeterminismo.
 
-Outra forma de representar autômatos não determínisticos é introduzindo a entrada $\epsilon$, como pode ser visto na figura~\ref{fig:exemplo_automato_epsilon}. Perceba que este autômato \emph{não é equivalente} ao definido anteriormente. Ele aceita uma entrada $b$ que o primeiro não aceita.
+Autômatos finitos não-determinísticos também aceitam um tipo de entrada especial $\epsilon$, que não consome caracteres da entrada, como pode ser visto na figura~\ref{fig:exemplo_automato_epsilon}. Perceba que este autômato \emph{não é equivalente} ao definido anteriormente. Ele aceita uma palavra $b$ que o primeiro não aceita.
 
 \begin{figure}[ht]
   \centering
@@ -572,7 +572,7 @@ Outra forma de representar autômatos não determínisticos é introduzindo a en
 \end{figure}
 
 
-Autômatos podem ser utilizados para reconhecer linguagens regulares. É possível construir um autômato que, dada uma linguagem, termina em estados de aceite somente se a palavra fizer parte da linguagem representada.
+Autômatos finitos podem ser utilizados para reconhecer linguagens regulares. É possível construir um autômato que, dada uma linguagem, termina em estados de aceite somente se a palavra fizer parte da linguagem representada.
 
 O autômato descrito na figura~\ref{fig:exemplo_automato_epsilon}, por exemplo, reconhece uma linguagem finita definida por $L = \{ac, aca, b, ba\}$. A linguagem que um autômato finito reconhece é \emph{sempre regular}. E \emph{toda linguagem regular} pode ser reconhecida com autômatos finitos \cite{bib:Kleene56}.
 
@@ -580,7 +580,7 @@ O autômato descrito na figura~\ref{fig:exemplo_automato_epsilon}, por exemplo, 
 \section{Método de Construção de Thompson}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Pela equivalência entre linguagens regulares e autômatos finitos. É útil poder converter entre um e outro pela facilidade de lidar com cada um deles em situações específicas. Ken Thompson \cite{bib:Thompson68} descreveu um método para construir autômatos a partir de expressões regulares.
+Pela sinergia entre expressões regulares e autômatos finitos. É útil poder converter entre um e outro pela facilidade de lidar com cada um deles em situações específicas. Ken Thompson \cite{bib:Thompson68} descreveu um método para construir autômatos a partir de expressões regulares.
 
 Na época em que foi escrito, o artigo descrevia como gerar código de máquina para um IBM 7094. Isto era necessário por restrições de hardware da época. Hoje não é mais estritamente necessário. Este trabalho irá se limitar a descrever como construir o autômato a partir da expressão regular.
 
@@ -590,7 +590,7 @@ O método consite em construir o autômato recursivamente através da análise d
 
 O primeiro passo para a construção do autômato é analisar sintaticamente a expressão, construindo a árvore sintática. 
 
-Podemos definir uma EBNF simples que representa a linguagem formada pelas expressões regulares.
+Podemos definir uma gramática gerativa simples pela notação EBNF (\emph{Extended Backus–Naur Form}) que representa a linguagem formada pelas expressões regulares.
 
 \begin{verbatim}
 <option>     ::= <sequence> { "|" <sequence> }*
@@ -599,7 +599,7 @@ Podemos definir uma EBNF simples que representa a linguagem formada pelas expres
 <primary>    ::= "." | <literal> | "(" <option> ")"
 \end{verbatim}
 
-Assim, podemos fazer parse da expressão facilmente. A expressão $(a|a)+b$, por exemplo, seria avaliada como a árvore descrita na figura~\ref{fig:aab_parse_tree}.
+Assim, a expressão pode ser facilmente analisada. Por exemplo, a expressão $(a|a)+b$ seria avaliada como a árvore descrita na figura~\ref{fig:aab_parse_tree}.
 
 \begin{figure}[ht]
   \centering
@@ -608,20 +608,18 @@ Assim, podemos fazer parse da expressão facilmente. A expressão $(a|a)+b$, por
   \label{fig:aab_parse_tree}
 \end{figure}
 
-Utilizando a EBNF, esta árvore pode ser produzida por diversos tipos de ferramentas presentes em várias linguagens. Exemplos notáveis incluem o YACC (\emph{Yet Another Compiler Compiler}) e o JAVACC (\emph{Java Compiler Compiler}).
+Utilizando a EBNF, esta árvore pode ser produzida por diversos tipos de ferramentas geradoras de compiladores presentes em várias linguagens. Exemplos notáveis incluem o YACC (\emph{Yet Another Compiler Compiler}), o JAVACC (\emph{Java Compiler Compiler}) e o ANTLR (\emph{ANother Tool for Language Recognition}).
 
 Com esta árvore de avaliação é possível fazer a conversão para o autômato de forma bastante trivial, como será discutido nas próximas seções.
 
 \subsection{Notação}
 \label{sec:Notacao}
 
-Iremos assumir uma notação diferente para representação do autômato, que irá facilitar a construção. Para fins de praticidade, todo estado $q_i \in Q$ será de um entre três tipos possíveis:
-
-\begin{itemize}
-    \item Um estado de \emph{consumo}, que possui exatamente uma transição possível dada por um caractere $a \in \Sigma$.
-    \item Um estado de \emph{decisão}, que possui uma ou duas transições $\epsilon$ para estados distintos.
-    \item Um estado de \emph{aceite}, que não possui qualquer transição.
-\end{itemize}
+\begin{enumerate}
+    \item Estado de \emph{consumo},  com apenas uma transição $(a \in \Sigma, S \in N)$.
+    \item Estado de \emph{decisão}, com uma transição $\epsilon$ para um estado ou duas transições $\epsilon$ para estados distintos.
+    \item Estado de aceite, com nenhuma transição
+\end{enumerate}
 
 A figura~\ref{fig:nova_notacao} mostra como podem ser representados os estados desta nova notação no diagrama de estados.
 
@@ -749,7 +747,7 @@ A conversão entre os dois se dá através do algoritmo conhecido como \emph{Rab
 
 Uma forma de simular a execução de autômatos é, sempre que confrontado com uma decisão, escolher as duas simultaneamente, e manter fluxos paralelos sendo executados. 
 
-Inicialmente, pode parecer que esta solução pode levar a um conjunto de até $2^n$ fluxos executando simultaneamente, porém, como um autômato tem um número finito de estados, existem no máximo $m$ fluxos simultâneos para cada caractere. Eventualmente, múltiplas decisões podem colidir num mesmo estado, eliminando assim o caráter exponencial da avaliação. Assim, para uma entrada com n caracteres avaliada contra um autômato de m estados, no pior caso, a complexidade de tempo é de $O(n \times m)$.
+Inicialmente, pode parecer que esta solução leve a um conjunto de até $2^n$ fluxos executando simultaneamente, porém, como um autômato tem um número finito de estados, existem no máximo $m$ fluxos simultâneos para cada caractere. Eventualmente, múltiplas decisões podem colidir num mesmo estado, eliminando assim o caráter exponencial da avaliação. Assim, para uma entrada com n caracteres avaliada contra um autômato de m estados, no pior caso, a complexidade de tempo é de $O(n \times m)$.
 
 O objetivo é que durante a execução, seja lido um caractere por vez. Então, antes de cada execução é preciso avaliar todas as transições $\epsilon$ e deixar todos os fluxos em espera posicionados em estados do tipo \emph{consumo}.
 
@@ -786,11 +784,11 @@ Neste capítulo será apresentada a implementação da biblioteca \emph{PyRex} (
 
 \section{Considerações Iniciais}
 
-Este projeto visava alcançar uma implementação completamente polinomial para expressões regulares. Alcançado o primeiro objetivo, o foco da implementação foi a simplicidade. Foram evitados truques de implementação que a tornassem mais rápida em detrimento da legibilidade. Todas as escolhas foram para reduzir a complexidade da implementação. Mesmo assim, o algoritmo utilizado foi eficiente o bastante para comprovar o ponto deste trabalho.
+Este projeto visava alcançar uma implementação completamente polinomial para expressões regulares. Alcançado o primeiro objetivo, o foco da implementação foi a simplicidade. Foram evitados truques de implementação que a tornassem mais rápida em detrimento da legibilidade. Todas as escolhas foram para reduzir a complexidade da implementação. Mesmo assim, o algoritmo utilizado foi eficiente o bastante para atingir o objetivo deste trabalho.
 
-A linguagem escolhida para implementar o projeto foi Python. É uma linguagem de máquina virtual, tal qual o Java. Entretanto, sua máquina virtual não tem as otimizações em tempo de execução que as implementações mais famosas de Java tem. Além disso, sua resolução dinâmica de tipos a faz ter uma performance inferior a outra linguagens com resolução estática de tipos. 
+A linguagem escolhida para implementar o projeto foi Python. É uma linguagem de máquina virtual, tal qual o Java. Entretanto, sua máquina virtual não tem as otimizações em tempo de execução que as implementações mais famosas de Java tem. Além disso, sua resolução dinâmica de tipos a faz ter uma performance inferior À de outras linguagens com resolução estática de tipos. 
 
-Mesmo assim, pela reduzida quantidade de caracteres especiais em sua sintaxe, os programas escritos nela são em geral mais legíveis e simples. Por isso, toda a implementação do PyRex tem menos de 90 linhas de código (contando as em branco) e menos de 3KiB. Esta implementação abrange desde o parse da expressão regular até a simulação do autômato retornando inclusive a região do match da expressão regular.
+Mesmo assim, pela reduzida quantidade de caracteres especiais em sua sintaxe, os programas escritos nela são em geral mais legíveis e simples. Por isso, toda a implementação do PyRex tem menos de 90 linhas de código (contando as em branco) e menos de 3KB. Esta implementação abrange desde o parse da expressão regular até a simulação do autômato retornando inclusive a região do match da expressão regular.
 
 O projeto foi implementado utilizando apenas as bibliotecas padrão disponíveis no Python 2.7, porém ele também funciona no Python 3.0 e superiores.
 
@@ -845,7 +843,7 @@ def sequence():
     return e
 \end{lstlisting}
 
-A implementação é bastante simplista, usa uma instância da classe \emph{deque} como buffer de tokens e chamadas recursivas para implementar as regras. Para cada uma das quatro regras defindas pela BNF, há um método aninhado em \emph{rex} para representá-la.
+A implementação é bem simples, usa uma instância da classe \emph{deque} como buffer de tokens e chamadas recursivas para implementar as regras. Para cada uma das quatro regras defindas pela BNF, há um método aninhado em \emph{rex} para representá-la.
 
 O tratamento de erros é simples porém eficiente. Sempre que um caractere não esperado é encontrado na entrada, ele é reportado. Um dos mecanismos pode ser observado no código principal do parser (listagem~\ref{lst:main_parser}), onde após consumir todos os caracteres possíveis, se ainda existir remanescentes na entrada, uma exceção é lançada.
 
