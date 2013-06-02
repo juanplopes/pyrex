@@ -1,9 +1,6 @@
 #!/usr/bin/env ruby
 
 r = Regexp.new(readline.strip)
-r.match('warm up')
-
-puts 'ruby'
 
 while true
     starttime = Time.now

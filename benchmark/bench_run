@@ -1,0 +1,40 @@
+#!/bin/bash
+
+if [ $# -lt 2 ]; then
+    echo 'bench <input> <output>'
+    echo 'e.g.: bench input1.txt bench1.txt'
+    exit 0
+fi
+
+function average { 
+    while read -a line ; do
+        sum=0
+        for ((i=0; i<${#line[@]}; i++)) ; do
+            let sum+=line[i]
+        done;
+        echo $(bc -l <<< "$sum/$i")
+    done
+}
+
+RUNNERS=('pyrex' 'python' 'ruby' 'csharp' 'java')
+
+for runner in "${RUNNERS[@]}"
+do
+    echo "Running ${runner}... "
+    truncate result_${runner}.txt -s 0
+
+    for i in $(seq 1 32); 
+    do 
+        echo "    execution #$i"
+        mv result_${runner}.txt result_${runner}.tmp
+        "./bench_${runner}" < $1 | paste result_${runner}.tmp - > result_${runner}.txt
+        rm result_${runner}.tmp
+    done    
+
+    mv $2 $2.tmp
+    cat result_${runner}.txt | (echo ${runner}; average) | paste $2.tmp - > $2
+
+    rm result_${runner}.txt
+    rm $2.tmp
+done
+

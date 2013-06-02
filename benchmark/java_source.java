@@ -7,9 +7,7 @@ public class java_source {
     public static void main(String... args) throws IOException {
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         Pattern pattern = Pattern.compile(reader.readLine());
-        pattern.matcher("warm up").matches();
         String input;
-        System.out.println("java");
         while ((input = reader.readLine()) != null) {
             long start = System.nanoTime();
             pattern.matcher(input).matches();

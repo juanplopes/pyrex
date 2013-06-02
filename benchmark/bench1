@@ -7,14 +7,8 @@ for i in $(seq 1 30);
 do 
     eval printf 'a%0.s' {1..$i} >> input1.txt
     echo >> input1.txt
-done
-
-for i in $(seq 1 38); 
-do 
-    eval printf 'a%0.s' {1..$i} >> input1.txt
-    echo >> input1.txt
     echo $i >> bench1.txt
 done
 
-./bench input1.txt bench1.txt '1p;32,1000p'
+./bench_run input1.txt bench1.txt
 rm input1.txt

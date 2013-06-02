@@ -3,18 +3,12 @@
 echo 'a*b' > input2.txt
 echo 'n' > bench2.txt
 
-for i in $(seq 1 30); 
-do 
-    eval printf 'a%0.s' {1..$i} >> input2.txt
-    echo >> input2.txt
-done
-
-for i in $(seq 1 20 1000); 
+for i in $(seq 1 5 500); 
 do 
     eval printf 'a%0.s' {1..$i} >> input2.txt
     echo >> input2.txt
     echo $i >> bench2.txt
 done
 
-./bench input2.txt bench2.txt '1p;32,1000p'
+./bench_run input2.txt bench2.txt
 rm input2.txt

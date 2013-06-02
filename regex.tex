@@ -3,7 +3,7 @@
 \usepackage[brazil]{babel}  % adequacao para o portugues Brasil
 \usepackage{cmap}           % Mapear caracteres especiais no PDF
 \usepackage[utf8]{inputenc} % Determina a codificacao utiizada
-                        
+
 \usepackage{array}
                       
 \usepackage{pgfplots}
@@ -38,11 +38,12 @@
 
 \orientador{Prof.} % rotulo
            {Paulo Eustáquio Duarte}{Pinto} % {nome}{sobrenome}
-           {} % afiliacao
+           {IME/DICC/UERJ} % afiliacao
 
+\renewcommand{\coorientadornome}{Coorientadora}
 \coorientador{Profª.} % rotulo
            {Maria Alice Silveira de}{Brito} % {nome}{sobrenome}
-           {} % afiliacao
+           {IME/DICC/UERJ} % afiliacao
 
 
 \grau{Bacharel}
@@ -253,16 +254,22 @@ Deseja-se mostrar com esse projeto que o problema de reconhecimento de expressõ
 \section{Estrutura}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-O projeto está divido em cinco capítulos. O capítulo 2 trata da base teórica por trás das expressões regulares, contando sua história, passando pelo método de construção do autômato de Thompson, e exibindo um algoritmo trivial (porém ineficiente) para sua solução.
+O projeto está divido em cinco capítulos. Cada um dos próximos capítulos está descrito abaixo.
 
-O capítulo 3 descreve a implementação sugerida por este trabalho, discutindo certos aspectos específicos desta implementação que não tenham sido abordados na parte de teoria. 
+\begin{description}
 
-O capítulo 4 aborda as diferenças entre as implementações modernas e a implementação proposta neste trabalho. Começa descrevendo o poder das implementações modernas de expressão regular, mostrando recursos avançados, como \emph{zero-width assertions} e \emph{backreferences}. Prova a NP-completude do \emph{match} nestas implementações. Mostra também exemplos de expressões que reconhecem gramáticas não-regulares, exibindo o distanciamento entre estas e a teoria original. Por fim, é mostrado um benchmark comparando as diversas implementações, que evidenciam uma diferença fundamental na forma como o problema é abordado em cada uma delas.
+\item[Capitulo 2 -- Fundamentação Teórica:] base teórica por trás das expressões regulares, contando sua história, passando pelo método de construção do autômato de Thompson, e exibindo um algoritmo trivial (porém ineficiente) para sua solução.
 
-O capítulo 5 expõe as conclusões e contribuições deste trabalho, bem como as dificuldades encontradas durante o projeto. Também serão listadas e descritas as funcionalidades não implementadas, possivelmente sugerindo formas eficientes de implementá-las, ou mesmo formas diferentes de simular o autômato que melhorem a eficiência geral da execução.
+\item[Capitulo 3 -- Implementação:] implementação sugerida por este trabalho, discutindo certos aspectos específicos desta implementação que não tenham sido abordados na parte de teoria. 
+
+\item[Capitulo 4 -- Análise dos Resultados:] diferenças entre as implementações modernas e a implementação proposta neste trabalho. Começa descrevendo o poder das implementações modernas de expressão regular, mostrando recursos avançados, como \emph{zero-width assertions} e \emph{backreferences}. Prova a NP-completude do \emph{match} nestas implementações. Mostra também exemplos de expressões que reconhecem gramáticas não-regulares, exibindo o distanciamento entre estas e a teoria original. Por fim, é mostrado um benchmark comparando as diversas implementações, que evidenciam uma diferença fundamental na forma como o problema é abordado em cada uma delas. 
+
+\item[Capitulo 5 -- Conclusão:] descrição das contribuições deste trabalho, bem como as dificuldades encontradas durante o projeto. Também serão listadas e descritas as funcionalidades não implementadas, possivelmente sugerindo formas eficientes de implementá-las, ou mesmo formas diferentes de simular o autômato que melhorem a eficiência geral da execução. 
+
+\end{description}
 
 %======================================================================================
-\chapter{Fundamentação Teórica}
+\chapter{Fundamentação Teórica}\label{cap:theory}
 %======================================================================================
 
 Neste capítulo será introduzida um pouco da base teórica que guiou a implementação deste projeto.
@@ -405,12 +412,12 @@ O fato desta gramática definir sequências de símbolos à esquerda com mais de
 
 Segundo Noam Chomsky \cite{bib:Chomsky57}, uma gramática formal pode ser classificada em um dos quatro tipos baseados em sua capacidade expressiva:
 
-\begin{itemize}
-    \item {\bf Tipo 0}: gramáticas recursivamente enumeráveis (ou irrestritas)
-    \item {\bf Tipo 1}: gramáticas sensíveis ao contexto
-    \item {\bf Tipo 2}: gramáticas livres de contexto
-    \item {\bf Tipo 3}: gramáticas regulares
-\end{itemize}
+\begin{description}
+    \item[Tipo 0:] gramáticas recursivamente enumeráveis (ou irrestritas)
+    \item[Tipo 1:] gramáticas sensíveis ao contexto
+    \item[Tipo 2:] gramáticas livres de contexto
+    \item[Tipo 3:] gramáticas regulares
+\end{description}
 
 Como pode ser visto no diagrama da figura~\ref{fig:chomsky}, cada conjunto é propriamente incluso no seu conjunto superior na hierarquia. Há entretanto uma ligeira exceção, entre a classe das livres de contexto e das sensíveis ao contexto, na situação de geração de empty.
 
@@ -818,7 +825,16 @@ O parser é responsável por receber uma string com a expressão regular, analis
 
 O matcher contém informações do autômato gerado e contém funções que sabem simular a execução do autômato. Ele é implementado como uma classe Python com um método \emph{match}, além da sobrecarga do operador \emph{\_\_repr\_\_} do Python, que provê uma visualização útil do objeto em tempo de debugging.
 
-O parser é implementado pela função \emph{rex}. E o matcher pela classe \emph{Machine}.
+O uso desta biblioteca se dá pela compilação do autômato usando a função \emph{rex} e a posterior avaliação de strings usando o método \emph{match} da classe \emph{Machine}. Um exemplo de uso pode ser visto na listagem~\ref{lst:usage_example}.
+
+\vspace{0.5cm}
+\begin{lstlisting}[caption={Exemplo de uso da biblioteca PyRex},label=lst:usage_example]
+import pyrex
+machine = pyrex.rex('a(ab)+')
+print machine.match('aabab')
+\end{lstlisting}
+
+O retorno da chamada da função match pode ser tanto uma tupla com dois elementos (índices de início e final do match) ou uma referência nula (\emph{None} em Python). No exemplo da listagem~\ref{lst:usage_example}, o retorno seria uma tupla $(0, 5)$, indicando que o match começa no índice 0 da string e termina no índice 4. Perceba que o índice final é tomado exclusivamente.
 
 
 \section{Análise sintática}
@@ -845,7 +861,7 @@ def sequence():
 
 A implementação é bem simples, usa uma instância da classe \emph{deque} como buffer de tokens e chamadas recursivas para implementar as regras. Para cada uma das quatro regras defindas pela BNF, há um método aninhado em \emph{rex} para representá-la.
 
-O tratamento de erros é simples porém eficiente. Sempre que um caractere não esperado é encontrado na entrada, ele é reportado. Um dos mecanismos pode ser observado no código principal do parser (listagem~\ref{lst:main_parser}), onde após consumir todos os caracteres possíveis, se ainda existir remanescentes na entrada, uma exceção é lançada.
+O tratamento de erros é simples porém eficiente. Sempre que um caractere não esperado é encontrado na entrada, ele é reportado. Um dos mecanismos pode ser observado no código principal do parser (listagem~\ref{lst:main_parser}), onde após consumir todos os caracteres possíveis, se ainda existirem remanescentes na entrada, uma exceção é lançada.
 
 \vspace{0.5cm}
 \begin{lstlisting}[caption={Exemplo de tratamento de erros no parser},label=lst:main_parser]
@@ -919,7 +935,9 @@ Cada estado nestas listas vem acompanhado da posição na string original onde o
 
 É importante ressaltar que um mesmo estado nunca entra na lista B duas vezes no mesmo ciclo de consumo. Esta verificação é efetuada pelo array V, que controla o índice do último caractere onde cada estado entrou na lista de estados. Inicialmente, esta lista está preenchida com valores -1.
 
-Como apenas estados de consumo entram nas listas de estados para participar do ciclo de consumo (por razões óbvias), é preciso avaliar todos os estados de decisão antes do início do ciclo de consumo. A listagem \ref{lst:addnext} mostra a implementação do método \emph{addnext} que adiciona estados à próxima lista de consumo (B), resolvendo recursivamente estados de decisão em seus respectivos próximos estados de consumo. Este método também retorna o número de vezes que o estado de aceite foi alcançado.
+Como apenas estados de consumo entram nas listas de estados para participar do ciclo de consumo (por razões óbvias), é preciso avaliar todos os estados de decisão antes do início do ciclo de consumo. 
+
+A listagem \ref{lst:addnext} mostra a implementação do método \emph{addnext} que adiciona estados à próxima lista de consumo (B), resolvendo recursivamente estados de decisão em seus respectivos próximos estados de consumo. Este método também retorna o número de vezes que o estado de aceite foi alcançado.
 
 \vspace{0.5cm}
 \begin{lstlisting}[caption={Implementação do método \emph{addnext}},label=lst:addnext]
@@ -971,10 +989,17 @@ Valendo-se da implementação do método \emph{matcher} foi possível construir 
 É possível chamar o visualizador com o comando \emph{./view.py (regex) (input)}, e.g.:
 
 \begin{verbatim}
-./view a+b+c+ aabbbcccc
+./view.py a+b+c+ aabbbcccc
 \end{verbatim}
 
-No exemplo, a execução do programa iria mostrar os passos do match desta expressão regular. Alguns passos da execução podem ser vistos nas figuras~\ref{fig:exemplo_view_passo_3} e \ref{fig:exemplo_view_passo_6}.
+No exemplo, a execução do programa iria mostrar os passos do match desta expressão regular. O autômato gerado pode ser visualizado na fitgura~\ref{fig:view_automaton}. Alguns passos da execução podem ser vistos nas figuras~\ref{fig:exemplo_view_passo_3} e \ref{fig:exemplo_view_passo_6}.
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[scale=0.35]{figures/view_automaton.png}
+  \caption{Autômato para expressão $a+b+c+$}
+  \label{fig:view_automaton}
+\end{figure}
 
 \begin{figure}[ht]
   \centering
@@ -1002,6 +1027,7 @@ Esta forma de exibir mostra o estado atual de todos os fluxos executando pelo au
 \item{O que continua lendo caracteres b da entrada, enquanto houver. (0)}
 \item{O que está pronto para ler caracteres c, quando começarem. (0)}
 \end{itemize}
+
 
 \begin{figure}[ht]
   \centering
@@ -1037,7 +1063,25 @@ O código-fonte completo da ferramenta pode ser visto no apêndice~\ref{app:view
 \chapter{Análise dos Resultados}
 %======================================================================================
 
-Teste
+Neste capítulo serão abordadas as principais diferenças entre a implementação proposta neste trabalho em comparação com outras implementações populares.
+
+\section{Retorno do Método \emph{match}}
+
+O problema de reconhecer palavras usando expressões regulares é uma problema de \emph{decisão}. Isto significa que ele aceita apenas uma entre duas respostas: \emph{sim} ou \emph{não}. Entretanto, provou-se útil ao longo do tempo não só reconhecer palavras em linguagens regulares, mas também qualquer sub-palavra pertencente a ela, retornando, então, a localização na palavra original.
+
+Uma expressão regular $abcd$ retornaria um match válido numa palavra $zzabcdzz$. Este comportamento permite que múltiplas soluções sejam válidas. Por exemplo, a mesma expressão poderia encontrar dois resultados diferentes na palavra $abcdabcd$. Muitos resultados poderiam se sobrepor, inclusive. A expressão $a*$, ao avaliar a palavra $aaaa$ pode levar a 10 resultados diferentes. A implementação utilizada influencia bastante na escolha de qual dos resultados deve ser retornado.
+
+A implementação proposta neste projeto sempre favorece as respostas mais longas. Em caso de empate, é favorecida a resposta que inicie mais à esquerda na entrada. Este comportamento é garantido pela função \emph{key}, representada na listagem~\ref{lst:matcher} na página~\pageref{lst:matcher}.
+
+Este comportamento é coerente com o artigo original de Thompson e, consequentemente, com as implementações de ferramentas como \emph{sed} e \emph{grep} do sistema operacional Unix. Por outro lado, diverge de outras implementações usuais baseadas na do Perl, que geralmente retornam a primeira resposta encontrada seguindo uma ordem gulosa de avaliação \cite{bib:Cox07}.
+
+Uma forma fácil de verificar esta diferença é comparar o match da expressão $a*(b|abc)$ contra a string $abc$. A implementação padrão do Python retornaria a string $ab$. A implementação neste projeto encontrará a string $abc$. A diferença é que a primeira tenta avaliar o máximo que pode na repetição $a*$, enquanto a segunda consegue visualizar globalmente os matches possíveis.
+
+\section{Match de backreferences: um problema NP-completo}
+
+Durante o capítulo~\ref{cap:theory} foram demonstradas diversas formas de simular o autômato construído a partir da expressão regular. Cada uma delas tem características particulares de complexidade de tempo e espaço, além de dificuldades de implementação diversas.
+
+A implementação
 
 \begin{figure}[ht]
 \centering
@@ -1067,12 +1111,9 @@ Teste
 	\legend{pyrex, python, ruby, csharp, java}
 	\end{semilogyaxis}
 \end{tikzpicture}
-\caption{Tempo de execução (em escala logarítmica) para match de $a^n$ contra $(a?a)+b$}
+\caption{Tempo de execução (em escala logarítmica) para match de $a^n$ contra $a*$}
 \label{fig:graph_bench_2}
 \end{figure}
-
-
-Teste
 
 %======================================================================================
 \chapter{Conclusão}
@@ -1217,97 +1258,7 @@ if __name__ == '__main__':
     print()
     simulate(pyrex.rex(sys.argv[1]), sys.argv[2])
 \end{lstlisting}
-
-%======================================================================================
-\postextualchapter{Benchmark em Python: re, pyrex}
-%======================================================================================
-
-\section{Tabela de Tempos (em microsegundos)}
-
-\begin{center}
-	\vline
-	\begin{tabular}{ c || c | c }
-		{\bf n} & {\bf re} & {\bf pyrex} \\
-		\hline 
-		1 & 5 & 20  \\ 
-		2 & 4 & 23 \\ 
-		3 & 3 & 27 \\ 
-		4 & 3 & 33 \\ 
-		5 & 3 & 39 \\ 
-		6 & 4 & 44 \\ 
-		7 & 6 & 50 \\ 
-		8 & 6 & 55 \\ 
-		9 & 9 & 61 \\ 
-		10 & 13 & 67 \\ 
-		11 & 22 & 73 \\ 
-		12 & 33 & 79 \\ 
-		13 & 55 & 91 \\ 
-		14 & 84 & 95 \\ 
-		15 & 133 & 100 \\ 
-		16 & 221 & 103 \\ 
-		17 & 353 & 108 \\ 
-		18 & 566 & 114 \\ 
-		19 & 927 & 121 \\ 
-		20 & 1486 & 129 \\ 
-	\end{tabular}
-	\vline
-	\quad
-	\vline
-	\begin{tabular}{ c || c | c }
-		{\bf n} & {\bf re} & {\bf pyrex} \\
-		\hline 
-		21 & 2409 & 136 \\ 
-		22 & 3875 & 142 \\ 
-		23 & 6438 & 159 \\ 
-		24 & 10251 & 153 \\ 
-		25 & 17418 & 178 \\ 
-		26 & 26590 & 177 \\ 
-		27 & 42723 & 189 \\ 
-		28 & 68890 & 190 \\ 
-		29 & 111910 & 198 \\ 
-		30 & 181338 & 201 \\ 
-		31 & 296340 & 212 \\ 
-		32 & 478507 & 219 \\ 
-		33 & 763335 & 222 \\ 
-		34 & 1259066 & 228 \\ 
-		35 & 1937591 & 232 \\ 
-		36 & 3136469 & 240 \\ 
-		37 & 5078676 & 246 \\ 
-		38 & 8261930 & 250 \\ 
-		39 & 13229837 & 256 \\ 
-		40 & 21334059 & 262 \\
-	\end{tabular}
-	\vline
-\end{center}
-
-\newpage
-\section{Gráfico}
-
-\begin{figure}[ht]
-  \centering
-  \includegraphics[scale=0.5]{figures/benchmark1.png}
-\end{figure}
-
-\section{Código fonte}
-
-\begin{lstlisting}[language=python]
-import re, pyrex
-
-from timeit import timeit
-
-r1 = re.compile('(a?a)+b')
-r2 = pyrex.rex('(a?a)+b')
-
-def time(r, i):
-    return timeit(lambda: r.match('a'*i), number=1)*1e6
-
-for i in xrange(1, 41):
-    print '{}\t{:8.0f}\t{:8.0f}'.format(
-        i, time(r1, i), time(r2, i))
-\end{lstlisting}
-
-     
-   
+  
 
 \bibliography{bibliografia}
 
