@@ -10,5 +10,5 @@ do
     echo $i >> bench2.txt
 done
 
-./bench_run input2.txt bench2.txt
+./bench_run input2.txt bench2.txt 30
 rm input2.txt

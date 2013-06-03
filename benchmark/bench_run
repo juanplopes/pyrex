@@ -1,8 +1,8 @@
 #!/bin/bash
 
-if [ $# -lt 2 ]; then
-    echo 'bench <input> <output>'
-    echo 'e.g.: bench input1.txt bench1.txt'
+if [ $# -lt 3 ]; then
+    echo 'bench <input> <output> <runs>'
+    echo 'e.g.: bench input1.txt bench1.txt 20'
     exit 0
 fi
 
@@ -23,7 +23,7 @@ do
     echo "Running ${runner}... "
     truncate result_${runner}.txt -s 0
 
-    for i in $(seq 1 10); 
+    for i in $(seq 1 $3); 
     do 
         echo "    execution #$i"
         mv result_${runner}.txt result_${runner}.tmp

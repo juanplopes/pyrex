@@ -1113,15 +1113,15 @@ Uma forma fácil de verificar esta diferença é comparar o match da expressão 
 \begin{figure}[ht]
 \centering
 \begin{tikzpicture}
-	\begin{semilogyaxis}[xlabel=n, ylabel=tempo (s), legend columns=5, cycle list name=black white]
+	\begin{axis}[xlabel=n, ylabel=tempo (s), legend columns=5, cycle list name=black white]
 	\addplot table[x=n,y=pyrex] {benchmark/bench2.txt};
 	\addplot table[x=n,y=python] {benchmark/bench2.txt};
 	\addplot table[x=n,y=ruby] {benchmark/bench2.txt};
 	\addplot table[x=n,y=java] {benchmark/bench2.txt};
 	\legend{pyrex, python, ruby, java}
-	\end{semilogyaxis}
+	\end{axis}
 \end{tikzpicture}
-\caption{Tempo de execução (em escala logarítmica) para match de $a^n$ contra $a*$}
+\caption{Tempo de execução para match de $a^n$ contra $a*$}
 \label{fig:graph_bench_2}
 \end{figure}
 
