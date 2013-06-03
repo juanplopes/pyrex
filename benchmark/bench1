@@ -3,7 +3,7 @@
 echo '(a?a)+b' > input1.txt
 echo 'n' > bench1.txt
 
-for i in $(seq 1 30); 
+for i in $(seq 1 35); 
 do 
     eval printf 'a%0.s' {1..$i} >> input1.txt
     echo >> input1.txt

@@ -1,6 +1,0 @@
-#!/bin/bash
-mcs csharp_source.cs
-mono csharp_source.exe
-rm csharp_source.exe
-    
-

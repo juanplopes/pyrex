@@ -88,13 +88,13 @@
   backgroundcolor=\color{white}, 
   basicstyle=\scriptsize\ttfamily,       
   captionpos=b,                 
-  commentstyle=\color{mygreen}, 
+  commentstyle=\color{mygray}, 
   deletekeywords={...},         
   escapeinside={\%*}{*)},       
   extendedchars=true,           
   keepspaces=true,              
   frame=single,
-  keywordstyle=\bfseries\color{blue},    
+  keywordstyle=\bfseries\color{black},    
   morekeywords={*,...},         
   numbers=left,
   numbersep=5pt,                
@@ -114,8 +114,9 @@
 \pgfplotsset{
 	width=12cm,
 	every axis legend/.append style={
-	at={(0.5,1.03)},
-	anchor=south}
+		at={(0.5,1.03)},
+		anchor=south
+	}
 }
 
 \makeindex
@@ -221,13 +222,12 @@ A figura \ref{fig:benchmark1} mostra o crescimento no tempo de execução entre 
 \begin{figure}[ht]
 \centering
 \begin{tikzpicture}
-	\begin{semilogyaxis}[xlabel=n, ylabel=tempo (ns), legend columns=5]
+	\begin{semilogyaxis}[xlabel=n, ylabel=tempo (s), legend columns=5, cycle list name=black white]
 	\addplot table[x=n,y=pyrex] {benchmark/bench1.txt};
 	\addplot table[x=n,y=python] {benchmark/bench1.txt};
 	\addplot table[x=n,y=ruby] {benchmark/bench1.txt};
-	\addplot table[x=n,y=csharp] {benchmark/bench1.txt};
 	\addplot table[x=n,y=java] {benchmark/bench1.txt};
-	\legend{pyrex, python, ruby, csharp, java}
+	\legend{pyrex, python, ruby, java}
 	\end{semilogyaxis}
 \end{tikzpicture}
 \caption{Tempo de execução (em escala logarítmica) para match de $a^n$ contra $(a?a)+b$}
@@ -1065,6 +1065,20 @@ O código-fonte completo da ferramenta pode ser visto no apêndice~\ref{app:view
 
 Neste capítulo serão abordadas as principais diferenças entre a implementação proposta neste trabalho em comparação com outras implementações populares.
 
+Algumas comparações com implementações específicas serão feitas, por isso, faz-se necessário definir claramente as caracteristicas e versões destas implementações. Segue uma tabela que clarifica tais questões:
+
+\begin{center}
+	\begin{tabular}{ c | c | c }
+		{\bf Implementação} & {\bf Ambiente} & {\bf Linguagem original} \\
+		\hline 
+		pyrex & Python 2.7.3 & Python \\
+		re & Python 2.7.3 & C \\
+		Oniguruma & Ruby 1.9.3 & C \\
+		java.util.regex & Java 1.6.0\_45 & Java \\
+	\end{tabular}
+\end{center}
+
+
 \section{Retorno do Método \emph{match}}
 
 O problema de reconhecer palavras usando expressões regulares é uma problema de \emph{decisão}. Isto significa que ele aceita apenas uma entre duas respostas: \emph{sim} ou \emph{não}. Entretanto, provou-se útil ao longo do tempo não só reconhecer palavras em linguagens regulares, mas também qualquer sub-palavra pertencente a ela, retornando, então, a localização na palavra original.
@@ -1077,43 +1091,49 @@ Este comportamento é coerente com o artigo original de Thompson e, consequentem
 
 Uma forma fácil de verificar esta diferença é comparar o match da expressão $a*(b|abc)$ contra a string $abc$. A implementação padrão do Python retornaria a string $ab$. A implementação neste projeto encontrará a string $abc$. A diferença é que a primeira tenta avaliar o máximo que pode na repetição $a*$, enquanto a segunda consegue visualizar globalmente os matches possíveis.
 
-\section{Match de backreferences: um problema NP-completo}
-
-Durante o capítulo~\ref{cap:theory} foram demonstradas diversas formas de simular o autômato construído a partir da expressão regular. Cada uma delas tem características particulares de complexidade de tempo e espaço, além de dificuldades de implementação diversas.
-
-A implementação
+\section{Desempenho em Casos Exponenciais}
 
 \begin{figure}[ht]
 \centering
 \begin{tikzpicture}
-	\begin{semilogyaxis}[xlabel=n, ylabel=tempo (ns), legend columns=5]
+	\begin{semilogyaxis}[xlabel=n, ylabel=tempo (s), legend columns=5, cycle list name=black white]
 	\addplot table[x=n,y=pyrex] {benchmark/bench1.txt};
 	\addplot table[x=n,y=python] {benchmark/bench1.txt};
 	\addplot table[x=n,y=ruby] {benchmark/bench1.txt};
-	\addplot table[x=n,y=csharp] {benchmark/bench1.txt};
 	\addplot table[x=n,y=java] {benchmark/bench1.txt};
-	\legend{pyrex, python, ruby, csharp, java}
+	\legend{pyrex, python, ruby, java}
 	\end{semilogyaxis}
 \end{tikzpicture}
 \caption{Tempo de execução (em escala logarítmica) para match de $a^n$ contra $(a?a)+b$}
 \label{fig:graph_bench_1}
 \end{figure}
 
+\section{Desempenho em Casos Triviais}
+
 \begin{figure}[ht]
 \centering
 \begin{tikzpicture}
-	\begin{semilogyaxis}[xlabel=n, ylabel=tempo (ns), legend columns=5]
+	\begin{semilogyaxis}[xlabel=n, ylabel=tempo (s), legend columns=5, cycle list name=black white]
 	\addplot table[x=n,y=pyrex] {benchmark/bench2.txt};
 	\addplot table[x=n,y=python] {benchmark/bench2.txt};
 	\addplot table[x=n,y=ruby] {benchmark/bench2.txt};
-	\addplot table[x=n,y=csharp] {benchmark/bench2.txt};
 	\addplot table[x=n,y=java] {benchmark/bench2.txt};
-	\legend{pyrex, python, ruby, csharp, java}
+	\legend{pyrex, python, ruby, java}
 	\end{semilogyaxis}
 \end{tikzpicture}
 \caption{Tempo de execução (em escala logarítmica) para match de $a^n$ contra $a*$}
 \label{fig:graph_bench_2}
 \end{figure}
+
+
+\section{Match de backreferences: um problema NP-completo}
+
+Durante o capítulo~\ref{cap:theory} foram demonstradas diversas formas de simular o autômato construído a partir da expressão regular. Cada uma delas tem características particulares de complexidade de tempo e espaço, além de dificuldades de implementação diversas.
+
+A implementação
+
+
+
 
 %======================================================================================
 \chapter{Conclusão}

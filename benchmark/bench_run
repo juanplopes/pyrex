@@ -12,18 +12,18 @@ function average {
         for ((i=0; i<${#line[@]}; i++)) ; do
             let sum+=line[i]
         done;
-        echo $(bc -l <<< "$sum/$i")
+        echo $(bc -l <<< "$sum/$i/1000000000")
     done
 }
 
-RUNNERS=('pyrex' 'python' 'ruby' 'csharp' 'java')
+RUNNERS=('pyrex' 'python' 'ruby' 'java')
 
 for runner in "${RUNNERS[@]}"
 do
     echo "Running ${runner}... "
     truncate result_${runner}.txt -s 0
 
-    for i in $(seq 1 32); 
+    for i in $(seq 1 10); 
     do 
         echo "    execution #$i"
         mv result_${runner}.txt result_${runner}.tmp
