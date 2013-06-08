@@ -82,9 +82,9 @@
   bookmarksdepth=4
 }
 
-\definecolor{mygreen}{rgb}{0,0.6,0}
 \definecolor{mygray}{rgb}{0.5,0.5,0.5}
-\definecolor{mymauve}{rgb}{0.58,0,0.82}
+\definecolor{mygrayer}{rgb}{0.2,0.2,0.2}
+
 
 \lstset{ %
   backgroundcolor=\color{white}, 
@@ -107,7 +107,7 @@
   showtabs=false,   
   firstnumber=1,     
   stepnumber=1,                   
-  stringstyle=\color{mymauve},    
+  stringstyle=\color{mygrayer},    
   tabsize=2,    
   language=python,                 
   title=\lstname                 
@@ -1117,15 +1117,15 @@ TBD
 \begin{figure}[ht]
 \centering
 \begin{tikzpicture}
-	\begin{axis}[xlabel=n, ylabel=tempo (s), legend columns=5, cycle list name=black white]
+	\begin{semilogyaxis}[xlabel=n, ylabel=tempo (s), legend columns=5, cycle list name=black white]
 	\addplot table[x=n,y=pyrex] {benchmark/bench2.txt};
 	\addplot table[x=n,y=python] {benchmark/bench2.txt};
 	\addplot table[x=n,y=ruby] {benchmark/bench2.txt};
 	\addplot table[x=n,y=java] {benchmark/bench2.txt};
 	\legend{pyrex, python, ruby, java}
-	\end{axis}
+	\end{semilogyaxis}
 \end{tikzpicture}
-\caption{Tempo de execução para match de $a^n$ contra $a*$}
+\caption{Tempo de execução (em escala logarítmica) para match de $a^n$ contra $a*$}
 \label{fig:graph_bench_2}
 \end{figure}
 
@@ -1177,18 +1177,15 @@ Uma expressão está na 3CNF se ela está na forma:
 
 onde $A_{ij}$ pode ser tanto uma variável ($X$) quanto a negação de uma variável ($\neg X$).
 
-\subsection{Provando pertinência em NP-completo}
+\subsection{MATCH em NP-completo}
 
-Dado que 
+Para provar que um problema pertence ao conjunto NP-completo, uma das formas é provar é garantindo que ele faz parte do conjunto NP e do conjunto NP-difícil.
 
+Normalmente, a primeira parte (provar pertinência em NP) é mais fácil, consiste em mostrar que dada uma eviência é possível verificá-la em tempo polinomial.
 
-\subsection{MATCH em NP}
+A segunda parte pode ser um pouco mais complicada. Geralmente envolve mostrar que é possível reduzir um problema NP-díficil ao problema que se quer provar em tempo polinomial, e.g. provando que é possível reduzir 3SAT ao problema em questão em tempo polinomial.
 
-
-
-A implementação
-
-\subsection{MATCH em NP-difícil}
+Para fins de referência, definiremos o problema de reconhecimento de cadeias utilizando expressões regulares com backreferences como $MATCH(E, S)$ onde $E$ é uma cadeia que define uma expressão regular e $S$ é a cadeia a ser verificada. Um algoritmo para solução detes problema de
 
 
 
