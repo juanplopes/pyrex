@@ -5,7 +5,9 @@
 \usepackage[utf8]{inputenc} % Determina a codificacao utiizada
 
 \usepackage{array}
-                      
+
+\usepackage{caption}
+\usepackage{subcaption}
 \usepackage{pgfplots}
 \usepackage{DejaVuSansMono}
 \usepackage{listings}
@@ -1110,6 +1112,8 @@ Uma forma fácil de verificar esta diferença é comparar o match da expressão 
 
 \section{Desempenho em Casos Triviais}
 
+TBD
+
 \begin{figure}[ht]
 \centering
 \begin{tikzpicture}
@@ -1130,7 +1134,61 @@ Uma forma fácil de verificar esta diferença é comparar o match da expressão 
 
 Durante o capítulo~\ref{cap:theory} foram demonstradas diversas formas de simular o autômato construído a partir da expressão regular. Cada uma delas tem características particulares de complexidade de tempo e espaço, além de dificuldades de implementação diversas.
 
+O que se propõe nesta seção é demonstrar que qualquer implementação de expressões regulares que suporte backreferences necessariamente torna o \emph{MATCH} um problema NP-completo. Este resultado, apesar de não provar que estas implementações são intratáveis computacionalmente (o que envolveria provar que $P \neq NP$), na prática mostra que qualquer algoritmo conhecido é suficientemente ineficiente para aplicações onde o tempo de execução é crítico.
+
+\subsection{Problemas NP-completos}
+
+A classe de problemas NP (ou NPTIME, de \emph{Non-deterministic Polynomial Time}) diz respeito a todos os problemas de \emph{decisão} que podem ser resolvidos em tempo polinomial numa máquina de Turing não-determinística. Isto inclui também os problemas de decisão que podem ser resolvidos em máquinas de Turing determinísticas em tempo polinomial (conjunto P). Não há até o momento qualquer prova conclusiva se há algum problema em NP que não esteja também em P. Também não se sabe se todos os problemas de NP estão em P. A figura \ref{fig:p_np} mostra como seria o diagrama de conjuntos em ambos os casos.
+
+
+\begin{figure}[ht]
+\centering
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[scale=0.3]{figures/p_neq_np.png}
+\end{subfigure}%
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[scale=0.3]{figures/p_eq_np.png}
+\end{subfigure}
+\caption{Diagrama de conjuntos caso $P \neq NP$ e $P=NP$, respectivamente}
+\label{fig:p_np}
+\end{figure}
+
+
+Uma característica importante dos problemas em NP é que se a resposta para o problema for \emph{sim}, dada uma \emph{evidência} (ou \emph{testemunha}) que mostre tal fato, é possível determinar em tempo polinomial se esta resposta está correta ou não utilizando uma máquina de Turing determinística.
+
+Nos anos 70, Stephen Cook introduziu o conceito de problemas NP-completos \cite{bib:Cook71}. São problemas em NP tais que qualquer outro problema em NP pode ser reduzido a eles em tempo polinomial. Qualquer solução polinomial de um problema NP-completo demonstraria que todos os problemas em NP podem ser resolvidos polinomialmente em máquinas de Turing determinísticas.
+
+Cook também provou provou que o problema de satisfabilidade booleana (SAT) é NP-completo. Resultado parecido com o que Leonid Levin alcançou independentemente em 1973 \cite{bib:Levin73}. Hoje este resultado é conhecido como teorema de Cook--Levin. 
+
+O problema de satisfabilidade consiste em determinar se existe uma interpretação que satisfaça uma expressão booleana, i.e. se existe uma atribuição de variáveis que avalie tal expressão como \emph{verdadeira}. Neste problema, a \emph{evidência} consiste no conjunto de valores a se atribuir às variáveis para que a expressão seja avaliada como verdadeira. Para verificá-la, basta substituir por tais valores e avaliar a expressão resultante.
+
+Certas variações de SAT podem pertencer a classes de problemas diferentes. Uma variação possível é restringir às expressões booleanas a sempre estarem na CNF (\emph{Conjunctive Normal Form} ou Forma Normal Conjuntiva). 
+
+Se a expressão booleana estiver escrita na 2CNF (forma normal conjuntiva com no máximo 2 variáveis por cláusula) este problema torna-se polinomial. Neste caso, é referido como 2-satisfabilidade (2SAT). Entretanto, se a expressão estiver escrita na 3CNF, o problema (3SAT) continua NP-completo \cite{bib:Karp72}.
+
+Uma expressão está na 3CNF se ela está na forma:
+
+\begin{equation*}
+(A_{11} \lor A_{12} \lor A_{13}) \wedge (A_{21} \lor A_{22} \lor A_{23}) \wedge \cdots \wedge (A_{n1} \lor A_{n2} \lor A_{n3}),
+\end{equation*}
+
+
+onde $A_{ij}$ pode ser tanto uma variável ($X$) quanto a negação de uma variável ($\neg X$).
+
+\subsection{Provando pertinência em NP-completo}
+
+Dado que 
+
+
+\subsection{MATCH em NP}
+
+
+
 A implementação
+
+\subsection{MATCH em NP-difícil}
 
 
 
