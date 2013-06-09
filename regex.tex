@@ -127,6 +127,7 @@
 
 \counterwithout{lstlisting}{chapter}
 \renewcommand*{\lstlistingname}{Listagem}
+\renewcommand*{\lstlistlistingname}{Lista de listagens}
 \frontmatter
 \capa
 \folhaderosto
@@ -165,11 +166,11 @@
 
 Na teoria, expressões regulares constituem uma notação para definir linguagens regulares em termos de operações recursivas simples. São equivalentes a autômatos finitos em seu poder expressivo. Na prática entretanto, enquanto ferramentas extremamente populares, as expressões regulares modernas afastaram-se bastante da teoria que as originou. 
 
-A maior parte das mudanças aconteceu para permiti-las alcançar um poder de expressão maior. Entretanto, esta conveniência trouxe o custo de tornar o \emph{match} um problema mais difícil computacionalmente do que a teoria descreve. Na maior parte das linguagens modernas o \emph{match} de \emph{regexes} (como são comumente conhecidas) é um problema NP-completo. Além disso, por particularidades nas implementações, mesmo expressões que poderiam ser reconhecidas em tempo polinomial são resolvidas com soluções exponenciais. 
+A maior parte das mudanças aconteceu para permiti-las alcançar um poder de expressão maior. Entretanto, esta conveniência trouxe o custo de tornar o \emph{match} um problema mais difícil computacionalmente do que a teoria descreve. Na maior parte das linguagens modernas o \emph{match} de \emph{regexes} (como são comumente conhecidas) é um problema NP-difícil. Além disso, por particularidades nas implementações, mesmo expressões que poderiam ser reconhecidas em tempo polinomial são resolvidas com soluções exponenciais. 
 
 O objetivo neste trabalho é analisar as armadilhas comuns no desenvolvimento de expressões regulares, realizando benchmarks entre diversas implementações populares, apontando funcionalidades que impediriam sua execução polinomial. Também sugere uma implementação simples e didática que tem, no pior caso, desempenho nas ordens de grandeza superior às bibliotecas-padrão de muitas linguagens.
 
-\noindent {Palavras-chave}: Teoria da computação. Expressões regulares. Linguagens regulares. Autômatos finitos. Complexidade computacional. Algoritmos. NP-completo.
+\noindent {Palavras-chave}: Teoria da computação. Expressões regulares. Linguagens regulares. Autômatos finitos. Complexidade computacional. Algoritmos. NP-difícil.
 
 % ----------------------------------------------------------
 % Abstract
@@ -179,14 +180,15 @@ O objetivo neste trabalho é analisar as armadilhas comuns no desenvolvimento de
 
 In theory, regular expressions are a notation to define regular languages in terms of simple recursive operations. Are equivalent to finite automata in its expressive power. In practice however, while very popular tools, modern regular expressions did deviate from the theory that gave them origin.
 
-Most of the changes happened to allow them to reach a greater expressive power. This convenience, however came at the cost of making the match a computationally harder problem than what theory describes. In most of the modern languages, the regex match (as it is commonly known) is a NP-complete problem. Besides, the way they are implemented makes even expressions that could be recognized in polynomial time to be solved with exponential algorithms.
+Most of the changes happened to allow them to reach a greater expressive power. This convenience, however came at the cost of making the match a computationally harder problem than what theory describes. In most of the modern languages, the regex match (as it is commonly known) is a NP-hard problem. Besides, the way they are implemented makes even expressions that could be recognized in polynomial time to be solved with exponential algorithms.
 
 This work aims to analyze the common pitfalls in regular expressions development, measuring performance with benchmarks of the most popular implementations, pointing the features that could not be implemented in polynomial time. Also it suggests a simple and didactic implementation which has superior worst-case performance than many language's standard libraries.
 
-\noindent {Keywords}: Computation theory. Regular expressions. Regular languages. Finite automata. Computational complexity. Algorithms. NP-complete.
+\noindent {Keywords}: Computation theory. Regular expressions. Regular languages. Finite automata. Computational complexity. Algorithms. NP-hard.
 
 \listadefiguras
 %\listadetabelas
+\lstlistoflistings
 
 \sumario
 
@@ -217,7 +219,7 @@ Expressões regulares e autômatos finitos compartilham uma relação estreita. 
 
 Desde então, conforme as implementações foram evoluindo, muitas funcionalidades foram adicionadas à linguagem de descrição de expressões regulares que as afastaram da teoria original. Enquanto originalmente descreviam linguagens estritamente regulares, a implementação mais difundida atualmente (\emph{PCRE}) é capaz não só de reconhecer qualquer linguagem livre de contexto, como também algumas sensíveis ao contexto. \cite{bib:Nikita12}
 
-Uma das consequências mais notáveis desta evolução não planejada é que o reconhecimento de strings da linguagem, um problema com solução linear originalmente, ganhou soluções exponenciais em um grande número de implementações modernas, que inclui muitas das mais usadas. Talvez a funcionalidade mais perigosa neste sentido sejam as backreferences, que não só impedem soluções polinomiais como tornam o problema de reconhecimento NP-completo. Entretanto, mesmo nas expressões que poderiam ser reconhecidas estritamente com autômatos finitos, certas particularidades de implementação as tornam potencialmente exponenciais, no pior caso \cite{bib:Cox07}.
+Uma das consequências mais notáveis desta evolução não planejada é que o reconhecimento de strings da linguagem, um problema com solução linear originalmente, ganhou soluções exponenciais em um grande número de implementações modernas, que inclui muitas das mais usadas. Talvez a funcionalidade mais perigosa neste sentido sejam as backreferences, que não só impedem soluções polinomiais como tornam o problema de reconhecimento NP-difícil. Entretanto, mesmo nas expressões que poderiam ser reconhecidas estritamente com autômatos finitos, certas particularidades de implementação as tornam potencialmente exponenciais, no pior caso \cite{bib:Cox07}.
 
 A figura \ref{fig:benchmark1} mostra o crescimento no tempo de execução entre a implementação da biblioteca padrão da linguagem Python e a implementação proposta neste projeto, usando o método de Thompson. 
 
@@ -246,7 +248,7 @@ Mesmo em casos onde o usuário mal intencionado não tem acesso à escrita de ex
 \section{Objetivo}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Este projeto tem dois objetivos principais. O primeiro é demonstrar através de testes pontuais e benchmarks os problemas fundamentais nas implementações de expressões regulares em diversas linguagens modernas, provando inclusive a NP-completude do problema de reconhecimento de strings nas linguagens que definem. O segundo objetivo é alcançar uma implementação didática e minimalista das expressões regulares, abordando as propostas por Kleene e utilizando o método descrito por Thompson para construção e simulação do autômato.
+Este projeto tem dois objetivos principais. O primeiro é demonstrar através de testes pontuais e benchmarks os problemas fundamentais nas implementações de expressões regulares em diversas linguagens modernas, provando inclusive que o problema de reconhecimento de expressões regulares com backreferences pertence ao conjunto dos NP-difíceis. O segundo objetivo é alcançar uma implementação didática e minimalista das expressões regulares, abordando as propostas por Kleene e utilizando o método descrito por Thompson para construção e simulação do autômato.
 
 A implementação irá deixar de fora certas funcionalidades comuns nos \emph{sabores} mais modernos de expressão regular. Algumas destas funcionalidades podem ser implementadas sem sacrificar eficiência de execução. Outras, introduzem certa complexidade, porém mantendo a execução do algoritmo polinomial. O restante, entretanto, não é possível implementar sem tornar o algoritmo exponencial no pior caso. Todas as funcionalidades intencionalmente excluídas serão listadas e propostas de soluções serão apresentadas quando cabível.
 
@@ -264,7 +266,7 @@ O projeto está divido em cinco capítulos. Cada um dos próximos capítulos est
 
 \item[Capitulo 3 -- Implementação:] implementação sugerida por este trabalho, discutindo certos aspectos específicos desta implementação que não tenham sido abordados na parte de teoria. 
 
-\item[Capitulo 4 -- Análise dos Resultados:] diferenças entre as implementações modernas e a implementação proposta neste trabalho. Começa descrevendo o poder das implementações modernas de expressão regular, mostrando recursos avançados, como \emph{zero-width assertions} e \emph{backreferences}. Prova a NP-completude do \emph{match} nestas implementações. Mostra também exemplos de expressões que reconhecem gramáticas não-regulares, exibindo o distanciamento entre estas e a teoria original. Por fim, é mostrado um benchmark comparando as diversas implementações, que evidenciam uma diferença fundamental na forma como o problema é abordado em cada uma delas. 
+\item[Capitulo 4 -- Análise dos Resultados:] diferenças entre as implementações modernas e a implementação proposta neste trabalho. Começa descrevendo o poder das implementações modernas de expressão regular, mostrando recursos avançados, como \emph{zero-width assertions} e \emph{backreferences}. Prova a pertinência a NP-difícil do \emph{match} nestas implementações. Mostra também exemplos de expressões que reconhecem gramáticas não-regulares, exibindo o distanciamento entre estas e a teoria original. Por fim, é mostrado um benchmark comparando as diversas implementações, que evidenciam uma diferença fundamental na forma como o problema é abordado em cada uma delas. 
 
 \item[Capitulo 5 -- Conclusão:] descrição das contribuições deste trabalho, bem como as dificuldades encontradas durante o projeto. Também serão listadas e descritas as funcionalidades não implementadas, possivelmente sugerindo formas eficientes de implementá-las, ou mesmo formas diferentes de simular o autômato que melhorem a eficiência geral da execução. 
 
@@ -523,7 +525,7 @@ Pode ser observado o exemplo de uma linguagem composta por palavras repetidas, c
 
 Esta linguagem não apenas cai fora do conjunto das linguagens regulares, como também não é uma linguagem livre de contexto.
 
-Tal poder expressivo tem seu preço. Match de backreferences é um problema NP-completo, logo, os melhores algoritmos conhecidos ainda tem pior caso exponencial. É possível, porém, escrever algoritmos polinomiais para expressões que não fazem uso de backreferences.
+Tal poder expressivo tem seu preço. Match de backreferences é um problema NP-difícil, logo, os melhores algoritmos conhecidos ainda tem pior caso exponencial. É possível, porém, escrever algoritmos polinomiais para expressões que não fazem uso de backreferences.
 
 Para suportar backreferences, a implementação mais comum consiste em backtracking com memória das capturas anteriores, o que impede a utilização de \emph{memoization}, técnica que poderia tornar polinomial a complexidade deste tipo de implementação. Mais detalhes sobre os tipos de implementação são discutidos na seção~\ref{sec:simulacao}, na página~\pageref{sec:simulacao}.
 
@@ -1130,15 +1132,17 @@ TBD
 \end{figure}
 
 
-\section{Match de backreferences: um problema NP-completo}
+\section{Match de backreferences: um problema NP-difícil}
 
 Durante o capítulo~\ref{cap:theory} foram demonstradas diversas formas de simular o autômato construído a partir da expressão regular. Cada uma delas tem características particulares de complexidade de tempo e espaço, além de dificuldades de implementação diversas.
 
-O que se propõe nesta seção é demonstrar que qualquer implementação de expressões regulares que suporte backreferences necessariamente torna o \emph{MATCH} um problema NP-completo. Este resultado, apesar de não provar que estas implementações são intratáveis computacionalmente (o que envolveria provar que $P \neq NP$), na prática mostra que qualquer algoritmo conhecido é suficientemente ineficiente para aplicações onde o tempo de execução é crítico.
+O que se propõe nesta seção é demonstrar que qualquer implementação de expressões regulares que suporte backreferences necessariamente torna o \emph{MATCH} um problema NP-difícil. Este resultado, apesar de não provar que estas implementações são intratáveis computacionalmente (o que envolveria provar que $P \neq NP$), na prática mostra que qualquer algoritmo conhecido é suficientemente ineficiente para aplicações onde o tempo de execução é crítico.
 
-\subsection{Problemas NP-completos}
+\subsection{Problemas NP-difíceis}
 
-A classe de problemas NP (ou NPTIME, de \emph{Non-deterministic Polynomial Time}) diz respeito a todos os problemas de \emph{decisão} que podem ser resolvidos em tempo polinomial numa máquina de Turing não-determinística. Isto inclui também os problemas de decisão que podem ser resolvidos em máquinas de Turing determinísticas em tempo polinomial (conjunto P). Não há até o momento qualquer prova conclusiva se há algum problema em NP que não esteja também em P. Também não se sabe se todos os problemas de NP estão em P. A figura \ref{fig:p_np} mostra como seria o diagrama de conjuntos em ambos os casos.
+A classe de problemas NP-difíceis (\emph{Non-deterministic Polynomial-time hard}) são aqueles para os quais existem problemas NP-completos redutíveis a eles em tempo polinomial. Nem todos os problemas em NP-difícil são de decisão, diferentemente dos problemas em NP.
+
+A classe NP diz respeito a todos os problemas de \emph{decisão} que podem ser resolvidos em tempo polinomial em uma máquina de Turing não-determinística. Isto inclui também os problemas de decisão que podem ser resolvidos em máquinas de Turing determinísticas em tempo polinomial (conjunto P). Não há até o momento qualquer prova conclusiva se há algum problema em NP que não esteja também em P. Também não se sabe se todos os problemas de NP estão em P. A figura \ref{fig:p_np} mostra como seria o diagrama de conjuntos em ambos os casos.
 
 
 \begin{figure}[ht]
@@ -1177,18 +1181,63 @@ Uma expressão está na 3CNF se ela está na forma:
 
 onde $A_{ij}$ pode ser tanto uma variável ($X$) quanto a negação de uma variável ($\neg X$).
 
-\subsection{MATCH em NP-completo}
+\subsection{Match de backreferences}
 
-Para provar que um problema pertence ao conjunto NP-completo, uma das formas é provar é garantindo que ele faz parte do conjunto NP e do conjunto NP-difícil.
+Durante o reconhecimento de expressões regulares, uma funcionalidade comum em implementações modernas é a capacidade de definir grupos de captura. Uma expressão $(a+)(b+)(c+)$ teria quatro grupos de captura, numerados de 0 a 3. E o reconhecimento de uma string com esta expressão resultaria em uma tupla com o valor capturado por cada um dos grupos. A string $aabbbcccc$ resultaria nas capturas $(aabbbcccc, aa, bbb, cccc)$.
 
-Normalmente, a primeira parte (provar pertinência em NP) é mais fácil, consiste em mostrar que dada uma eviência é possível verificá-la em tempo polinomial.
+Baseado nesta funcionalidade, muitas implementações modernas adicionam a capacidade de referenciar tais grupos de captura ainda durante o match de uma string. Por exemplo, dada uma linguagem $L = \{a^nba^n \mid n \in \mathbb{N}\}$, seria possível denotá-la com a expressão $(a*)b \backslash 1$. A referência ao grupo de captura 1 $(a*)$ se dá pela expressão $\backslash 1$.
 
-A segunda parte pode ser um pouco mais complicada. Geralmente envolve mostrar que é possível reduzir um problema NP-díficil ao problema que se quer provar em tempo polinomial, e.g. provando que é possível reduzir 3SAT ao problema em questão em tempo polinomial.
+Denotaremos aqui o problema de match de backreferences aqui como $MATCH(e, s)$ onde $e$ é uma expressão regular com backreferences e $n$ grupos de captura e $s$ a string a ser reconhecida. O objetivo é encontrar tupla $r = (s_0, s_1, \cdots, s_n)$, onde $s_i$ são substrings de $s$. A definição de $MATCH(e, s)$ é: existe tupla $r$ que pertença a linguagem definida pela expressão $e$?
 
-Para fins de referência, definiremos o problema de reconhecimento de cadeias utilizando expressões regulares com backreferences como $MATCH(E, S)$ onde $E$ é uma cadeia que define uma expressão regular e $S$ é a cadeia a ser verificada. Um algoritmo para solução detes problema de
+\subsection{MATCH em NP-difícil}
 
+Para provar que um problema pertence a NP-díficil, basta provar que existe um problema em NP-completo que se reduz a ele em tempo polinomial. Aqui será usado 3SAT para tal prova.
 
+Dada uma expressão booleana denotada na 3CNF, é possível construir uma expressão regular com backreferences que reconhece uma string em especial se e somente se a expressão booleana tiver uma interpretação válida.
 
+Como exemplo, pode-se observar a expressão booleana
+
+\setlength\abovedisplayskip{0pt}
+\begin{equation*}
+(x_1 \lor x_2 \lor \neg x_3) \wedge 
+(x_1 \lor \neg x_2 \lor x_3) \wedge
+(\neg x_1 \lor \neg x_2 \lor x_3) \wedge 
+(\neg x_1 \lor \neg x_2 \lor \neg x_3).
+\end{equation*}
+
+É possível representar esta expressão booleana através da expressão regular
+
+\setlength\abovedisplayskip{0pt}
+\begin{equation*}
+\wedge (x?)(x?)(x?).*;
+                   (?:\backslash 1|\backslash 2|\backslash 3x),
+                   (?:\backslash 1|\backslash 2x|\backslash 3),
+                   (?:\backslash 1x|\backslash 2x|\backslash 3),
+                   (?:\backslash 1x|\backslash 2x|\backslash 3x), \$
+\end{equation*}
+
+Ao tentar realizar match desta expressão com a string $xxx;x,x,x,x$ o resultado será a tupla de strings $(`xxx;x,x,x,x', `x', `', `x')$, denotando que caso $x_1 = verdadeiro, x_2 = falso, x_3 = verdadeiro$, a expressão original será satisfeita.
+
+A listagem~\ref{lst:nphard} mostra uma implementação em Python de 3-SAT utilizando expressões regulares.
+
+\vspace{0.5cm}
+\begin{lstlisting}[caption={Implementação de 3SAT com expressões regulares},label=lst:nphard]
+#!/usr/bin/env python
+import re
+
+clauses = [[1,2,-3], [1,-2,3], [-1,-2,3], [-1,-2,-3]]
+
+v = reduce(lambda a, b: max(a, *b), clauses, 0)
+s = v * 'x' + ';' + len(clauses) * 'x,'
+e = '^' + v * '(x?)' + '.*;' + ''.join(
+    '(?:' + '|'.join(
+        '\\' + (str(-x) + 'x' if x < 0 else str(x)) 
+        for x in clause) + '),' 
+    for clause in clauses)
+
+print re.match(e, s).groups() 
+#('x', '', 'x')
+\end{lstlisting}
 
 %======================================================================================
 \chapter{Conclusão}
@@ -1202,7 +1251,7 @@ TBD
 
 \postextualchapter{Código-fonte da Biblioteca PyRex}\label{app:full_source}
 
-\begin{lstlisting}[language=python]
+\begin{lstlisting}[caption={Código-fonte da biblioteca PyRex},label=lst:fill_appendice]
 # -*- coding: utf-8 -*-
 from collections import deque
 from functools import reduce
@@ -1294,9 +1343,9 @@ class Machine(object):
         return '\n'.join('{:04d}: {}'.format(i, s) for i, s in enumerate(self.source()))
 \end{lstlisting}   
 
-\postextualchapter{Código-fonte da Visualizador}\label{app:view_source}
+\postextualchapter{Código-fonte do Visualizador}\label{app:view_source}
 
-\begin{lstlisting}
+\begin{lstlisting}[caption={Código-fonte do Visualizador},label=lst:view_appendice]
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
