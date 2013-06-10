@@ -1271,8 +1271,6 @@ Este resultado mostra ainda como certas otimizações estáticas permitem que a 
 \chapter{Conclusão}
 %======================================================================================
 
-\section{Contribuição}
-
 A principal contribuição neste trabalho foi uma implementação didática de expressões regulares utilizando o método de construção de Thompson. Nela foi utilizada uma forma simples de representar os estados do autômato finito não-determinístico como instruções de uma máquina abstrata que pode ser implementada em qualquer plataforma. Aqui foi implementada em Python para fins de simplicidade e didática.
 
 Os resultados alcançados foram bastante satisfatórios, mostrando que é possível implementar expressões regulares com algoritmos polinomiais. A implementação, apesar de não ser a mais eficiente para casos triviais, mostrou-se muito útil para demonstrar didaticamente a teoria apresentada no capítulo~\ref{cap:theory}.
@@ -1333,23 +1331,23 @@ Nesta seção serão discutidas propostas de trabalhos futuros que podem dar con
 
 \postextualchapter{Código-fonte dos Benchmarks}\label{app:benchmarks_source}
 
-\lstinputlisting[caption={Benchmark 1: (a?a)+b}]{benchmark/bench1}
+\lstinputlisting[caption={Benchmark 1: (a?a)+b}, language=bash]{benchmark/bench1}
 
-\lstinputlisting[caption={Benchmark 2: a*b}]{benchmark/bench2}
+\lstinputlisting[caption={Benchmark 2: a*b}, language=bash]{benchmark/bench2}
 
-\lstinputlisting[caption={Benchmark 3: a*a*a*a*a*b}]{benchmark/bench3}
+\lstinputlisting[caption={Benchmark 3: a*a*a*a*a*b}, language=bash]{benchmark/bench3}
 
-\lstinputlisting[caption={Benchmark runner}]{benchmark/bench_run}
+\lstinputlisting[caption={Benchmark runner}, language=bash]{benchmark/bench_run}
 
 \lstinputlisting[caption={Benchmark com PyRex}]{benchmark/bench_pyrex}
 
 \lstinputlisting[caption={Benchmark com Python}]{benchmark/bench_python}
 
-\lstinputlisting[caption={Benchmark com Ruby}]{benchmark/bench_ruby}
+\lstinputlisting[caption={Benchmark com Ruby}, language=ruby]{benchmark/bench_ruby}
 
-\lstinputlisting[caption={Benchmark com Java (compilador)}]{benchmark/bench_java}
+\lstinputlisting[caption={Benchmark com Java (compilador)}, language=bash]{benchmark/bench_java}
 
-\lstinputlisting[caption={Benchmark com Java (fonte)}]{benchmark/java_source.java}
+\lstinputlisting[caption={Benchmark com Java (fonte)}, language=java]{benchmark/java_source.java}
 
 \postextualchapter{Tabelas dos Benchmarks}\label{app:benchmarks_tables}
 
