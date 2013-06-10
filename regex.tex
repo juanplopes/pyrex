@@ -217,7 +217,7 @@ Desde então, conforme as implementações foram evoluindo, muitas funcionalidad
 
 Uma das consequências mais notáveis desta evolução não planejada é que o reconhecimento de strings da linguagem, um problema com solução linear originalmente, ganhou soluções exponenciais em um grande número de implementações modernas, que inclui muitas das mais usadas. Talvez a funcionalidade mais perigosa neste sentido sejam as backreferences, que não só impedem soluções polinomiais como tornam o problema de reconhecimento NP-difícil. Entretanto, mesmo nas expressões que poderiam ser reconhecidas estritamente com autômatos finitos, certas particularidades de implementação as tornam potencialmente exponenciais, no pior caso \cite{bib:Cox07}.
 
-A figura \ref{fig:benchmark1} mostra o crescimento no tempo de execução entre a implementação da biblioteca padrão da linguagem Python e a implementação proposta neste projeto, usando o método de Thompson. 
+A figura \ref{fig:benchmark1} mostra o crescimento no tempo de execução entre a implementação da biblioteca padrão das linguagens Python, Java, Ruby e a implementação proposta neste projeto, usando o método de Thompson. 
 
 \begin{figure}[!htbp]
 \centering
@@ -238,15 +238,15 @@ Essas implementações tornam o uso de expressões regulares potencialmente inse
 
 Muitas vezes a prevenção para esse tipo de ataque pode não ser trivial, e.g. em Java, onde métodos comumente usados contra a entrada do usuário, como \emph{replaceAll} e \emph{split}, da classe \emph{String} são implementados com expressões regulares vulneráveis a esse tipo de ataque.
 
-Mesmo em casos onde o usuário mal intencionado não tem acesso à escrita de expressões regulares, um erro de programação pode deixar o sistema vulnerável a negação de serviço. Este problema torna-se especialmente notável pelo frequente compartilhamento em repositórios online, que contém muitas expressões vulneráveis \cite{bib:Kirrage13,bib:Weidman10}. 
+Mesmo em casos onde o usuário mal intencionado não tem acesso à escrita de expressões regulares, um erro de programação pode deixar o sistema vulnerável a negação de serviço. Este problema torna-se especialmente notável pelo frequente compartilhamento em repositórios online, que contêm muitas expressões vulneráveis \cite{bib:Kirrage13,bib:Weidman10}. 
 
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 \section{Objetivo}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Este projeto tem dois objetivos principais. O primeiro é demonstrar através de testes pontuais e benchmarks os problemas fundamentais nas implementações de expressões regulares em diversas linguagens modernas, provando inclusive que o problema de reconhecimento de expressões regulares com backreferences pertence ao conjunto dos NP-difíceis. O segundo objetivo é alcançar uma implementação didática e minimalista das expressões regulares, abordando as propostas por Kleene e utilizando o método descrito por Thompson para construção e simulação do autômato.
+Este projeto tem dois objetivos principais. O primeiro é demonstrar através de testes pontuais e benchmarks os problemas fundamentais nas implementações de expressões regulares em diversas linguagens modernas, provando inclusive que o problema de reconhecimento de expressões regulares com backreferences pertence à classe de problemas NP-difícil. O segundo objetivo é alcançar uma implementação didática e minimalista das expressões regulares, abordando as propostas por Kleene e utilizando o método descrito por Thompson para construção e simulação do autômato.
 
-A implementação irá deixar de fora certas funcionalidades comuns nos \emph{sabores} mais modernos de expressão regular. Algumas destas funcionalidades podem ser implementadas sem sacrificar eficiência de execução. Outras, introduzem certa complexidade, porém mantendo a execução do algoritmo polinomial. O restante, entretanto, não é possível implementar sem tornar o algoritmo exponencial no pior caso. Todas as funcionalidades intencionalmente excluídas serão listadas e propostas de soluções serão apresentadas quando cabível.
+A implementação neste projeto não inclui certas funcionalidades comuns nos \emph{sabores} mais modernos de expressão regular. Algumas destas funcionalidades podem ser implementadas sem sacrificar eficiência de execução. Outras, introduzem certa complexidade, porém mantêm a execução do algoritmo polinomial. O restante, entretanto, não é possível implementar sem tornar o algoritmo exponencial no pior caso. Todas as funcionalidades intencionalmente excluídas serão listadas e propostas de soluções serão apresentadas quando cabível.
 
 Deseja-se mostrar com esse projeto que o problema de reconhecimento de expressões regulares pode ser resolvido de maneira eficiente, mesmo com as implementações mais simples, desde que seja observada a base teórica que as deu origem.
 
@@ -260,9 +260,9 @@ O projeto está divido em cinco capítulos. Cada um dos próximos capítulos est
 
 \item[Capitulo 2 -- Fundamentação Teórica:] base teórica por trás das expressões regulares, contando sua história, passando pelo método de construção do autômato de Thompson, e exibindo um algoritmo trivial (porém ineficiente) para sua solução.
 
-\item[Capitulo 3 -- Implementação:] implementação sugerida por este trabalho, discutindo certos aspectos específicos desta implementação que não tenham sido abordados na parte de teoria. 
+\item[Capitulo 3 -- Implementação:] implementação apresentada neste trabalho, discutindo certos aspectos específicos desta implementação que não tenham sido abordados na parte de teoria. 
 
-\item[Capitulo 4 -- Análise dos Resultados:] diferenças entre as implementações modernas e a implementação proposta neste trabalho. Começa descrevendo o poder das implementações modernas de expressão regular, mostrando recursos avançados, como \emph{zero-width assertions} e \emph{backreferences}. Prova a pertinência a NP-difícil do \emph{match} nestas implementações. Mostra também exemplos de expressões que reconhecem gramáticas não-regulares, exibindo o distanciamento entre estas e a teoria original. Por fim, é mostrado um benchmark comparando as diversas implementações, que evidenciam uma diferença fundamental na forma como o problema é abordado em cada uma delas. 
+\item[Capitulo 4 -- Análise dos Resultados:] diferenças entre as implementações modernas e a implementação proposta neste trabalho. Neste capítulo é provada a pertinência em NP-difícil do \emph{match} de expressões com backreferences e são mostrados benchmarks comparando as diversas implementações (inclusive a aqui apresentada), que evidenciam uma diferença fundamental na forma como o problema é abordado em cada uma delas. 
 
 \item[Capitulo 5 -- Conclusão:] descrição das contribuições deste trabalho, bem como as dificuldades encontradas durante o projeto. Também serão listadas e descritas as funcionalidades não implementadas, possivelmente sugerindo formas eficientes de implementá-las, ou mesmo formas diferentes de simular o autômato que melhorem a eficiência geral da execução. 
 
@@ -345,7 +345,7 @@ Com base na concatenação, uma operação importante em linguagens é o fecho K
 
 E.g.: se $A = \{a, aa\}$, então $A^* = \{\epsilon, a, aa, aaa, \ldots\}$.
 
-Existem duas formas principais para se definir linguagens formais. \emph{Gramáticas gerativas}, que geram elementos da linguagem a partir de sistemas de reescrita; e \emph{Autômatos}, que reconhecem elementos da linguagem. 
+Existem duas formas principais para se definir linguagens formais. \emph{Gramáticas gerativas}, que geram palavras da linguagem a partir de sistemas de reescrita; e \emph{Autômatos}, que reconhecem palavras da linguagem. 
 
 Além destas, existem diversas outras formas de definir linguagens. As próprias expressões regulares denotam linguagens formais. Outra forma bastante é comum é através da sintaxe de geração de conjuntos, e.g. $L=\{a^n \mid n \in \mathbb{N}\}$.
 
@@ -360,9 +360,9 @@ Gramáticas gerativas são sistemas de reescrita, i.e. a partir de um símbolo i
 Uma gramática gerativa é formada por uma tupla $G = (N, \Sigma, P, S)$. Onde:
 
 \begin{itemize}
-    \item N é o conjunto de símbolos não terminais. Eles não fazem parte da linguagem original, então precisam ser sempre substituídos para alcançar um símbolo válido na linguagem.
+    \item N é o conjunto de símbolos não terminais. Eles não fazem parte da linguagem original, então precisam ser sempre substituídos para alcançar uma palavra válida na linguagem.
     \item $\Sigma$ é o conjunto de símbolos terminais da linguagem. Também conhecido como alfabeto.
-    \item P é o conjunto de regras de produção, geralmente na forma $\alpha \rightarrow \beta \mid \alpha, \beta \in N \cup \Sigma$.
+    \item P é o conjunto de regras de produção, geralmente na forma $\alpha \rightarrow \beta \mid \alpha, \beta \in (N \cup \Sigma)*$.
     \item S é o símbolo inicial do sistema de reescrita. $S \in N$.
 \end{itemize}
 
@@ -742,7 +742,7 @@ Autômatos finitos determinísticos são muito mais fáceis de simular, visto qu
 
 É sabido que autômatos finitos determinísticos (DFA) e não-determinísticos (NFA) são equivalentes em termos de poder expressivo. É possível converter entre um e outro com métodos conhecidos. Entretanto, cada um deles faz concessões em termos de recursos utilizados.
 
-Um NFA com m estados, quando convertido para uma DFA pode ter ate $2^m$ estados. Em termos de memória utilizada, NFAs são exponencialmente mais expressivos que DFAs \cite{bib:Calabro05}. Entretanto, DFAs tem execução com menor complexidade que NFAs. Para uma entrada com n caracteres, NFAs podem ser simulados em $O(n \times m)$, enquanto DFAs em $O(m)$.
+Um NFA com m estados, quando convertido para uma DFA pode ter ate $2^m$ estados. Em termos de memória utilizada, NFAs são exponencialmente mais expressivos que DFAs. Entretanto, DFAs tem execução com menor complexidade que NFAs. Para uma entrada com n caracteres, NFAs podem ser simulados em $O(n \times m)$, enquanto DFAs em $O(m)$.
 
 A conversão entre os dois se dá através do algoritmo conhecido como \emph{Rabin-Scott powerset construction} \cite{bib:Rabin59}. Que consiste basicamente em simular a execução paralela do autômato para todas as entradas possíveis.
 
@@ -775,7 +775,7 @@ A figura~\ref{fig:nfa_simultaneo} mostra a execução do autômato gerado para a
 
 O maior perigo da conversão completa para DFA é o potencial explosivo que a geração do autômato determinístico tem. Até $2^n$ estados podem ser gerados, e tempo proporcional a isso será gasto. Por outro lado, a simulação parelela parece gastar uma quantidade linear de memória e tempo polinomial para simular o autômato.
 
-Para a maior parte dos autômatos reais, dificilmente a quantidade de estados no DFA será tão grande. Por isso, uma aproximação combinada entre as duas abordagens poderia trazer vantagens.
+Para a maior parte das aplicações práticas, dificilmente a quantidade de estados no DFA será tão grande. Por isso, uma aproximação combinada entre as duas abordagens poderia trazer vantagens.
 
 Durante a simulação paralela, os estados ativados simultaneamente correspondem exatamente a um estado no respectivo DFA. A realizar cache destes estados (porém mantendo uma política de gerência de memória, descartando os mais antigos) a implementação estará mantendo a complexidade de execução da simulação paralela, porém aumentando as chances de eventualmente gerar o DFA completamente.
 
@@ -791,11 +791,11 @@ Neste capítulo será apresentada a implementação da biblioteca \emph{PyRex} (
 
 \section{Considerações Iniciais}
 
-Este projeto visava alcançar uma implementação completamente polinomial para expressões regulares. Alcançado o primeiro objetivo, o foco da implementação foi a simplicidade. Foram evitados truques de implementação que a tornassem mais rápida em detrimento da legibilidade. Todas as escolhas foram para reduzir a complexidade da implementação. Mesmo assim, o algoritmo utilizado foi eficiente o bastante para atingir o objetivo deste trabalho.
+Neste projeto o objetivo era alcançar uma implementação completamente polinomial para expressões regulares. Alcançado o primeiro objetivo, a implementação foi focada na simplicidade. Foram evitados truques de implementação que a tornassem mais rápida em detrimento da legibilidade. Todas as escolhas foram para reduzir a complexidade da implementação. Mesmo assim, o algoritmo utilizado foi eficiente o bastante para atingir o objetivo inicial.
 
-A linguagem escolhida para implementar o projeto foi Python. É uma linguagem de máquina virtual, tal qual o Java. Entretanto, sua máquina virtual não tem as otimizações em tempo de execução que as implementações mais famosas de Java tem. Além disso, sua resolução dinâmica de tipos a faz ter uma performance inferior À de outras linguagens com resolução estática de tipos. 
+A linguagem escolhida para implementar o projeto foi Python. É uma linguagem de máquina virtual, tal qual o Java. Entretanto, sua máquina virtual não tem as otimizações em tempo de execução que as implementações mais famosas de Java tem. Além disso, a resolução dinâmica de tipos a faz ter uma performance inferior à de outras linguagens com resolução estática de tipos. 
 
-Mesmo assim, pela reduzida quantidade de caracteres especiais em sua sintaxe, os programas escritos nela são em geral mais legíveis e simples. Por isso, toda a implementação do PyRex tem menos de 90 linhas de código (contando as em branco) e menos de 3KB. Esta implementação abrange desde o parse da expressão regular até a simulação do autômato retornando inclusive a região do match da expressão regular.
+Mesmo assim, pela reduzida quantidade de caracteres especiais em sua sintaxe, os programas escritos nela são em geral mais legíveis e simples. Por isso, toda a implementação do PyRex tem menos de 90 linhas de código (contando as em branco) e menos de 3KB. Esta implementação abrange desde a análise sintática da expressão regular até a simulação do autômato retornando inclusive a região do match da expressão.
 
 O projeto foi implementado utilizando apenas as bibliotecas padrão disponíveis no Python 2.7, porém ele também funciona no Python 3.0 e superiores.
 
@@ -815,7 +815,7 @@ Assim, foi implementado o match de:
     \item Kleene+ (e.g. $a+$)
 \end{itemize}
 
-Estas funcionalidades são bem próximas as definidas por Thompson \cite{bib:Thompson68} em seu artigo e definem inequivocamente gramáticas regulares.
+Estas funcionalidades são bem próximas as definidas por Thompson \cite{bib:Thompson68} em seu artigo e permitem denotar inequivocamente linguagens regularres.
 
 \section{Estrutura do Código}
 
@@ -823,7 +823,7 @@ O código está dividido em basicamente duas partes: um \emph{parser} e um \emph
 
 O parser é responsável por receber uma string com a expressão regular, analisá-la sintaticamente e retornar um objeto (o matcher) capaz de reconhecer strings que façam parte da linguagem regular definida.
 
-O matcher contém informações do autômato gerado e contém funções que sabem simular a execução do autômato. Ele é implementado como uma classe Python com um método \emph{match}, além da sobrecarga do operador \emph{\_\_repr\_\_} do Python, que provê uma visualização útil do objeto em tempo de debugging.
+O matcher contém informações do autômato gerado e funções que sabem simular a execução do autômato. Ele é implementado como uma classe Python com um método \emph{match}, além da sobrecarga do operador \emph{\_\_repr\_\_} do Python, que provê uma visualização útil do objeto em tempo de depuração.
 
 O uso desta biblioteca se dá pela compilação do autômato usando a função \emph{rex} e a posterior avaliação de strings usando o método \emph{match} da classe \emph{Machine}. Um exemplo de uso pode ser visto na listagem~\ref{lst:usage_example}.
 
@@ -864,6 +864,7 @@ A implementação é bem simples, usa uma instância da classe \emph{deque} como
 O tratamento de erros é simples porém eficiente. Sempre que um caractere não esperado é encontrado na entrada, ele é reportado. Um dos mecanismos pode ser observado no código principal do parser (listagem~\ref{lst:main_parser}), onde após consumir todos os caracteres possíveis, se ainda existirem remanescentes na entrada, uma exceção é lançada.
 
 \vspace{0.5cm}
+\noindent\begin{minipage}{\textwidth}
 \begin{lstlisting}[caption={Exemplo de tratamento de erros no parser},label=lst:main_parser]
 e = option()
 if tokens: 
@@ -871,6 +872,7 @@ if tokens:
 
 return Machine(e)
 \end{lstlisting}
+\end{minipage}
 
 \section{Representação}
 
@@ -897,10 +899,13 @@ A figura~\ref{fig:exemplo_automato_puro} e as listagens \ref{lst:automaton_array
 \end{lstlisting}
 }
 
+\noindent\begin{minipage}{\textwidth}
 {
   \lstset{%
     basicstyle=\ttfamily\normalsize,
   }
+
+
 \begin{lstlisting}[caption={Representação do autômato como instruções},label=lst:automaton_instr]
 0000: JUMP (1, 3)
 0001: CONSUME a
@@ -911,6 +916,7 @@ A figura~\ref{fig:exemplo_automato_puro} e as listagens \ref{lst:automaton_array
 0006: MATCH!
 \end{lstlisting}
 }
+\end{minipage}
 
 
 \section{Simulação}
@@ -925,13 +931,13 @@ def match(self, string):
 
 O método implementado para a simulação do autômato é a \emph{simulação paralela}. Este método foi escolhido por combinar uma complexidade assintótica polinomial com uma facilidade de implementação razoável.
 
-Como é costumeiro na implementação de expressões regulares, o match é realizado caso qualquer substring do input faça match. O método de simulação paralela leva vantagem por necessitar de pouca alteração para suportar este modo de execução.
+Como é costumeiro na implementação de expressões regulares, o match é realizado caso qualquer substring do input pertença à linguagem definida. O método de simulação paralela leva vantagem por necessitar de pouca alteração para suportar este modo de execução.
 
 A implementação baseia-se em ciclos de consumo, onde um conjunto de estados iniciais passam simultâneamente por uma transição pelo mesmo caractere $c$ para um conjunto de estados sequentes.
 
-Para representar os estados, utilizamos duas listas, A e B, que em todo momento representam o conjunto de estados \emph{de consumo} alcançados até o início da avaliação do caractere atual (A) e o conjunto de estados que a avaliação do caractere atual irá alcançar (B). Após a avaliação de cada caractere estas listas são invertidas. 
+Para representar os estados, utilizamos duas listas, A e B, que em todo momento representam respectivamente: o conjunto de estados \emph{de consumo} alcançados até o início da avaliação do caractere atual (A) e o conjunto de estados que a avaliação do caractere atual irá alcançar (B). Após a avaliação de cada caractere estas listas são invertidas. 
 
-Cada estado nestas listas vem acompanhado da posição na string original onde o match começou. Esta informação é criada quando o estado inicial é colocado na lista para cada um dos caracteres. Ela é então copiada cada vez que o estado é resolvido e avança para seus sucessores. Na lista, o estado é representado por uma tupla $(start, j)$, onde $start$ representa a posição na entrada onde o match começou e $j$ é o índice do estado.
+Cada estado nestas listas vem acompanhado da posição na string original onde o match começou. Esta informação é criada quando o estado inicial é colocado na lista para cada um dos caracteres. Ela é então copiada cada vez que o estado é resolvido e avança para seus sucessores. Na lista, o estado é representado por uma tupla $(start, j)$, onde $start$ representa a posição na entrada onde o match começou e $j$ é o índice do estado atual.
 
 É importante ressaltar que um mesmo estado nunca entra na lista B duas vezes no mesmo ciclo de consumo. Esta verificação é efetuada pelo array V, que controla o índice do último caractere onde cada estado entrou na lista de estados. Inicialmente, esta lista está preenchida com valores -1.
 
@@ -992,7 +998,7 @@ Valendo-se da implementação do método \emph{matcher} foi possível construir 
 ./view.py a+b+c+ aabbbcccc
 \end{verbatim}
 
-No exemplo, a execução do programa iria mostrar os passos do match desta expressão regular. O autômato gerado pode ser visualizado na fitgura~\ref{fig:view_automaton}. Alguns passos da execução podem ser vistos nas figuras~\ref{fig:exemplo_view_passo_3} e \ref{fig:exemplo_view_passo_6}.
+No exemplo, a execução do programa iria mostrar os passos do match desta expressão regular. O autômato gerado pode ser visualizado na figura~\ref{fig:view_automaton}. Alguns passos da execução podem ser vistos nas figuras~\ref{fig:exemplo_view_passo_3} e \ref{fig:exemplo_view_passo_6}.
 
 \begin{figure}[!htbp]
   \centering
@@ -1093,7 +1099,7 @@ Uma forma fácil de verificar esta diferença é comparar o match da expressão 
 
 \section{Match de backreferences: um problema NP-difícil}
 
-Durante o capítulo~\ref{cap:theory} foram demonstradas diversas formas de simular o autômato construído a partir da expressão regular. Cada uma delas tem características particulares de complexidade de tempo e espaço, além de dificuldades de implementação diversas.
+Durante o capítulo~\ref{cap:theory} foram mostradas diversas formas de simular o autômato construído a partir da expressão regular. Cada uma delas tem características particulares de complexidade de tempo e espaço, além de dificuldades de implementação diversas.
 
 O que se propõe nesta seção é demonstrar que qualquer implementação de expressões regulares que suporte backreferences necessariamente torna o \emph{MATCH} um problema NP-difícil. Este resultado, apesar de não provar que estas implementações são intratáveis computacionalmente (o que envolveria provar que $P \neq NP$), na prática mostra que qualquer algoritmo conhecido é suficientemente ineficiente para aplicações onde o tempo de execução é crítico.
 
@@ -1267,13 +1273,33 @@ Este resultado mostra ainda como certas otimizações estáticas permitem que a 
 
 \section{Contribuição}
 
-A principal contribuição neste trabalho foi uma implementação didática de expressões regulares utilizando o método de construção de Thompson. Nela foi utilizada uma forma simples de representar os estados do autômato finito não-determinístico como instruções de uma máquina abstrata, que pode ser implementada em qualquer plataforma. Aqui foi implementada em Python para fins de simplicidade e didática.
+A principal contribuição neste trabalho foi uma implementação didática de expressões regulares utilizando o método de construção de Thompson. Nela foi utilizada uma forma simples de representar os estados do autômato finito não-determinístico como instruções de uma máquina abstrata que pode ser implementada em qualquer plataforma. Aqui foi implementada em Python para fins de simplicidade e didática.
 
 Os resultados alcançados foram bastante satisfatórios, mostrando que é possível implementar expressões regulares com algoritmos polinomiais. A implementação, apesar de não ser a mais eficiente para casos triviais, mostrou-se muito útil para demonstrar didaticamente a teoria apresentada no capítulo~\ref{cap:theory}.
 
-O capítulo~\ref{cap:analysis} mostrou com sucesso que o problema reconhecimento de expressões regulares com backreferences é NP-difícil; mostrou também a incapacidade de implementações em linguagens como Python, Ruby e Java de reconhecê-las em tempo polinomial, mesmo para expressões sem backreferences.
+No capítulo~\ref{cap:analysis} mostrou-se com sucesso que o problema reconhecimento de expressões regulares com backreferences é NP-difícil; mostrou-se também a incapacidade de implementações em linguagens como Python, Ruby e Java de reconhecê-las em tempo polinomial, mesmo para expressões sem backreferences.
 
 Estes resultados confirmam a necessidade de parcimônia ao utilizar expressões regulares, principalmente em softwares compartilham recursos de hardware entre vários usuários, e.g. sites e outros serviços de rede.
+
+\section{Funcionalidades não-implementadas}
+
+Enquanto o principal objetivo neste trabalho era apresentar uma implementação simples de expressões regulares, algumas funcionalidades comuns em implementações modernas foram propositalmente ignoradas. Enquanto algumas delas podem ser implementadas facilmente sem sacrificar complexidade de tempo, outras necessariamente tornariam o match exponencial.
+
+\begin{description}
+	\item[Classes de caracteres:] Para facilitar a escrita de expressões, muitas implementações disponibilizam conjuntos pré-definidos de caracteres. Exemplos incluem $\backslash w$, que inclui letras, números e underscore; ou $\backslash d$, que inclui todos os caracteres numéricos. Também deveria ser possível reconhecer classes customizadas, e.g. $[0-9a-fA-F]$, para caracteres aceitáveis num número na base hexadecimal.
+
+	\item[Suporte a Unicode:] Uma implementação moderna de expressões regulares precisa dar suporte a strings Unicode. Apesar de não mudar a complexidade de execução do algoritmo, a implementação precisa ter cuidado com muitos detalhes, e.g. a definição do que é um caractere aceitável numa palavra ($\backslash w$) varia conforme a codificação.
+
+	\item[Captura de grupos:] A possibilidade capturar grupos pode ser importante para extrair informações de strings. Por exemplo, para capturar números separados por vírgula, seria possível escrever a expressão $(\backslash d+),(\backslash d+)$. Assim, a primeira captura seria o primeiro número e a segunda o segundo número.
+
+	\item[Repetições contadas:] Poder definir a repetição de um grupo um número finito de vezes. A expressão $a\{2,4\}$ reconhece exatamente as strings $aa$, $aaa$ e $aaaa$. Apesar de ser fácil implementar usando autômatos (basta reescrever a expressão para $aaa?a?$. Porém, esta reescrita pode ter um crescimento exponencial. Um exemplo é a expressão $a\{1000000\}$. Onde uma expressão com 10 caracteres gera um autômato com no mínimo um milhão de estados.
+	
+	\item[\emph{Zero-width assertions}:] Algumas vezes pode ser necessário condicionar o match de um grupo ao match de outras strings em volta da região do match principal. Exemplos incluem o match de fronteiras de palavra ($\backslash b$), que pode ser útil ao buscar por uma palavra inteira numa string. A expressão $\backslash bpalavra\backslash b$, por exemplo, procura por $palavra$ na entrada desde que não seja uma substring de nenhuma outra palavra.
+	
+	\item[\emph{Backreferences}:] Como já mencionado no capítulo~\ref{cap:analysis}, backreferences são a capacidade de referenciar outros grupos de captura. Foi provado também que esta funcionalidade torna o match um problema NP-difícil.
+		
+\end{description}
+
 
 \section{Trabalhos Futuros}
 
