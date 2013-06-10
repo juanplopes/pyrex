@@ -3,12 +3,12 @@
 echo '(a?a)+b' > input1.txt
 echo 'n' > bench1.txt
 
-for i in $(seq 1 42); 
+for i in $(seq 0 2 42); 
 do 
     eval printf 'a%0.s' {1..$i} >> input1.txt
     echo >> input1.txt
     echo $i >> bench1.txt
 done
 
-./bench_run input1.txt bench1.txt 10
+./bench_run input1.txt bench1.txt ${1:-16}
 rm input1.txt

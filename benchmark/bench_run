@@ -25,10 +25,13 @@ do
 
     for i in $(seq 1 $3); 
     do 
-        echo "    execution #$i"
-        mv result_${runner}.txt result_${runner}.tmp
-        "./bench_${runner}" < $1 | paste result_${runner}.tmp - > result_${runner}.txt
-        rm result_${runner}.tmp
+        echo -n "    execution #$i... "
+        TIMEFORMAT='%lU'
+        time (
+            mv result_${runner}.txt result_${runner}.tmp;
+            "./bench_${runner}" < $1 | paste result_${runner}.tmp - > result_${runner}.txt;
+            rm result_${runner}.tmp;
+        )
     done    
 
     mv $2 $2.tmp

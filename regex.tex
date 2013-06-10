@@ -5,6 +5,7 @@
 \usepackage[utf8]{inputenc} % Determina a codificacao utiizada
 
 \usepackage{array}
+\usepackage{pgfplotstable}
 
 \usepackage{caption}
 \usepackage{subcaption}
@@ -139,7 +140,6 @@
 \end{folhadeaprovacao}
 
 \pretextualchapter{Dedicatória}
-
   \vfill\vfill
     \hfill À minha esposa, Jacqueline.
   \vfill
@@ -164,11 +164,9 @@
 
 \refbibliografica
 
-Na teoria, expressões regulares constituem uma notação para definir linguagens regulares em termos de operações recursivas simples. São equivalentes a autômatos finitos em seu poder expressivo. Na prática entretanto, enquanto ferramentas extremamente populares, as expressões regulares modernas afastaram-se bastante da teoria que as originou. 
+Na teoria, expressões regulares constituem uma notação para definir linguagens regulares em termos de operações recursivas simples. São equivalentes a autômatos finitos em seu poder expressivo. Na prática, apesar de serem ferramentas extremamente populares, as implementações modernas afastaram-se bastante da teoria que as originou. A maior parte das mudanças aconteceu para permiti-las alcançar um poder de expressão maior. Entretanto, esta conveniência trouxe o custo de tornar o \emph{match} um problema mais difícil computacionalmente do que a teoria descreve. Na maior parte das linguagens modernas o \emph{match} de \emph{regexes} (como são comumente conhecidas) é um problema NP-difícil. Além disso, por particularidades nas implementações, mesmo expressões que poderiam ser reconhecidas em tempo polinomial são resolvidas com soluções exponenciais. 
 
-A maior parte das mudanças aconteceu para permiti-las alcançar um poder de expressão maior. Entretanto, esta conveniência trouxe o custo de tornar o \emph{match} um problema mais difícil computacionalmente do que a teoria descreve. Na maior parte das linguagens modernas o \emph{match} de \emph{regexes} (como são comumente conhecidas) é um problema NP-difícil. Além disso, por particularidades nas implementações, mesmo expressões que poderiam ser reconhecidas em tempo polinomial são resolvidas com soluções exponenciais. 
-
-O objetivo neste trabalho é analisar as armadilhas comuns no desenvolvimento de expressões regulares, realizando benchmarks entre diversas implementações populares, apontando funcionalidades que impediriam sua execução polinomial. Também sugere uma implementação simples e didática que tem, no pior caso, desempenho nas ordens de grandeza superior às bibliotecas-padrão de muitas linguagens.
+Neste trabalho são analisadas as armadilhas comuns no desenvolvimento de expressões regulares, realizando benchmarks entre diversas implementações populares, apontando funcionalidades que impediriam sua execução polinomial. É sugerida uma implementação simples e didática que garante tempo de execução polinomial, no pior caso.
 
 \noindent {Palavras-chave}: Teoria da computação. Expressões regulares. Linguagens regulares. Autômatos finitos. Complexidade computacional. Algoritmos. NP-difícil.
 
@@ -178,11 +176,9 @@ O objetivo neste trabalho é analisar as armadilhas comuns no desenvolvimento de
 
 \pretextualchapter{Abstract}
 
-In theory, regular expressions are a notation to define regular languages in terms of simple recursive operations. Are equivalent to finite automata in its expressive power. In practice however, while very popular tools, modern regular expressions did deviate from the theory that gave them origin.
+In theory, regular expressions are a notation to define regular languages in terms of simple recursive operations. They are equivalent to finite automata in its expressive power. In practice, modern regular expressions implementations deviated from the original theory. Most changes were made to allow them reach a greater expressive power. This convenience, however, came at the cost of making the match a harder problem than it could be. In most modern languages, the regex match is a NP-hard problem. Besides, the way they are implemented makes even expressions that could be recognized in polynomial time to be solved with exponential algorithms.
 
-Most of the changes happened to allow them to reach a greater expressive power. This convenience, however came at the cost of making the match a computationally harder problem than what theory describes. In most of the modern languages, the regex match (as it is commonly known) is a NP-hard problem. Besides, the way they are implemented makes even expressions that could be recognized in polynomial time to be solved with exponential algorithms.
-
-This work aims to analyze the common pitfalls in regular expressions development, measuring performance with benchmarks of the most popular implementations, pointing the features that could not be implemented in polynomial time. Also it suggests a simple and didactic implementation which has superior worst-case performance than many language's standard libraries.
+This work aims to analyze the common pitfalls in regular expressions development, measuring performance with benchmarks of the most popular implementations, pointing features that could not be implemented in polynomial time. Also it suggests a simple and didactic implementation which has superior worst-case performance than most popular implementations.
 
 \noindent {Keywords}: Computation theory. Regular expressions. Regular languages. Finite automata. Computational complexity. Algorithms. NP-hard.
 
@@ -210,7 +206,7 @@ Seu extensivo uso vem precedido por uma forte base teórica na área de autômat
 
 Expressões regulares e autômatos finitos compartilham uma relação estreita. São equivalentes em poder expressivo, e a conversão do primeiro para o segundo é trivial, como pode ser visto na figura \ref{fig:exemplo_automato}. Ken Thompson demonstrou isso em sua implementação no final dos anos 60 \cite{bib:Thompson68}, enquanto desenvolvia o editor de texto \emph{QED}. As mesmas expressões regulares foram, posteriormente, portadas para os mais conhecidos \emph{ed} e \emph{grep}, integrantes do sistema operacional Unix.
 
-\begin{figure}[ht]
+\begin{figure}[!htbp]
   \centering
   \includegraphics[scale=0.3]{figures/exemplo_automato.png}
   \caption{Exemplo de autômato para expressão regular $(a|a)+b$}
@@ -223,7 +219,7 @@ Uma das consequências mais notáveis desta evolução não planejada é que o r
 
 A figura \ref{fig:benchmark1} mostra o crescimento no tempo de execução entre a implementação da biblioteca padrão da linguagem Python e a implementação proposta neste projeto, usando o método de Thompson. 
 
-\begin{figure}[ht]
+\begin{figure}[!htbp]
 \centering
 \begin{tikzpicture}
 	\begin{semilogyaxis}[xlabel=n, ylabel=tempo (s), legend columns=5, cycle list name=black white]
@@ -425,7 +421,7 @@ Segundo Noam Chomsky \cite{bib:Chomsky57}, uma gramática formal pode ser classi
 
 Como pode ser visto no diagrama da figura~\ref{fig:chomsky}, cada conjunto é propriamente incluso no seu conjunto superior na hierarquia. Há entretanto uma ligeira exceção, entre a classe das livres de contexto e das sensíveis ao contexto, na situação de geração de empty.
 
-\begin{figure}[ht]
+\begin{figure}[!htbp]
   \centering
   \includegraphics[scale=0.5]{figures/chomsky.png}
   \caption{Representação da inclusão de conjuntos na hiearquia de Chomsky}
@@ -506,7 +502,7 @@ Outros operadores sobre caracteres como o $.$ (qualquer caractere) e as classes 
 
 A precedência natural dos operadores, da mais fraca para a mais forte, é: alternância, concatenação, repetição. Assim, uma expressão como $ab|cd*$ é interpretada como exibido na figura~\ref{fig:abcd_parse_tree}.
 
-\begin{figure}[ht]
+\begin{figure}[!htbp]
   \centering
   \includegraphics[scale=0.4]{figures/abcd_parse_tree.png}
   \caption{Árvore de avaliação para expressão $ab|cd*$}
@@ -547,7 +543,7 @@ Autômatos finitos representam um modelo matemático de computação. Eles repre
 
 Por exemplo:
 
-\begin{figure}[ht]
+\begin{figure}[!htbp]
   \centering
   \includegraphics[scale=0.3]{figures/exemplo_automato_numerado.png}
   \caption{Diagrama de estados de um autômato não-determinístico}
@@ -575,7 +571,7 @@ Este autômato é \emph{não determinístico}, pois se a máquina reconhecedora 
 
 Autômatos finitos não-determinísticos também aceitam um tipo de entrada especial $\epsilon$, que não consome caracteres da entrada, como pode ser visto na figura~\ref{fig:exemplo_automato_epsilon}. Perceba que este autômato \emph{não é equivalente} ao definido anteriormente. Ele aceita uma palavra $b$ que o primeiro não aceita.
 
-\begin{figure}[ht]
+\begin{figure}[!htbp]
   \centering
   \includegraphics[scale=0.3]{figures/exemplo_automato_epsilon.png}
   \caption{Diagrama de estados de um autômato não-determinístico com entrada $\epsilon$}
@@ -612,7 +608,7 @@ Podemos definir uma gramática gerativa simples pela notação EBNF (\emph{Exten
 
 Assim, a expressão pode ser facilmente analisada. Por exemplo, a expressão $(a|a)+b$ seria avaliada como a árvore descrita na figura~\ref{fig:aab_parse_tree}.
 
-\begin{figure}[ht]
+\begin{figure}[!htbp]
   \centering
   \includegraphics[scale=0.5]{figures/aab_parse_tree.png}
   \caption{Árvore de avaliação para expressão $(a|a)+b$}
@@ -634,7 +630,7 @@ Com esta árvore de avaliação é possível fazer a conversão para o autômato
 
 A figura~\ref{fig:nova_notacao} mostra como podem ser representados os estados desta nova notação no diagrama de estados.
 
-\begin{figure}[ht]
+\begin{figure}[!htbp]
   \centering
   \includegraphics[scale=0.5]{figures/nova_notacao.png}
   \caption{Representação de estados na nova notação}
@@ -643,7 +639,7 @@ A figura~\ref{fig:nova_notacao} mostra como podem ser representados os estados d
 
 Esta representação facilita a visualização por omitir as transições $\epsilon$ e ressaltar a diferença entre os estados de consumo e os estados de decisão. Um exemplo de conversão para a nova notação pode ser visto na figura~\ref{fig:exemplo_nova_notacao}.
 
-\begin{figure}[ht]
+\begin{figure}[!htbp]
   \centering
   \includegraphics[scale=0.25]{figures/exemplo_nova_notacao.png}
   \caption{Mesmo autômato representado com as duas notações}
@@ -680,7 +676,7 @@ A tabela a seguir mostra a conversão para cada tipo de nó. Para fins de notaç
 
 Para converter um autômato usando estas regras, basta percorrer a árvore de avaliação de baixo para cima, inicialmente transformando todos os literais e recursivamente usando-os como insumo para os nós superiores. A figura~\ref{fig:exemplo_automato_completo} mostra um exemplo de conversão utilizando a expressão $(a|a)+b$.
 
-\begin{figure}[ht]
+\begin{figure}[!htbp]
   \centering
   \includegraphics[scale=0.33]{figures/exemplo_automato_completo.png}
   \caption{Exemplo completo de autômato para a expressão $(a|a)+b$}
@@ -764,7 +760,7 @@ O objetivo é que durante a execução, seja lido um caractere por vez. Então, 
 
 A figura~\ref{fig:nfa_simultaneo} mostra a execução do autômato gerado para a expressão regular $(a|a)+b$ contra a entrada $aa$.
 
-\begin{figure}[ht]
+\begin{figure}[!htbp]
   \centering
   \includegraphics[scale=0.5]{figures/nfa_simultaneo.png}
   \caption{Passos do \emph{match} da expressão $(a|a)+b$ contra a entrada \emph{aab}}
@@ -788,7 +784,7 @@ Durante a simulação paralela, os estados ativados simultaneamente correspondem
 \emph{Desvantagem}: Pior caso ainda é $O(n \times m)$. Precisa de memória adicional para guardar os estados executados e o cache de estados do DFA. Implementação consideravelmente mais complexa.
 
 %======================================================================================
-\chapter{Implementação}
+\chapter{Implementação}\label{cap:implementation}
 %======================================================================================
 
 Neste capítulo será apresentada a implementação da biblioteca \emph{PyRex} (expressões regulares em Python). A implementação na íntegra pode ser visualizada no apêndice~\ref{app:full_source}.
@@ -884,7 +880,7 @@ Como definido na seção~\ref{sec:Notacao} (página~\pageref{sec:Notacao}), a no
 
 A figura~\ref{fig:exemplo_automato_puro} e as listagens \ref{lst:automaton_array} e \ref{lst:automaton_instr} representam a expressão regular $(a|a)+b$. Apenas a forma em array é armazenada na instância da classe Machine para execução. Entretanto, a forma em instruções pode ser gerada através do método \emph{\_\_repr\_\_} da mesma classe.
 
-\begin{figure}[ht]
+\begin{figure}[!htbp]
   \centering
   \includegraphics[scale=0.4]{figures/exemplo_automato_puro.png}
   \caption{Representação do autômato como diagrama de estados}
@@ -998,14 +994,14 @@ Valendo-se da implementação do método \emph{matcher} foi possível construir 
 
 No exemplo, a execução do programa iria mostrar os passos do match desta expressão regular. O autômato gerado pode ser visualizado na fitgura~\ref{fig:view_automaton}. Alguns passos da execução podem ser vistos nas figuras~\ref{fig:exemplo_view_passo_3} e \ref{fig:exemplo_view_passo_6}.
 
-\begin{figure}[ht]
+\begin{figure}[!htbp]
   \centering
   \includegraphics[scale=0.35]{figures/view_automaton.png}
   \caption{Autômato para expressão $a+b+c+$}
   \label{fig:view_automaton}
 \end{figure}
 
-\begin{figure}[ht]
+\begin{figure}[!htbp]
   \centering
 \begin{verbatim}
 Best answer: <none>
@@ -1033,7 +1029,7 @@ Esta forma de exibir mostra o estado atual de todos os fluxos executando pelo au
 \end{itemize}
 
 
-\begin{figure}[ht]
+\begin{figure}[!htbp]
   \centering
 \begin{verbatim}
 Best answer: aabbbc (0, 6)
@@ -1064,7 +1060,7 @@ A ferramenta utiliza o método matcher, que retorna um iterador que, a cada iter
 O código-fonte completo da ferramenta pode ser visto no apêndice~\ref{app:view_source}.
 
 %======================================================================================
-\chapter{Análise dos Resultados}
+\chapter{Análise dos Resultados}\label{cap:analysis}
 %======================================================================================
 
 Neste capítulo serão abordadas as principais diferenças entre a implementação proposta neste trabalho em comparação com outras implementações populares.
@@ -1095,43 +1091,6 @@ Este comportamento é coerente com o artigo original de Thompson e, consequentem
 
 Uma forma fácil de verificar esta diferença é comparar o match da expressão $a*(b|abc)$ contra a string $abc$. A implementação padrão do Python retornaria a string $ab$. A implementação neste projeto encontrará a string $abc$. A diferença é que a primeira tenta avaliar o máximo que pode na repetição $a*$, enquanto a segunda consegue visualizar globalmente os matches possíveis.
 
-\section{Desempenho em Casos Exponenciais}
-
-\begin{figure}[ht]
-\centering
-\begin{tikzpicture}
-	\begin{semilogyaxis}[xlabel=n, ylabel=tempo (s), legend columns=5, cycle list name=black white]
-	\addplot table[x=n,y=pyrex] {benchmark/bench1.txt};
-	\addplot table[x=n,y=python] {benchmark/bench1.txt};
-	\addplot table[x=n,y=ruby] {benchmark/bench1.txt};
-	\addplot table[x=n,y=java] {benchmark/bench1.txt};
-	\legend{pyrex, python, ruby, java}
-	\end{semilogyaxis}
-\end{tikzpicture}
-\caption{Tempo de execução (em escala logarítmica) para match de $a^n$ contra $(a?a)+b$}
-\label{fig:graph_bench_1}
-\end{figure}
-
-\section{Desempenho em Casos Triviais}
-
-TBD
-
-\begin{figure}[ht]
-\centering
-\begin{tikzpicture}
-	\begin{semilogyaxis}[xlabel=n, ylabel=tempo (s), legend columns=5, cycle list name=black white]
-	\addplot table[x=n,y=pyrex] {benchmark/bench2.txt};
-	\addplot table[x=n,y=python] {benchmark/bench2.txt};
-	\addplot table[x=n,y=ruby] {benchmark/bench2.txt};
-	\addplot table[x=n,y=java] {benchmark/bench2.txt};
-	\legend{pyrex, python, ruby, java}
-	\end{semilogyaxis}
-\end{tikzpicture}
-\caption{Tempo de execução (em escala logarítmica) para match de $a^n$ contra $a*$}
-\label{fig:graph_bench_2}
-\end{figure}
-
-
 \section{Match de backreferences: um problema NP-difícil}
 
 Durante o capítulo~\ref{cap:theory} foram demonstradas diversas formas de simular o autômato construído a partir da expressão regular. Cada uma delas tem características particulares de complexidade de tempo e espaço, além de dificuldades de implementação diversas.
@@ -1145,7 +1104,7 @@ A classe de problemas NP-difíceis (\emph{Non-deterministic Polynomial-time hard
 A classe NP diz respeito a todos os problemas de \emph{decisão} que podem ser resolvidos em tempo polinomial em uma máquina de Turing não-determinística. Isto inclui também os problemas de decisão que podem ser resolvidos em máquinas de Turing determinísticas em tempo polinomial (conjunto P). Não há até o momento qualquer prova conclusiva se há algum problema em NP que não esteja também em P. Também não se sabe se todos os problemas de NP estão em P. A figura \ref{fig:p_np} mostra como seria o diagrama de conjuntos em ambos os casos.
 
 
-\begin{figure}[ht]
+\begin{figure}[!htbp]
 \centering
 \begin{subfigure}{.5\textwidth}
   \centering
@@ -1183,15 +1142,15 @@ onde $A_{ij}$ pode ser tanto uma variável ($X$) quanto a negação de uma vari�
 
 \subsection{Match de backreferences}
 
-Durante o reconhecimento de expressões regulares, uma funcionalidade comum em implementações modernas é a capacidade de definir grupos de captura. Uma expressão $(a+)(b+)(c+)$ teria quatro grupos de captura, numerados de 0 a 3. E o reconhecimento de uma string com esta expressão resultaria em uma tupla com o valor capturado por cada um dos grupos. A string $aabbbcccc$ resultaria nas capturas $(aabbbcccc, aa, bbb, cccc)$.
+Durante o reconhecimento de expressões regulares, uma funcionalidade comum em implementações modernas é a capacidade de definir grupos de captura. Uma expressão $(a+)(b+)(c+)$ teria quatro grupos de captura, numerados de 0 a 3. E o reconhecimento de uma string com esta expressão resultaria em uma tupla com o valor capturado por cada um dos grupos. A string $aabbbcccc$ resultaria nas capturas $(aa, bbb, cccc)$.
 
 Baseado nesta funcionalidade, muitas implementações modernas adicionam a capacidade de referenciar tais grupos de captura ainda durante o match de uma string. Por exemplo, dada uma linguagem $L = \{a^nba^n \mid n \in \mathbb{N}\}$, seria possível denotá-la com a expressão $(a*)b \backslash 1$. A referência ao grupo de captura 1 $(a*)$ se dá pela expressão $\backslash 1$.
 
-Denotaremos aqui o problema de match de backreferences aqui como $MATCH(e, s)$ onde $e$ é uma expressão regular com backreferences e $n$ grupos de captura e $s$ a string a ser reconhecida. O objetivo é encontrar tupla $r = (s_0, s_1, \cdots, s_n)$, onde $s_i$ são substrings de $s$. A definição de $MATCH(e, s)$ é: existe tupla $r$ que pertença a linguagem definida pela expressão $e$?
+Denotaremos aqui o problema de match de backreferences aqui como $MATCH(e, s)$ onde $e$ é uma expressão regular com backreferences e $n$ grupos de captura e $s$ a string a ser reconhecida. O objetivo é encontrar tupla $r = (s_1, s_2, \cdots, s_n)$, onde $s_i$ são substrings de $s$. A definição de $MATCH(e, s)$ é: existe tupla $r$ que pertença a linguagem definida pela expressão $e$?
 
-\subsection{MATCH em NP-difícil}
+\subsection{Implementação de 3SAT com expressões regulares}
 
-Para provar que um problema pertence a NP-díficil, basta provar que existe um problema em NP-completo que se reduz a ele em tempo polinomial. Aqui será usado 3SAT para tal prova.
+Para provar que um problema pertence a NP-díficil, basta provar que existe um problema em NP-completo que se reduz a ele em tempo polinomial. Usaremos 3SAT para tal prova.
 
 Dada uma expressão booleana denotada na 3CNF, é possível construir uma expressão regular com backreferences que reconhece uma string em especial se e somente se a expressão booleana tiver uma interpretação válida.
 
@@ -1205,7 +1164,7 @@ Como exemplo, pode-se observar a expressão booleana
 (\neg x_1 \lor \neg x_2 \lor \neg x_3).
 \end{equation*}
 
-É possível representar esta expressão booleana através da expressão regular
+É possível construir uma expressão regular que represente esta expressão, e.g.
 
 \setlength\abovedisplayskip{0pt}
 \begin{equation*}
@@ -1216,34 +1175,123 @@ Como exemplo, pode-se observar a expressão booleana
                    (?:\backslash 1x|\backslash 2x|\backslash 3x), \$
 \end{equation*}
 
-Ao tentar realizar match desta expressão com a string $xxx;x,x,x,x$ o resultado será a tupla de strings $(`xxx;x,x,x,x', `x', `', `x')$, denotando que caso $x_1 = verdadeiro, x_2 = falso, x_3 = verdadeiro$, a expressão original será satisfeita.
+Ao tentar realizar match desta expressão com a string $xxx;x,x,x,x,$ o resultado será a tupla de strings $(`x', `', `x')$, denotando que caso $x_1 = verdadeiro, x_2 = falso, x_3 = verdadeiro$, a expressão original será satisfeita.
+
+A primeira parte da expressão denota os grupos iniciais onde entre 0 e 3 variáveis podem ser verdadeiras (reconhecendo `x'). A segunda parte da expressão define as cláusulas. Toda cláusula começa com a definição de um grupo que não gera captura, $(?:\ldots$. Então cada variável é descrita com uma altenação. $\backslash i$ referencia a variável $x_i$, enquanto $\backslash ix$ denota sua negação.
 
 A listagem~\ref{lst:nphard} mostra uma implementação em Python de 3-SAT utilizando expressões regulares.
 
 \vspace{0.5cm}
-\begin{lstlisting}[caption={Implementação de 3SAT com expressões regulares},label=lst:nphard]
-#!/usr/bin/env python
-import re
+\lstinputlisting[caption={Implementação de 3SAT com expressões regulares},label=lst:nphard]{benchmark/nphard.py}
 
-clauses = [[1,2,-3], [1,-2,3], [-1,-2,3], [-1,-2,-3]]
+\section{Benchmarks}
 
-v = reduce(lambda a, b: max(a, *b), clauses, 0)
-s = v * 'x' + ';' + len(clauses) * 'x,'
-e = '^' + v * '(x?)' + '.*;' + ''.join(
-    '(?:' + '|'.join(
-        '\\' + (str(-x) + 'x' if x < 0 else str(x)) 
-        for x in clause) + '),' 
-    for clause in clauses)
+Apesar do match de backreferences ser um problema NP-difícil, match de expressões regulares por si só não é. O principal objetivo neste trabalho é mostrar que mesmo em casos onde as expressões poderiam ser avaliadas em tempo polinomial, elas não o são em uma grande parte de implementações modernas.
 
-print re.match(e, s).groups() 
-#('x', '', 'x')
-\end{lstlisting}
+Para demonstrar este ponto, foram feitos alguns testes utilizando a mesma expressão regular em diversas implementações e comparando seus tempos de execução em relação ao crescimento da string de entrada. O código-fonte de todos os testes pode ser encontrado no apêndice~\ref{app:benchmarks_source}. Todas as tabelas de valores podem ser encontradas no apêndice~\ref{app:benchmarks_tables}.
+
+Todos os gráficos estão em escala logarítmica, para facilitar a visualização do grande intevalo de valores que cada implementação representa.
+
+\subsection{Benchmark 1: (a?a)+b}
+
+Neste teste a string $a^n$ foi avaliada contra a expressão regular $(a?a)+b$. O objetivo é mostrar o comportamento exponencial de implementações baseadas em backtracking. A expressão escolhida força a escolha para cada caractere da entrada sobre usar ou não o caractere $a$ na expressão $a?$. 
+
+A figura~\ref{fig:graph_bench_1} mostra o tempo de execução para as diferentes implementações. A tabela na seção~\ref{sec:table_bench_1} (p.~\pageref{sec:table_bench_1}) contém os dados para este gráfico.
+
+\begin{figure}[!htbp]
+\centering
+\begin{tikzpicture}
+	\begin{semilogyaxis}[xlabel=n, ylabel=tempo (s), legend columns=5, cycle list name=black white]
+	\addplot table[x=n,y=pyrex] {benchmark/bench1.txt};
+	\addplot table[x=n,y=python] {benchmark/bench1.txt};
+	\addplot table[x=n,y=ruby] {benchmark/bench1.txt};
+	\addplot table[x=n,y=java] {benchmark/bench1.txt};
+	\legend{pyrex, python, ruby, java}
+	\end{semilogyaxis}
+\end{tikzpicture}
+\caption{Tempo de execução (em escala logarítmica) para match de $a^n$ contra $(a?a)+b$}
+\label{fig:graph_bench_1}
+\end{figure}
+
+Um ponto interessante a ser observado é que a implementação em Java, que inicialmente tem a pior constante de todas, rapidamente sofre compilação JIT (\emph{Just in Time}), que faz com que o tempo de execução caia bastante, porém mantendo seu caráter exponencial.
+
+\subsection{Benchmark 2: a*b}
+
+Neste teste, o objetivo era demonstrar a alta constante da implementação PyRex em casos onde o tempo de execução é linear para todas as implementações.
+
+A figura~\ref{fig:graph_bench_2} mostra o tempo de execução para as diferentes implementações. A tabela na seção~\ref{sec:table_bench_2} (p.~\pageref{sec:table_bench_2}) contém os dados para este gráfico.
+
+\begin{figure}[!htbp]
+\centering
+\begin{tikzpicture}
+	\begin{semilogyaxis}[xlabel=n, ylabel=tempo (s), legend columns=5, cycle list name=black white]
+	\addplot table[x=n,y=pyrex] {benchmark/bench2.txt};
+	\addplot table[x=n,y=python] {benchmark/bench2.txt};
+	\addplot table[x=n,y=ruby] {benchmark/bench2.txt};
+	\addplot table[x=n,y=java] {benchmark/bench2.txt};
+	\legend{pyrex, python, ruby, java}
+	\end{semilogyaxis}
+\end{tikzpicture}
+\caption{Tempo de execução (em escala logarítmica) para match de $a^n$ contra $a*b$}
+\label{fig:graph_bench_2}
+\end{figure}
+
+É possível observar uma clara desvantagem de implementações em código gerenciado (PyRex e Java) contra outras implementações escritas em C (Ruby e Python) para casos onde a complexidade de tempo é linear.
+
+\subsection{Benchmark 3: a*a*a*a*a*b}
+
+Neste teste, o objetivo era demonstrar como mesmo em casos onde implementações baseadas em backtracking não geram tempos de execução exponenciais, ainda assim é possível alcançar tempos de execução super-lineares. Esta expressão força um backtracking para consumo de várias repetições $a*$. O tempo de execução esperado para implementações baseadas em backtracking é da $O(n^5)$.
+
+A figura~\ref{fig:graph_bench_3} mostra o tempo de execução para as diferentes implementações. A tabela na seção~\ref{sec:table_bench_3} (p.~\pageref{sec:table_bench_3}) contém os dados para este gráfico.
+
+\begin{figure}[!htbp]
+\centering
+\begin{tikzpicture}
+	\begin{semilogyaxis}[xlabel=n, ylabel=tempo (s), legend columns=5, cycle list name=black white]
+	\addplot table[x=n,y=pyrex] {benchmark/bench3.txt};
+	\addplot table[x=n,y=python] {benchmark/bench3.txt};
+	\addplot table[x=n,y=ruby] {benchmark/bench3.txt};
+	\addplot table[x=n,y=java] {benchmark/bench3.txt};
+	\legend{pyrex, python, ruby, java}
+	\end{semilogyaxis}
+\end{tikzpicture}
+\caption{Tempo de execução (em escala logarítmica) para match de $a^n$ contra $a*a*a*a*a*b$}
+\label{fig:graph_bench_3}
+\end{figure}
+
+Este resultado mostra ainda como certas otimizações estáticas permitem que a implementação do Ruby mantenha seu tempo de execução linear enquanto a implementação do Python, que também é escrita em C, tenha uma complexidade de tempo maior que a do PyRex.
 
 %======================================================================================
 \chapter{Conclusão}
 %======================================================================================
 
-TBD
+\section{Contribuição}
+
+A principal contribuição neste trabalho foi uma implementação didática de expressões regulares utilizando o método de construção de Thompson. Nela foi utilizada uma forma simples de representar os estados do autômato finito não-determinístico como instruções de uma máquina abstrata, que pode ser implementada em qualquer plataforma. Aqui foi implementada em Python para fins de simplicidade e didática.
+
+Os resultados alcançados foram bastante satisfatórios, mostrando que é possível implementar expressões regulares com algoritmos polinomiais. A implementação, apesar de não ser a mais eficiente para casos triviais, mostrou-se muito útil para demonstrar didaticamente a teoria apresentada no capítulo~\ref{cap:theory}.
+
+O capítulo~\ref{cap:analysis} mostrou com sucesso que o problema reconhecimento de expressões regulares com backreferences é NP-difícil; mostrou também a incapacidade de implementações em linguagens como Python, Ruby e Java de reconhecê-las em tempo polinomial, mesmo para expressões sem backreferences.
+
+Estes resultados confirmam a necessidade de parcimônia ao utilizar expressões regulares, principalmente em softwares compartilham recursos de hardware entre vários usuários, e.g. sites e outros serviços de rede.
+
+\section{Trabalhos Futuros}
+
+A implementação apresentada no capítulo~\ref{cap:implementation} abordou os pontos mais básicos do reconhecimento de expressões regulares. Devido à alta densidade de funcionalidades em implementações modernas de expressões regulares, uma nova implementação precisaria resolver outros problemas, antes de ser útil para a industria.
+
+Nesta seção serão discutidas propostas de trabalhos futuros que podem dar continuidade à implementação apresentada, de forma a torná-la apta ao uso em programas comerciais.
+
+\begin{description}
+	\item[Reimplementar a máquina em C:] Uma das vantagens de descrever a expressão regular como instruções de uma máquina abstrata é a capacidade de implementá-la facilmente em qualquer linguagem. Durante os benchmarks, um dos pontos mais visíveis foi a desvantagem de uma implementação puramente em Python ao competir com outras implementações em C nos casos mais triviais. Uma proposta de novo trabalho seria reimplementar esta máquina de execução utilizando uma linguagem de mais baixo nível.
+	
+	\item[Implementar funcionalidades comuns:] Certas funcionalidades presentes em implementações modernas permitem uma representação mais concisa de certas linguagens sem sacrificar a complexidade de tempo do algoritmo. Alguns exemplos notáveis incluem: captura de grupos (sem backreferences); alguns tipos de \emph{zero-width assertions}, como \$ ou $\backslash b$.
+	
+	\item[Realizar um mapeamento completo de funcionalides:] Ao longo do tempo, as funcionalidades em implementações expressões regulares começaram a divergir entre as diversas implementações desenvolvidas. Cada biblioteca implementa uma certa porção utilizando um certo algoritmo. Uma proposta de trabalho seria mapear todas essas funcionalidades, catalogando seu impacto na complexidade dos algoritmos que as implementam.
+	
+	
+\end{description}
+
+
 
 \backmatter
 
@@ -1251,140 +1299,70 @@ TBD
 
 \postextualchapter{Código-fonte da Biblioteca PyRex}\label{app:full_source}
 
-\begin{lstlisting}[caption={Código-fonte da biblioteca PyRex},label=lst:fill_appendice]
-# -*- coding: utf-8 -*-
-from collections import deque
-from functools import reduce
-
-def rex(pattern):
-    tokens = deque(pattern)
-
-    def walk(chars):
-        while tokens and tokens[0] in chars:
-            yield tokens.popleft()
-
-    def option():
-        e = sequence()
-        for token in walk('|'):
-            e2 = sequence()
-            e = [(1, len(e)+2)] + e + [(len(e2)+1,)] + e2
-        return e        
-
-    def sequence():
-        e = []
-        while tokens and tokens[0] not in '|)':
-            e += repetition()
-        return e
-        
-    def repetition():
-        e = primary()
-        for token in walk('?*+'):
-            if token in '+*': e = e + [(1, -len(e))]
-            if token in '?*': e = [(1, len(e)+1)] + e
-        return e
-        
-    def primary():
-        token = tokens.popleft()
-        if token == '.': return [None]
-        if token == '(': return [option(), tokens.popleft()][0]
-        if token not in '?*+)|': return [token]
-        raise Exception('Not expected: "{}"'.format(token))
-
-    e = option()
-    if tokens: 
-        raise Exception('Not expected: "{}"'.format(''.join(tokens)))
-
-    return Machine(e)
-                
-class Machine(object):
-    def __init__(self, states):
-        self.states = states
-        self.n = len(states)
-        
-    def matcher(self, string):
-        A, B, V = list(), list(), [-1]*len(self.states)
-            
-        def addnext(start, i, j):
-            if j==self.n: return 1
-            if V[j] == i: return 0
-            V[j] = i
-
-            if isinstance(self.states[j], tuple):
-                return sum(addnext(start, i, j+k) for k in self.states[j])
-
-            B.append((start, j))
-            return 0
-        
-        def key(a): return (a[1]-a[0], -a[0]) if a else (0, 0)
-
-        answer = None
-        for i, c in enumerate(string):
-            addnext(i, i, 0)
-            yield i, answer, B
-            
-            A, B = B, A
-            del B[:]
-
-            for start, j in A:
-                if self.states[j] in (None, c) and addnext(start, i+1, j+1):
-                    answer = max(answer, (start, i+1), key=key)
-            
-        yield len(string), answer, B
-        
-    def match(self, string):
-        return reduce(lambda answer, s: s[1], self.matcher(string), None)
-     
-    def source(self):
-        for s in self.states:
-            yield ('JUMP ' if isinstance(s, tuple) else 'CONSUME ') + str(s)
-        yield 'MATCH!'
-       
-    def __repr__(self):
-        return '\n'.join('{:04d}: {}'.format(i, s) for i, s in enumerate(self.source()))
-\end{lstlisting}   
+\lstinputlisting[caption={Código-fonte da biblioteca PyRex},label=lst:fill_appendice]{pyrex/pyrex.py}
 
 \postextualchapter{Código-fonte do Visualizador}\label{app:view_source}
 
-\begin{lstlisting}[caption={Código-fonte do Visualizador},label=lst:view_appendice]
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
+\lstinputlisting[caption={Código-fonte do Visualizador},label=lst:view_appendice]{pyrex/view.py}
 
-from __future__ import print_function
-import sys, pyrex
+\postextualchapter{Código-fonte dos Benchmarks}\label{app:benchmarks_source}
 
-try: input = raw_input
-except NameError: pass
+\lstinputlisting[caption={Benchmark 1: (a?a)+b}]{benchmark/bench1}
 
-def simulate(machine, string):
-    for i, answer, state in machine.matcher(string):
-        best = (string[answer[0]:answer[1]] + ' ' + str(answer) if answer else '<none>')
-        print('Best answer: ' + best)
-        print('Input: ' + string)
-        print('       ' + i*' ' + '^' + ' (' + str(i) + ')')
-        print()
-        
-        per_line = {item: str(start)+' >' for start, item in state}
-        
-        for j, line in enumerate(machine.source()):
-            print('{:>5}{:04d}: {}'.format(per_line.get(j, ''), j, line))
+\lstinputlisting[caption={Benchmark 2: a*b}]{benchmark/bench2}
 
-        print('-----')
-        input()
-        
-if __name__ == '__main__':
-    if len(sys.argv) != 3:
-        print('usage: simulator.py <regex> <input>')
-        sys.exit(1)
-        
-    print('-----')
-    print('Matching pattern "{}" against input "{}"'.format(*sys.argv[1:]))
-    print('-----')
-    print()
-    simulate(pyrex.rex(sys.argv[1]), sys.argv[2])
-\end{lstlisting}
-  
+\lstinputlisting[caption={Benchmark 3: a*a*a*a*a*b}]{benchmark/bench3}
+
+\lstinputlisting[caption={Benchmark runner}]{benchmark/bench_run}
+
+\lstinputlisting[caption={Benchmark com PyRex}]{benchmark/bench_pyrex}
+
+\lstinputlisting[caption={Benchmark com Python}]{benchmark/bench_python}
+
+\lstinputlisting[caption={Benchmark com Ruby}]{benchmark/bench_ruby}
+
+\lstinputlisting[caption={Benchmark com Java (compilador)}]{benchmark/bench_java}
+
+\lstinputlisting[caption={Benchmark com Java (fonte)}]{benchmark/java_source.java}
+
+\postextualchapter{Tabelas dos Benchmarks}\label{app:benchmarks_tables}
+
+\section{Benchmark 1: (a?a)+b}
+\label{sec:table_bench_1}
+
+\begin{center}
+\pgfplotstabletypeset[
+    precision=3,
+    every head row/.style={after row=\hline},
+    every last row/.style={after row=\hline},
+    ]{benchmark/bench1.txt}
+\end{center}
+
+\newpage
+\section{Benchmark 2: a*b}
+\label{sec:table_bench_2}
+
+\begin{center}
+\pgfplotstabletypeset[
+    precision=3,
+    every head row/.style={after row=\hline},
+    every last row/.style={after row=\hline},
+    ]{benchmark/bench2.txt}
+\end{center}
+
+\newpage
+\section{Benchmark 3: a*a*a*a*a*b}
+\label{sec:table_bench_3}
+
+\begin{center}
+\pgfplotstabletypeset[
+    precision=3,
+    every head row/.style={after row=\hline},
+    every last row/.style={after row=\hline},
+    ]{benchmark/bench3.txt}
+\end{center}
+
 
 \bibliography{bibliografia}
 
 \end{document}
-
