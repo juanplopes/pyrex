@@ -223,7 +223,7 @@ Expressões regulares e autômatos finitos compartilham uma relação estreita. 
 \begin{figure}[!htbp]
   \centering
   \includegraphics[scale=0.3]{figures/exemplo_automato.png}
-  \caption{Exemplo de autômato para expressão regular $(a|a)+b$}
+  \caption{Exemplo de autômato para expressão regular $(a|a)^*b$}
   \label{fig:exemplo_automato}
 \end{figure}
 
@@ -244,13 +244,13 @@ Linguagens como Python, Java e Ruby são amplamente utilizadas pelo mercado, por
 	\legend{pyrex, python, ruby, java}
 	\end{semilogyaxis}
 \end{tikzpicture}
-\caption{Tempo de execução (em escala logarítmica) para \emph{match} de $a^n$ contra $(a?a)+b$}
+\caption{Tempo de execução (em escala logarítmica) para \emph{match} de $a^n$ contra $(a?a)^+b$}
 \label{fig:benchmark1}
 \end{figure}
 
 Estas implementações tornam o uso de expressões regulares potencialmente inseguro em situações ora triviais. Um usuário mal intencionado pode ser capaz de forçar a execução de uma expressão com caráter exponencial para efetuar um ataque de negação de serviço em um servidor web. 
 
-Por exemplo, ao permitir que entradas do usuário sejam interpretadas como expressões regulares, um usuário mal intencionado pode injetar a expressão $(a?a)+b$, que por sua complexidade exponencial em implementações vulneráveis, ocuparia 100\% de uma CPU por um tempo virtualmente infinito. Vários ataques deste tipo podem causar instabilidade e queda do serviço web.
+Por exemplo, ao permitir que entradas do usuário sejam interpretadas como expressões regulares, um usuário mal intencionado pode injetar a expressão $(a^a)^+b$, que por sua complexidade exponencial em implementações vulneráveis, ocuparia 100\% de uma CPU por um tempo virtualmente infinito. Vários ataques deste tipo podem causar instabilidade e queda do serviço web.
 
 Muitas vezes a prevenção para esse tipo de ataque pode não ser trivial, e.g. em Java, onde métodos comumente usados sobre objetos oriundos da entrada do usuário, como \emph{replaceAll} e \emph{split}, da classe \emph{String} são implementados com expressões regulares vulneráveis a esse tipo de ataque.
 
@@ -264,13 +264,13 @@ Este projeto tem dois objetivos principais. O primeiro é demonstrar através de
 
 A implementação neste projeto não inclui certas funcionalidades comuns nos \emph{sabores} mais modernos de expressão regular. Algumas destas funcionalidades podem ser implementadas sem sacrificar eficiência de execução. Outras, introduzem certa complexidade, porém mantêm a execução do algoritmo polinomial. O restante, entretanto, não é possível implementar sem tornar o algoritmo exponencial no pior caso. Todas as funcionalidades intencionalmente excluídas serão listadas e propostas de soluções serão apresentadas quando cabível.
 
-Deseja-se mostrar com esse projeto que o problema de reconhecimento de expressões regulares pode ser resolvido de maneira eficiente, mesmo com as implementações mais simples, desde que seja observada a base teórica que as deu origem.
+Pretende-se mostrar com esse projeto que o problema de reconhecimento de expressões regulares pode ser resolvido de maneira eficiente, mesmo com as implementações mais simples, desde que seja observada a base teórica que as deu origem.
 
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 \section{Estrutura}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-O projeto está divido em cinco capítulos. Cada um dos próximos capítulos está descrito abaixo.
+O projeto está divido nos cinco capítulos, a saber:
 
 \begin{description}
 
@@ -363,7 +363,7 @@ E.g.: se $A = \{a, aa\}$, então $A^* = \{\epsilon, a, aa, aaa, \ldots\}$.
 
 Existem duas formas principais para se definir linguagens formais. \emph{Gramáticas gerativas}, que geram palavras da linguagem a partir de sistemas de reescrita; e \emph{Autômatos}, que reconhecem palavras da linguagem. 
 
-Além destas, existem diversas outras formas de definir linguagens. As próprias expressões regulares denotam linguagens formais. Outra forma bastante é comum é através da sintaxe de geração de conjuntos, e.g. $L=\{a^n \mid n \in \mathbb{N}\}$.
+Além destas, existem diversas outras formas de definir linguagens. As próprias expressões regulares denotam linguagens formais da classe das regulares. Outra forma bastante é comum é através da sintaxe de geração de conjuntos, e.g. $L=\{a^n \mid n \in \mathbb{N}\}$.
 
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 \section{Gramáticas Gerativas}
@@ -382,7 +382,7 @@ Uma gramática gerativa é formada por uma tupla $G = (N, \Sigma, P, S)$. Onde:
     \item S é o símbolo inicial do sistema de reescrita. $S \in N$.
 \end{itemize}
 
-Um exemplo de gramática é a que define expressões da forma $a^nb^n, n>0$:
+Um exemplo de gramática é a que define cadeias da forma $a^nb^n, n>0$:
 
 \begin{equation*}
 	G = ({\{S\}, \{a,b\}, P, S})
@@ -399,7 +399,7 @@ Onde P é definido por:
 
 Iniciando do símbolo S, é possível começar com a regra $ab$ ou $aSb$. A primeira já forma uma palavra na linguagem que queremos descrever ($ab$), a segunda possui um símbolo não terminal. A partir dele é possível gerar as palavras na linguagem: $aabb$, $aaabbb$, etc...
 
-Perceba que na gramática todas as regras do lado esquerdo possuem apenas um símbolo não terminal. Se fôssemos escrever uma gramática para expressões na forma $a^nb^nc^n$, precisaríamos de uma gramática mais rebuscada:
+Perceba que na gramática todas as regras do lado esquerdo possuem apenas um símbolo não terminal. Se fôssemos escrever uma gramática para cadeias na forma $a^nb^nc^n$, precisaríamos de uma gramática mais rebuscada:
 
 \begin{equation*}
 	G = (\{S, T\}, \{a,b,c\}, P, S)
@@ -448,9 +448,7 @@ Como pode ser visto no diagrama da Figura~\ref{fig:chomsky}, cada conjunto é pr
 
 Gramáticas regulares são aquelas cujas regras de produção são na forma $S \rightarrow a$ ou $S \rightarrow aT$, onde \emph{S} e \emph{T} são não-terminais e \emph{a} é um terminal na linguagem. Estas gramáticas são equivalentes em poder de expressão a \emph{autômatos finitos}. 
 
-Opcionalmente a regra $S \rightarrow aT$ pode ser substituída por $S \rightarrow Ta$, mas nunca as duas podem ocorrer na mesma gramática. Se a primeira ocorre, a gramática é conhecida como \emph{regular à direita}. Caso contrário, é \emph{regular à esquerda}.
-
-Alguns autores também incluem regras do tipo $S \rightarrow \epsilon$, desde que S não apareça do lado direito de nenhuma regra.
+Opcionalmente a regra $S \rightarrow aT$ pode ser substituída por $S \rightarrow Ta$, mas nunca as duas podem ocorrer na mesma gramática. Se a primeira ocorre, a gramática é conhecida como \emph{linear à direita}. Caso contrário, é \emph{linear à esquerda}. \cite{bib:Chomsky58}
 
 Exemplos de linguagens regulares incluem: endereços de email, repetição de caracteres ($a^n$), repetição independente de dois caracteres ($a^nb^m$).
 
@@ -460,26 +458,26 @@ Gramáticas livres de contexto são aquelas onde todas as regras de produção s
 
 Isto na prática significa que a substituição de um não-terminal é sempre feita independente do contexto onde é encontrado. Gramáticas deste tipo são equivalentes em poder expressivo a \emph{autômatos de pilha}. Elas compõem a base teórica para a maioria das linguagens de programação. 
 
-Entre alguns exemplos clássicos de linguagens livres de contexto figuram: parênteses aninhados, repetição condicionada de dois caracteres ($a^nb^n$), expressões aritméticas.
+Entre alguns exemplos clássicos de linguagens livres de contexto figuram: parênteses aninhantes, repetição condicionada de dois caracteres ($a^nb^n$), expressões aritméticas.
 
 \subsection{Gramáticas Sensíveis ao Contexto}
-Gramáticas sensíveis ao contexto são aquelas onde todas as regras de produção são do tipo $\alpha S\beta\rightarrow \alpha\gamma\beta$, onde $\alpha$, $\gamma$ e $\beta$ são sequências compostas por terminais e não-terminais. Elas diferem das gramáticas livres de contexto por definir -- exatamente -- contexto para que um não-terminal S seja substituído por uma sequência $\gamma$. 
+Gramáticas sensíveis ao contexto são aquelas onde aparecem regras de produção do tipo $\alpha S\beta\rightarrow \alpha\gamma\beta$, em que $\alpha$, $\gamma$ e $\beta$ são sequências compostas por terminais e não-terminais. Elas diferem das gramáticas livres de contexto por definir -- exatamente -- contexto para que um não-terminal S seja substituído por uma sequência $\gamma$. 
 
-Apesar de terem um escopo bem mais amplo, gramáticas deste tipo ainda são passíveis de ser computadas usando um \emph{autômato linearmente limitado}. 
+Apesar dessas exigências de contexto, as cadeias dessa classe de linguagens ainda são passíveis de ser reconhecidas com o emprego de um \emph{autômato linearmente limitado}. 
 
 Exemplos de liguagens sensíveis ao contexto: \emph{squares} (\emph{DogDog, CatCat, WikiWiki...}), \emph{matching triplets} ($a^nb^nc^n$).
 
 \subsection{Gramáticas Recursivamente Enumeráveis}
 
-As gramáticas para as linguagens recursivamente enumeráveis não apresentam restrições em suas regras, o que faz com que essas linguagens sejam também chamadas de ``sem restrição". Portanto, qualquer sequência de terminais e não-terminais $\alpha$ pode ser substituída por outra $\beta$. Gramáticas assim são reconhecíveis por uma \emph{máquina de Turing}. 
+As gramáticas para as linguagens recursivamente enumeráveis não apresentam restrições em suas regras, o que faz com que essas linguagens sejam também chamadas de ``sem restrição". Portanto, qualquer sequência de terminais e não-terminais $\alpha$ pode ser substituída por outra $\beta$. Cadeias de linguagens assim são reconhecíveis por uma \emph{máquina de Turing}. 
 
-Diferente dos tipos anteriores, quando apresentada a uma sequência que não faça parte da linguagem, não há garantia de parada da máquina, definindo o que é chamado de \emph{conjunto semi-decidível}.
+Diferente dos tipos anteriores, quando é submetida a reconhecimento uma cadeia que não faça parte da linguagem, não há garantia de parada da máquina, definindo o que é chamado de \emph{conjunto semi-decidível}.
 
 Um dos exemplos mais notáveis de linguagens recursivamente enumeráveis que não são sensíveis ao contexto é a sintaxe de templates do C++ \cite{bib:Veldhuizen03}.
 
 \subsection{Tabela de Referência}
 
-É possível resumir os tipos de gramáticas da hierarquia de Chomsky numa tabela de referência quanto à máquina que as reconhece e os tipos de regras da gramática que as gera.
+É possível resumir os tipos de linguagens da hierarquia de Chomsky numa tabela de referência quanto às máquinas que as reconhecem e os tipos de regras das gramáticas que as geram.
 
 \begin{center}
 	\begin{tabular}{ c | c | c | c }
@@ -500,42 +498,37 @@ Um dos exemplos mais notáveis de linguagens recursivamente enumeráveis que nã
 \section{Expressões Regulares}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Expressões regulares são sequências de caracteres que denotam linguagens regulares. Estas sequências obedecem a algumas regras de criação. Alguns caracteres são interpretados literalmente, enquanto outros são considerados metacaracteres que controlam como os trechos da expressão se relacionam.
+Expressões regulares são sequências de caracteres que denotam linguagens regulares. Definimos uma expressão regular (ER), em um alfabeto $\Sigma$, através de seis expressões regulares primitivas ER1 $\ldots$ ER6. É dito que $\alpha$ é uma expressão regular se e somente se ela puder ser determinada a partir destas primitivas, a seguir:
 
-Por definição:
+\begin{description}
+    \item[ER1] $\emptyset$ denota a linguagem vazia.
+    \item[ER2] $\epsilon$ denota a linguagem que contém apenas cadeia vazia.
+    \item[ER3] Todo caractere $a \in \Sigma$ é uma expressão regular.
+    \item[ER4] Se $\alpha$ e $\beta$ são expressões regulares que denotam $L_\alpha$ e $L_\beta$ respectivamente, $\alpha|\beta$ denota a linguagem $L_\alpha \cup L_\beta$.
+    \item[ER5] Se $\alpha$ e $\beta$ são expressões regulares que denotam $L_\alpha$ e $L_\beta$ respectivamente, $\alpha\beta$ denota a linguagem $L_\alpha L_\beta$.
+    \item[ER6] Se $\alpha$ é uma expressão regular que denota $L_\alpha$, $\alpha^*$ denota a linguagem $L_\alpha^*$.
+\end{description}
 
-\begin{itemize}
-    \item Sequências vazias são expressões regulares.
-    \item Caracteres unitários são expressões regulares. E.g. \emph{a}.
-    \item Expressões regulares podem ser concatenadas para formar novas expressões. E.g. se $e_1$ reconhece \emph{a} e $e_2$ reconhece \emph{b}, então $e_1e_2$ reconhece \emph{ab}.
-    \item Expressões regulares podem ser alternadas para formar novas expressões. E.g. se $e_1$ reconhece \emph{a} e $e_2$ reconhece \emph{b}, então $e_1|e_2$ reconhece \emph{a} e \emph{b}.
-    \item Pode-se aplicar o fecho Kleene para formar novas expressões. E.g. se $e_1$ reconhece \emph{a}, então $e_1*$ reconhece \emph{a}, \emph{aa}, \emph{aaa}... etc., bem como string vazia.
-\end{itemize}
-
-Perceba que é possível definir outros operadores comuns, como $?$ e $+$. Mas é possível fazê-lo a partir das operações descritas acima. O operador $e_1?$ pode ser definido como a alternância entre $e_1$ e uma string vazia. O operarador $e_1+$ pode ser definido como $e_1e_1*$.
+Perceba que é possível definir outros operadores comuns, como $?$ e $^+$. Mas é possível fazê-lo a partir das operações descritas acima. O operador $e_1?$ pode ser definido como a alternância $e_1|\epsilon$. O operarador $e_1^+$ pode ser definido como $e_1e_1^*$.
 
 Outros operadores sobre caracteres como o $.$ (qualquer caractere) e as classes de caractere (e.g. $[a-zA-Z]$) são trivialmente implementados usando alternação de expressões.
 
-A precedência natural dos operadores, da mais fraca para a mais forte, é: alternância, concatenação, repetição. Assim, uma expressão como $ab|cd*$ é interpretada como exibido na Figura~\ref{fig:abcd_parse_tree}.
+A precedência natural dos operadores, da mais fraca para a mais forte, é: alternância, concatenação, repetição. Assim, uma expressão como $ab|cd^*$ é interpretada como exibido na Figura~\ref{fig:abcd_parse_tree}.
 
 \begin{figure}[!htbp]
   \centering
   \includegraphics[scale=0.4]{figures/abcd_parse_tree.png}
-  \caption{Árvore de avaliação para expressão $ab|cd*$}
+  \caption{Árvore de avaliação para expressão $ab|cd^*$}
   \label{fig:abcd_parse_tree}
 \end{figure}
 
-É possível agrupar sub-expressões utilizando parênteses, tal qual é feito com expressões aritméticas. Assim $a(b|c)d*$ tem um sentido completamente diferente de $ab|cd*$.
+É possível agrupar sub-expressões utilizando parênteses, tal qual é feito com expressões aritméticas. Assim $a(b|c)d^*$ tem um sentido completamente diferente de $ab|cd^*$.
 
-Estas operações definem inequivocamente expressões regulares. É possível representar qualquer linguagem regular utilizando apenas estes operadores. Mais importante: é teoricamente possível reconhecer qualquer símbolo desta linguagem com apenas uma passagem pela entrada (sem \emph{backtracking}). 
-
-Representando apenas linguagens regulares, as expressões regulares conduzem a um paradoxo sobre si mesmas: elas não são capazes de representar a própria linguagem que as define. A razão disso é a presença dos parênteses agrupadores, tornando esta gramática propriamente pertencente ao conjunto das gramáticas livres de contexto.
+Estas operações, utilizando somente três operadores, definem inequivocamente expressões regulares. É possível denotar qualquer linguagem regular utilizando apenas estes operadores. Mais importante: é teoricamente possível reconhecer qualquer cadeia desta linguagem com apenas uma passagem pela entrada (sem \emph{backtracking}). 
 
 Novas implementações de expressões regulares adicionaram novos operadores que tornam a sintaxe mais concisa. Porém, essas adições normalmente não alteram o poder expressivo das \emph{regexes}, sendo encontradas adições que aumentam o poder expressivo, como é o caso das \emph{backreferences}, que permitem o reconhecimento de algumas linguagens não-regulares. \emph{Backreferences} consistem em referências \emph{submatches} reconhecidas anteriormente.
 
-Pode ser observado o exemplo de uma linguagem composta por palavras repetidas, como \emph{DogDog} ou \emph{CatCat}, para o qual é possível definir uma expressão regular $/(.*)\backslash 1/$ que reconhece esta linguagem. $\backslash 1$ instrui o motor de reconhecimento a esperar uma nova palavra exatamente igual à obtida pelo reconhecimento do primeiro grupo $(.*)$.
-
-Esta linguagem não apenas fica fora do conjunto das linguagens regulares, como também não é uma linguagem livre de contexto.
+Pode ser observado o exemplo de uma linguagem composta por palavras repetidas, como \emph{DogDog} ou \emph{CatCat}, para o qual é possível definir uma expressão regular $/(.^*)\backslash 1/$ que reconhece esta linguagem. $\backslash 1$ instrui o motor de reconhecimento a esperar uma nova palavra exatamente igual à obtida pelo reconhecimento do primeiro grupo $(.^*)$. Esta linguagem é sensível ao contexto, i.e. não apenas fica fora do conjunto das linguagens regulares, como também não é uma linguagem livre de contexto.
 
 Tal poder expressivo tem seu preço. O reconhecimento de \emph{backreferences} é um problema NP-difícil, logo, os melhores algoritmos conhecidos ainda têm pior caso exponencial. É possível, porém, escrever algoritmos polinomiais para expressões que não fazem uso de \emph{backreferences}.
 
@@ -553,7 +546,7 @@ Autômatos finitos representam um modelo matemático de computação. Eles repre
     \item Q é o conjunto de estados do autômato. Sempre finito.
     \item $\Sigma$ é o alfabeto da linguagem reconhecida pelo autômato.
     \item $q_0$ é o estado inicial do autômato. $q_0 \in Q$.
-    \item $\delta$ é a função de transição, que mapeia cada $(q_i, a) \in Q \times \Sigma$ a um subconjunto de Q. Se esse subconjunto tem apenas zero ou um elementos, o autômato é \emph{deterministico}, caso contrário, ele é \emph{não-determinístico}. Cabe notar que para cada autômato não-determinístico, há um autômato determinístico equivalente \cite{bib:Rabin59}.
+    \item $\delta$ é a função de transição, que mapeia cada $(q_i, a) \in Q \times \Sigma$ a um subconjunto de Q. Se esse subconjunto tem apenas zero ou um elemento, o autômato é \emph{deterministico}, caso contrário, ele é \emph{não-determinístico}. Cabe notar que para cada autômato não-determinístico, há um autômato determinístico equivalente \cite{bib:Rabin59}.
     \item A é o conjunto de estados de aceite. $A \subseteq Q$.
 \end{itemize}
 
@@ -595,7 +588,7 @@ Autômatos finitos não-determinísticos também aceitam um tipo de entrada espe
 \end{figure}
 
 
-Autômatos finitos podem ser utilizados para reconhecer linguagens regulares. É possível construir um autômato que, dada uma linguagem, termina em estados de aceite somente se a palavra fizer parte da linguagem representada.
+Autômatos finitos podem ser construídos para reconhecer cadeias das linguagens regulares. Assim, o processo de reconhecimento de uma cadeia submetida a um autômato desse tipo termina em estados de aceite se e somente se essa cadeia fizer parte da linguagem para a qual o autômato foi construído.
 
 O autômato descrito na Figura~\ref{fig:exemplo_automato_epsilon}, por exemplo, reconhece uma linguagem finita definida por $L = \{ac, aca, b, ba\}$. A linguagem que um autômato finito reconhece é \emph{sempre regular}. E \emph{toda linguagem regular} pode ser reconhecida com autômatos finitos \cite{bib:Kleene56}.
 
@@ -622,12 +615,12 @@ Podemos definir uma gramática gerativa simples pela notação EBNF (\emph{Exten
 <primary>    ::= "." | <literal> | "(" <option> ")"
 \end{verbatim}
 
-Assim, a expressão pode ser facilmente analisada. Por exemplo, a expressão $(a|a)+b$ seria avaliada como a árvore descrita na Figura~\ref{fig:aab_parse_tree}.
+Assim, a expressão pode ser facilmente analisada. Por exemplo, a expressão $(a|a)^+b$ seria avaliada como a árvore descrita na Figura~\ref{fig:aab_parse_tree}.
 
 \begin{figure}[!htbp]
   \centering
   \includegraphics[scale=0.5]{figures/aab_parse_tree.png}
-  \caption{Árvore de avaliação para expressão $(a|a)+b$}
+  \caption{Árvore de avaliação para expressão $(a|a)^+b$}
   \label{fig:aab_parse_tree}
 \end{figure}
 
@@ -690,12 +683,12 @@ A tabela a seguir mostra a conversão para cada tipo de nó. Para fins de notaç
 	\end{tabular}
 \end{center}
 
-Para converter um autômato usando estas regras, basta percorrer a árvore de avaliação de baixo para cima, inicialmente transformando todos os literais e recursivamente usando-os como insumo para os nós superiores. A Figura~\ref{fig:exemplo_automato_completo} mostra um exemplo de conversão utilizando a expressão $(a|a)+b$.
+Para converter um autômato usando estas regras, basta percorrer a árvore de avaliação de baixo para cima, inicialmente transformando todos os literais e recursivamente usando-os como insumo para os nós superiores. A Figura~\ref{fig:exemplo_automato_completo} mostra um exemplo de conversão utilizando a expressão $(a|a)^+b$.
 
 \begin{figure}[!htbp]
   \centering
   \includegraphics[scale=0.33]{figures/exemplo_automato_completo.png}
-  \caption{Exemplo completo de autômato para a expressão $(a|a)+b$}
+  \caption{Exemplo completo de autômato para a expressão $(a|a)^+b$}
   \label{fig:exemplo_automato_completo}
 \end{figure}
 
@@ -714,13 +707,13 @@ Por exemplo, o autômato representado pela Figura~\ref{fig:exemplo_automato_comp
 0006: MATCH!
 \end{verbatim}
 
-As instruções \emph{JUMP} são os que representam o não-determinismo destes autômatos, pois ao serem executadas, podem desviar para qualquer um dos rótulos para os quais apontam. Existem diversas formas de simular a execução desses programas não-determinísticos usando uma máquina de Turing determínistica. E é exatamente neste ponto onde a maior parte das implementações torna-se exponencial desnecessariamente.
+As instruções \emph{JUMP} são as que representam o não-determinismo destes autômatos, pois ao serem executadas, podem desviar para qualquer um dos rótulos para os quais apontam. Existem diversas formas de simular a execução desses programas não-determinísticos usando uma máquina de Turing determínistica. E é exatamente neste ponto onde a maior parte das implementações torna-se exponencial desnecessariamente.
 
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 \section{Simulação do Autômato}\label{sec:simulacao}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Simular a execução de um autômato não-determinístico utilizando uma máquina determinística é um problema por si só complicado. Existe potencialmente um número exponencial de caminhos possíveis num autômato não-determinístico \cite{bib:Rabin59}.
+Simular a execução de um autômato não-determinístico utilizando uma máquina determinística é um problema por si só complicado. Pode existir um número exponencial de caminhos possíveis num autômato não-determinístico \cite{bib:Rabin59}.
 
 Dentre as opções para simulação da execução do autômato, estão:
 
@@ -732,13 +725,13 @@ Dentre as opções para simulação da execução do autômato, estão:
 	\item \emph{Conversão preguiçosa para DFA}: semelhante a execução paralela, mas construindo um cache dos estados alcançados
 \end{itemize}
 
-Cada uma destas opções tem caracteristicas próprias. Suas vantagens e desvantagens serão discutidas separadamente.
+Cada uma destas opções tem características próprias. Suas vantagens e desvantagens serão discutidas separadamente.
 
 \subsection{Backtracking}
 
-Backtracking é talvez a forma mais trivial de implementar a simulação de autômatos não determinísticos. Consiste basicamente em ao ser apresentado a uma escolha, decidir por uma delas, mas manter uma pilha de escolhas feitas para retroceder e escolher novamente caso não tenha sucesso.
+Backtracking é talvez a forma mais trivial de implementar a simulação de autômatos não determinísticos. Consiste basicamente em diante de várias opções escolher uma delas, mas manter uma pilha de escolhas feitas para retroceder e escolher novamente caso não tenha sucesso.
 
-\emph{Vantagem}: Este método é o mais fácil de implementar, pois como a chamada de subrotinas na maior parte das linguagens já implementa uma pilha, uma simples recursão é o suficiente para implementar esta técnica.
+\emph{Vantagem}: Este método é o que oferece a possibilidade de uma implementação mais fácil, pois como a chamada de subrotinas na maior parte das linguagens já utiliza uma pilha para a alocação do seu registro de ativação, uma simples recursão é o suficiente para implementar esta técnica.
 
 \emph{Desvantagem}: Pela natureza do autômato, cada escolha pode gerar vários fluxos independentes, então uma sequência de n escolhas (assumindo que sejam binárias) pode gerar até $2^n$ fluxos diferentes. Além disso, esta técnica requer múltiplas passagens pela mesma string, o que é trivial se ela estiver em memória, mas complicado se estiver vindo de um fluxo de rede ou pipes do sistema. E por fim, a pilha reservada para chamadas de métodos é compartilhada com outros recursos e limitada em diversos ambientes, impossibilitando, por exemplo, o reconhecimento de strings muito grandes.
 
@@ -754,11 +747,11 @@ Definindo assim, se $n = |S|, m = |Q|$, então existem apenas $n \times m$ poss�
 
 \subsection{Conversão para DFA}
 
-Autômatos finitos determinísticos são muito mais fáceis de simular, visto que se aproximam muito mais intimamente aos computadores que conhecemos atualmente. 
+Autômatos finitos determinísticos são muito mais fáceis de simular, visto que são mais próximos dos computadores que conhecemos atualmente. 
 
 É sabido que autômatos finitos determinísticos (DFA) e não-determinísticos (NFA) são equivalentes em termos de poder expressivo. É possível converter entre um e outro com métodos conhecidos. NFAs tem baixa complexidade de memória, mas são mais custosos em tempo de execução. DFAs, entretanto permitem uma execução mais rápida ao custo de uma alta complexidade de memória. 
 
-Um NFA com m estados, quando convertido para um DFA pode ter ate $2^m$ estados. Em termos de memória utilizada, NFAs são exponencialmente mais expressivos que DFAs. Entretanto, DFAs tem execução com menor complexidade que NFAs. Para uma entrada com n caracteres, NFAs podem ser simulados em $O(n \times m)$, enquanto DFAs em $O(m)$.
+Um NFA com m estados, quando convertido para um DFA pode ter ate $2^m$ estados. Em termos de memória utilizada, NFAs são exponencialmente mais expressivos que DFAs \cite{bib:Calabro05}. Entretanto, DFAs tem execução com menor complexidade que NFAs. Para uma entrada com n caracteres, NFAs podem ser simulados em $O(n \times m)$, enquanto DFAs em $O(m)$.
 
 A conversão entre os dois se dá através do algoritmo conhecido como \emph{Rabin-Scott powerset construction} \cite{bib:Rabin59}. Este algoritmo consiste basicamente em simular a execução paralela do autômato para todas as entradas possíveis.
 
@@ -774,12 +767,12 @@ Inicialmente, pode parecer que esta solução leve a um conjunto de até $2^n$ f
 
 O objetivo é que durante a execução, seja lido um caractere por vez. Então, antes de cada execução é preciso avaliar todas as transições $\epsilon$ e deixar todos os fluxos em espera posicionados em estados do tipo \emph{consumo}.
 
-A Figura~\ref{fig:nfa_simultaneo} mostra a execução do autômato gerado para a expressão regular $(a|a)+b$ contra a entrada $aa$.
+A Figura~\ref{fig:nfa_simultaneo} mostra a execução do autômato gerado para a expressão regular $(a|a)^+b$ contra a entrada $aa$.
 
 \begin{figure}[!htbp]
   \centering
   \includegraphics[scale=0.5]{figures/nfa_simultaneo.png}
-  \caption{Passos do reconhecimento da expressão $(a|a)+b$ contra a entrada \emph{aab}}
+  \caption{Passos do reconhecimento da expressão $(a|a)^+b$ contra a entrada \emph{aab}}
   \label{fig:nfa_simultaneo}
 \end{figure}
 
@@ -825,8 +818,8 @@ Assim, foi implementado o reconhecimento de:
     \item Alternâncias (e.g. $ab|cd$)
     \item Agrupamentos (e.g. $a(bc)d$)
     \item Expressão opcional (e.g. $a?$)
-    \item Kleene* (e.g. $a*$)
-    \item Kleene+ (e.g. $a+$)
+    \item Kleene* (e.g. $a^*$)
+    \item Kleene+ (e.g. $a^+$)
 \end{itemize}
 
 Estas funcionalidades são bem próximas às definidas por Thompson \cite{bib:Thompson68} em seu artigo e permitem denotar inequivocamente linguagens regulares.
@@ -893,7 +886,7 @@ Durante o parse, a expressão regular é transformada numa representação do au
 
 Como definido na Seção~\ref{sec:Notacao} (Página~\pageref{sec:Notacao}), a notação utilizada neste autômato prevê três tipos de estado: consumo, decisão e aceite. Estados de consumo são representados pelo caractere que consomem. Estados de decisão são representados por uma tupla de inteiros que informam quantos estados à frente ou atrás deve-se `pular'. Estados de aceite não precisam de representação, pois sempre ocorrem no final do autômato (segundo esta notação).
 
-A Figura~\ref{fig:exemplo_automato_puro} e as listagens \ref{lst:automaton_array} e \ref{lst:automaton_instr} representam a expressão regular $(a|a)+b$. Apenas a forma em array é armazenada na instância da classe Machine para execução. Entretanto, a forma em instruções pode ser gerada através do método \emph{\_\_repr\_\_} da mesma classe.
+A Figura~\ref{fig:exemplo_automato_puro} e as listagens \ref{lst:automaton_array} e \ref{lst:automaton_instr} representam a expressão regular $(a|a)^+b$. Apenas a forma em array é armazenada na instância da classe Machine para execução. Entretanto, a forma em instruções pode ser gerada através do método \emph{\_\_repr\_\_} da mesma classe.
 
 \begin{figure}[!htbp]
   \centering
@@ -1016,7 +1009,7 @@ No exemplo, a execução do programa iria mostrar os passos do match desta expre
 \begin{figure}[!htbp]
   \centering
   \includegraphics[scale=0.35]{figures/view_automaton.png}
-  \caption{Autômato para expressão $a+b+c+$}
+  \caption{Autômato para expressão $a^+b^+c^+$}
   \label{fig:view_automaton}
 \end{figure}
 
@@ -1102,14 +1095,14 @@ Algumas comparações com implementações específicas serão feitas, por isso,
 
 O problema de reconhecer palavras usando expressões regulares é uma problema de \emph{decisão}. Isto significa que ele aceita apenas uma entre duas respostas: \emph{sim} ou \emph{não}. Entretanto, provou-se útil ao longo do tempo não só reconhecer palavras em linguagens regulares, mas também qualquer sub-palavra pertencente a ela, retornando, então, sua localização na palavra original.
 
-Uma expressão regular $abcd$ retornaria um match válido numa palavra $zzabcdzz$. Este comportamento permite que múltiplas soluções sejam válidas. Por exemplo, a mesma expressão poderia encontrar dois resultados diferentes na palavra $abcdabcd$. Muitos resultados poderiam se sobrepor, inclusive. A expressão $a*$, ao avaliar a palavra $aaaa$ pode levar a 10 resultados diferentes. A implementação utilizada influencia bastante na escolha de qual dos resultados deve ser retornado.
+Uma expressão regular $abcd$ retornaria um match válido numa palavra $zzabcdzz$. Este comportamento permite que múltiplas soluções sejam válidas. Por exemplo, a mesma expressão poderia encontrar dois resultados diferentes na palavra $abcdabcd$. Muitos resultados poderiam se sobrepor, inclusive. A expressão $a^*$, ao avaliar a palavra $aaaa$ pode levar a 10 resultados diferentes. A implementação utilizada influencia bastante na escolha de qual dos resultados deve ser retornado.
 
 A implementação proposta neste projeto sempre favorece as respostas mais longas. Em caso de empate, é favorecida a resposta que inicie mais à esquerda na entrada. Este comportamento é garantido pela função \emph{key}, representada na Listagem~\ref{lst:matcher} na Página~\pageref{lst:matcher}.
 
 Este comportamento é coerente com o artigo original de Thompson e, consequentemente, com as implementações de ferramentas como \emph{sed} e \emph{grep} do sistema operacional Unix. Por outro lado, diverge de outras implementações usuais baseadas na do Perl, que geralmente retornam a primeira resposta encontrada seguindo uma ordem gulosa de avaliação \cite{bib:Cox07}.
 
 Uma forma fácil de verificar esta diferença é comparar o match da expressão \linebreak
-$a*(b|abc)$ contra a string $abc$. A implementação padrão do Python retornaria a string $ab$. A implementação neste projeto encontrará a string $abc$. A diferença é que a primeira tenta avaliar o máximo que pode na repetição $a*$, enquanto a segunda consegue visualizar globalmente os matches possíveis.
+$a^*(b|abc)$ contra a string $abc$. A implementação padrão do Python retornaria a string $ab$. A implementação neste projeto encontrará a string $abc$. A diferença é que a primeira tenta avaliar o máximo que pode na repetição $a^*$, enquanto a segunda consegue visualizar globalmente os matches possíveis.
 
 \section{Reconhecimento de \emph{backreferences}: um problema NP-difícil}
 
@@ -1143,13 +1136,13 @@ Uma característica importante dos problemas em NP é que se a resposta para o p
 
 Nos anos 70, Stephen Cook introduziu o conceito de problemas NP-completos \cite{bib:Cook71}. São problemas em NP tais que qualquer outro problema em NP pode ser reduzido a eles em tempo polinomial. Qualquer solução polinomial de um problema NP-completo demonstraria que todos os problemas em NP podem ser resolvidos polinomialmente em máquinas de Turing determinísticas.
 
-Cook também provou provou que o problema de satisfabilidade booleana (SAT) é NP-completo. Resultado parecido com o que Leonid Levin alcançou independentemente em 1973 \cite{bib:Levin73}. Hoje este resultado é conhecido como teorema de Cook--Levin. 
+Cook também provou provou que o problema de satisfabilidade booleana ({\sc sat}) é NP-completo. Resultado parecido com o que Leonid Levin alcançou independentemente em 1973 \cite{bib:Levin73}. Hoje este resultado é conhecido como teorema de Cook--Levin. 
 
 O problema de satisfabilidade consiste em determinar se existe uma interpretação que satisfaça uma expressão booleana, i.e. se existe uma atribuição de variáveis que avalie tal expressão como \emph{verdadeira}. Neste problema, o \emph{certificado} consiste no conjunto de valores a se atribuir às variáveis para que a expressão seja avaliada como verdadeira. Para verificá-la, basta substituir por tais valores e avaliar a expressão resultante.
 
-Certas variações de SAT podem pertencer a classes de problemas diferentes. Uma variação possível é restringir às expressões booleanas a sempre estarem na CNF (\emph{Conjunctive Normal Form} ou Forma Normal Conjuntiva). 
+Certas variações de {\sc sat} podem pertencer a classes de problemas diferentes. Uma variação possível é restringir às expressões booleanas a sempre estarem na CNF (\emph{Conjunctive Normal Form} ou Forma Normal Conjuntiva). 
 
-Se a expressão booleana estiver escrita na 2CNF (forma normal conjuntiva com no máximo 2 variáveis por cláusula) este problema torna-se polinomial. Neste caso, é referido como 2-satisfabilidade (2SAT). Entretanto, se a expressão estiver escrita na 3CNF, o problema ({\sc 3sat}) continua NP-completo \cite{bib:Karp72}.
+Se a expressão booleana estiver escrita na 2CNF (forma normal conjuntiva com no máximo 2 variáveis por cláusula) este problema torna-se polinomial. Neste caso, é referido como 2-satisfabilidade ({\sc 2sat}). Entretanto, se a expressão estiver escrita na 3CNF, o problema ({\sc 3sat}) continua NP-completo \cite{bib:Karp72}.
 
 Uma expressão está na 3CNF se ela está na forma:
 
@@ -1162,15 +1155,15 @@ onde $A_{ij}$ pode ser tanto uma variável ($X$) quanto a negação de uma vari�
 
 \subsection{Reconhecimento de \emph{backreferences}}
 
-Durante o reconhecimento de expressões regulares, uma funcionalidade comum em implementações modernas é a capacidade de definir grupos de captura. Uma expressão $(a+)(b+)(c+)$ teria quatro grupos de captura, numerados de 0 a 3. E o reconhecimento de uma string com esta expressão resultaria em uma tupla com o valor capturado por cada um dos grupos. A string $aabbbcccc$ resultaria nas capturas $(aa, bbb, cccc)$.
+Durante o reconhecimento de expressões regulares, uma funcionalidade comum em implementações modernas é a capacidade de definir grupos de captura. Uma expressão $(a^+)(b^+)(c^+)$ teria quatro grupos de captura, numerados de 0 a 3. E o reconhecimento de uma string com esta expressão resultaria em uma tupla com o valor capturado por cada um dos grupos. A string $aabbbcccc$ resultaria nas capturas $(aa, bbb, cccc)$.
 
-Baseado nesta funcionalidade, muitas implementações modernas adicionam a capacidade de referenciar tais grupos de captura ainda durante o match de uma string. Por exemplo, dada uma linguagem $L = \{a^nba^n \mid n \in \mathbb{N}\}$, seria possível denotá-la com a expressão $(a*)b \backslash 1$. A referência ao grupo de captura 1 $(a*)$ se dá pela expressão $\backslash 1$.
+Baseado nesta funcionalidade, muitas implementações modernas adicionam a capacidade de referenciar tais grupos de captura ainda durante o match de uma string. Por exemplo, dada uma linguagem $L = \{a^nba^n \mid n \in \mathbb{N}\}$, seria possível denotá-la com a expressão $(a^*)b \backslash 1$. A referência ao grupo de captura 1 $(a*)$ se dá pela expressão $\backslash 1$.
 
 Denotaremos aqui o problema de reconhecimento de expressões regulares com \emph{backreferences} como {\sc Match}.
 
 
 \begin{definition}{Match}
-Dada uma expressão regular $E$ com \emph{backreferences} abrangendo $n$ grupos de captura e $S$ a string a ser reconhecida, encontrar tupla $C = (c_1, c_2, \cdots, c_n)$, onde $c_i$ é substring de $s$ relativa ao reconhecimento do $i$-ésimo grupo de captura.
+Dada uma expressão regular $E$ com \emph{backreferences} abrangendo $n$ grupos de captura e $S$ a string a ser reconhecida, encontrar tupla $C = (c_1, c_2, \cdots, c_n)$, onde $c_i$ é substring de $S$ relativa ao reconhecimento do $i$-ésimo grupo de captura.
 \end{definition}
 
 \begin{theorem}
@@ -1182,7 +1175,7 @@ Dada uma expressão regular $E$ com \emph{backreferences} abrangendo $n$ grupos 
 \setlength\abovedisplayskip{0pt}
 \begin{equation*}
             E = 
-                   \wedge (x?)^n .*;
+                   \wedge (x?)^n .^*;
                    (?:\backslash 1v_{11}|\backslash 2 v_{12}|\backslash 3 v_{13}),
                    (?:\backslash 1v_{21}|\backslash 2 v_{22}|\backslash 3 v_{23}),                   
                    \ldots
@@ -1197,7 +1190,7 @@ Dada uma expressão regular $E$ com \emph{backreferences} abrangendo $n$ grupos 
 S = x^n;x,^m
 \end{equation*}
 
-\noindent onde $v_{ij} = x$ se a variável $j$ da cláusula $i$ aparecer negada na fórmula, caso contrário, $v_{ij} = \epsilon$. Isto força o reconhecimento da \emph{backreference} $\backslash j$ como $x$ ou $\epsilon$ respectivamente, porém pelo menos uma das variáveis precisa reconhecer a substring $x,$ definida para cada cláusula na string $S$. Assim, existem grupos de captura $C = (c_1, c_2, \cdots, c_n)$ se e somente se for possível reconhecer tanto as expressões dos grupos de captura ($x$ ou $\epsilon$ para $verdadeiro$ ou $falso$, respectivamente), como as \emph{backreferences} que representam as cláusulas da fórmula de forma consistente. Como tanto a expressão $E$ quanto a string $S$ podem ser construídas em $O(n+m)$ {\sc Match} é NP-difícil. \qed
+\noindent onde $v_{ij} = x$ se a variável $j$ da cláusula $i$ aparecer negada na fórmula, caso contrário, $v_{ij} = \epsilon$. Isto força o reconhecimento da \emph{backreference} $\backslash j$ como $x$ ou $\epsilon$ respectivamente, porém pelo menos uma das variáveis precisa reconhecer a substring $x,$ definida para cada cláusula na string $S$. Assim, existem grupos de captura $C = (c_1, c_2, \cdots, c_n)$ se e somente se for possível reconhecer tanto as expressões dos grupos de captura ($x$ ou $\epsilon$ para $verdadeiro$ ou $falso$, respectivamente), como as \emph{backreferences} que representam as cláusulas da fórmula de forma consistente. Como tanto a expressão $E$ quanto a string $S$ podem ser construídas em $O(n+m)$, {\sc Match} é NP-difícil. \qed
 \end{proof}
 
 \subsection{Implementação de {\sc 3sat} com expressões regulares}
@@ -1218,7 +1211,7 @@ Como exemplo, pode-se observar a fórmula:
 
 \setlength\abovedisplayskip{0pt}
 \begin{equation*}
-\wedge (x?)(x?)(x?).*;
+\wedge (x?)(x?)(x?).^*;
                    (?:\backslash 1|\backslash 2|\backslash 3x),
                    (?:\backslash 1|\backslash 2x|\backslash 3),
                    (?:\backslash 1x|\backslash 2x|\backslash 3),
@@ -1244,7 +1237,7 @@ Todos os gráficos estão em escala logarítmica, para facilitar a visualizaçã
 
 \subsection{Benchmark 1: (a?a)+b}
 
-Neste teste a string $a^n$ foi avaliada contra a expressão regular $(a?a)+b$. O objetivo é mostrar o comportamento exponencial de implementações baseadas em backtracking. A expressão escolhida força a escolha para cada caractere da entrada sobre usar ou não o caractere $a$ na expressão $a?$. 
+Neste teste a string $a^n$ foi avaliada contra a expressão regular $(a?a)^+b$. O objetivo é mostrar o comportamento exponencial de implementações baseadas em backtracking. A expressão escolhida força a escolha para cada caractere da entrada sobre usar ou não o caractere $a$ na expressão $a?$. 
 
 A Figura~\ref{fig:graph_bench_1} mostra o tempo de execução para as diferentes implementações. A tabela na Seção~\ref{sec:table_bench_1} (Página~\pageref{sec:table_bench_1}) contém os dados para este gráfico.
 
@@ -1259,7 +1252,7 @@ A Figura~\ref{fig:graph_bench_1} mostra o tempo de execução para as diferentes
 	\legend{pyrex, python, ruby, java}
 	\end{semilogyaxis}
 \end{tikzpicture}
-\caption{Tempo de execução (em escala logarítmica) para match de $a^n$ contra $(a?a)+b$}
+\caption{Tempo de execução (em escala logarítmica) para match de $a^n$ contra $(a?a)^+b$}
 \label{fig:graph_bench_1}
 \end{figure}
 
@@ -1282,7 +1275,7 @@ A Figura~\ref{fig:graph_bench_2} mostra o tempo de execução para as diferentes
 	\legend{pyrex, python, ruby, java}
 	\end{semilogyaxis}
 \end{tikzpicture}
-\caption{Tempo de execução (em escala logarítmica) para match de $a^n$ contra $a*b$}
+\caption{Tempo de execução (em escala logarítmica) para match de $a^n$ contra $a^*b$}
 \label{fig:graph_bench_2}
 \end{figure}
 
@@ -1290,7 +1283,7 @@ A Figura~\ref{fig:graph_bench_2} mostra o tempo de execução para as diferentes
 
 \subsection{Benchmark 3: a*a*a*a*a*b}
 
-Neste teste, o objetivo era demonstrar como mesmo em casos onde implementações baseadas em backtracking não geram tempos de execução exponenciais, ainda assim é possível alcançar tempos de execução maiores que $O(n)$. Esta expressão força um backtracking para consumo de várias repetições $a*$. O tempo de execução esperado para implementações baseadas em backtracking é $O(n^5)$.
+Neste teste, o objetivo era demonstrar como mesmo em casos onde implementações baseadas em backtracking não geram tempos de execução exponenciais, ainda assim é possível alcançar tempos de execução maiores que $O(n)$. Esta expressão força um backtracking para consumo de várias repetições $a^*$. O tempo de execução esperado para implementações baseadas em backtracking é $O(n^5)$.
 
 A Figura~\ref{fig:graph_bench_3} mostra o tempo de execução para as diferentes implementações. A tabela na Seção~\ref{sec:table_bench_3} (Página~\pageref{sec:table_bench_3}) contém os dados para este gráfico.
 
@@ -1334,7 +1327,7 @@ O principal objetivo neste trabalho era apresentar uma implementação simples d
 
 	\item[Suporte a Unicode:] Uma implementação moderna de expressões regulares precisa dar suporte a strings Unicode. Apesar de não mudar a complexidade de execução do algoritmo, a implementação precisa ter cuidado com muitos detalhes, e.g. a definição do que é um caractere aceitável numa palavra ($\backslash w$) varia conforme a codificação.
 
-	\item[Captura de grupos:] A possibilidade de capturar grupos pode ser importante para extrair informações de strings. Por exemplo, para capturar números separados por vírgula, seria possível escrever a expressão $(\backslash d+),(\backslash d+)$. Assim, a primeira captura seria o primeiro número e a segunda o segundo número.
+	\item[Captura de grupos:] A possibilidade de capturar grupos pode ser importante para extrair informações de strings. Por exemplo, para capturar números separados por vírgula, seria possível escrever a expressão $(\backslash d^+),(\backslash d^+)$. Assim, a primeira captura seria o primeiro número e a segunda o segundo número.
 
 	\item[Repetições contadas:] É util poder definir a repetição de um certo grupo de captura um número finito de vezes, e.g. a expressão $a\{2,4\}$ deve reconhece exatamente as strings $aa$, $aaa$ e $aaaa$. É uma funcionalidade de simples implementação usando autômatos, bastando por exemplo reescrever a expressão como $aaa?a?$. Esta reescrita, porém, pode ter um crescimento exponencial. Um exemplo é a expressão $a\{1000000\}$. Onde uma expressão com 10 caracteres geraria um autômato com no mínimo um milhão de estados.
 	
@@ -1430,7 +1423,6 @@ Nesta seção serão discutidas propostas de trabalhos futuros que podem dar con
     every last row/.style={after row=\hline},
     ]{benchmark/bench3.txt}
 \end{center}
-
 
 
 \bibliography{bibliografia}
