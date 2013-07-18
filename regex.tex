@@ -122,6 +122,20 @@
 	}
 }
 
+\newtheorem{theorem}{Teorema}
+
+\newenvironment{proof}[1][Demonstração]{\begin{trivlist}
+\item[\hskip \labelsep \emph{#1}:]}{\end{trivlist}}
+
+\newenvironment{definition}[1]{\noindent\hrulefill \begin{trivlist}
+\item[\hskip \labelsep \textsc{#1}:]}{\end{trivlist}\noindent\hrulefill}
+
+
+\newcommand{\qed}{\nobreak \ifvmode \relax \else
+      \ifdim\lastskip<1.5em \hskip-\lastskip
+      \hskip1.5em plus0em minus0.5em \fi \nobreak
+      \vrule height0.75em width0.5em depth0.25em\fi}
+
 \makeindex
 
 \begin{document}
@@ -234,9 +248,11 @@ Linguagens como Python, Java e Ruby são amplamente utilizadas pelo mercado, por
 \label{fig:benchmark1}
 \end{figure}
 
-Estas implementações tornam o uso de expressões regulares potencialmente inseguro em situações ora triviais. Um usuário mal intencionado pode ser capaz de forçar a execução de uma expressão com caráter exponencial para efetuar um ataque de negação de serviço em um servidor web, por exemplo. 
+Estas implementações tornam o uso de expressões regulares potencialmente inseguro em situações ora triviais. Um usuário mal intencionado pode ser capaz de forçar a execução de uma expressão com caráter exponencial para efetuar um ataque de negação de serviço em um servidor web. 
 
-Muitas vezes a prevenção para esse tipo de ataque pode não ser trivial, e.g. em Java, onde métodos comumente usados contra a entrada do usuário, como \emph{replaceAll} e \emph{split}, da classe \emph{String} são implementados com expressões regulares vulneráveis a esse tipo de ataque.
+Por exemplo, ao permitir que entradas do usuário sejam interpretadas como expressões regulares, um usuário mal intencionado pode injetar a expressão $(a?a)+b$, que por sua complexidade exponencial em implementações vulneráveis, ocuparia 100\% de uma CPU por um tempo virtualmente infinito. Vários ataques deste tipo podem causar instabilidade e queda do serviço web.
+
+Muitas vezes a prevenção para esse tipo de ataque pode não ser trivial, e.g. em Java, onde métodos comumente usados sobre objetos oriundos da entrada do usuário, como \emph{replaceAll} e \emph{split}, da classe \emph{String} são implementados com expressões regulares vulneráveis a esse tipo de ataque.
 
 Mesmo em casos onde o usuário mal intencionado não tem acesso à escrita de expressões regulares, um erro de programação pode deixar o sistema vulnerável a negação de serviço. Este problema torna-se especialmente notável pelo frequente compartilhamento em repositórios online, que contêm muitas expressões vulneráveis \cite{bib:Kirrage13,bib:Weidman10}. 
 
@@ -301,9 +317,9 @@ O conjunto formado por todas as palavras de um alfabeto é infinito, porém enum
 A operação básica entre palavras é a \emph{concatenação}. Por exemplo, 
 
 \begin{alignat*}{3}
-w_1 = aaa &\wedge w_2=bbb  &\rightarrow w_1w_2 &= aaabbb \\
-w_1 = aaa &\wedge w_2=\epsilon  &\rightarrow w_1w_2 &= aaa \\
-w_1 = \epsilon &\wedge w_2=bbb  &\rightarrow w_1w_2 &= bbb \\
+w_1 = aaa &, w_2=bbb  &\Rightarrow w_1w_2 &= aaabbb \\
+w_1 = aaa &, w_2=\epsilon  &\Rightarrow w_1w_2 &= aaa \\
+w_1 = \epsilon &, w_2=bbb  &\Rightarrow w_1w_2 &= bbb \\
 \end{alignat*}
 
 Concatenação é associativa, então 
@@ -419,7 +435,7 @@ Segundo Noam Chomsky \cite{bib:Chomsky57}, uma gramática formal pode ser classi
     \item[Tipo 3:] gramáticas regulares
 \end{description}
 
-Como pode ser visto no diagrama da Figura~\ref{fig:chomsky}, cada conjunto é propriamente incluso no seu conjunto superior na hierarquia. Há entretanto uma ligeira exceção, entre a classe das livres de contexto e das sensíveis ao contexto, na situação de geração de empty.
+Como pode ser visto no diagrama da Figura~\ref{fig:chomsky}, cada conjunto é propriamente incluso no seu conjunto superior na hierarquia. Há entretanto uma ligeira exceção no caso das gramáticas sensíveis ao contexto, pois estas não podem gerar a string $\epsilon$, enquanto as livres de contexto podem. Gramáticas livres de contexto que geram $\epsilon$ constituem a única exceção da pertinência às gramáticas sesíveis ao contexto.
 
 \begin{figure}[!htbp]
   \centering
@@ -511,11 +527,11 @@ A precedência natural dos operadores, da mais fraca para a mais forte, é: alte
 
 É possível agrupar sub-expressões utilizando parênteses, tal qual é feito com expressões aritméticas. Assim $a(b|c)d*$ tem um sentido completamente diferente de $ab|cd*$.
 
-Estas operações, apesar de bastante incompletas, definem inequivocamente expressões regulares. É possível representar qualquer linguagem regular utilizando apenas estes operadores. Mais importante: é teoricamente possível reconhecer qualquer símbolo desta linguagem com apenas uma passagem pela entrada (sem \emph{backtracking}). 
+Estas operações definem inequivocamente expressões regulares. É possível representar qualquer linguagem regular utilizando apenas estes operadores. Mais importante: é teoricamente possível reconhecer qualquer símbolo desta linguagem com apenas uma passagem pela entrada (sem \emph{backtracking}). 
 
 Representando apenas linguagens regulares, as expressões regulares conduzem a um paradoxo sobre si mesmas: elas não são capazes de representar a própria linguagem que as define. A razão disso é a presença dos parênteses agrupadores, tornando esta gramática propriamente pertencente ao conjunto das gramáticas livres de contexto.
 
-Novas implementações de expressões regulares adicionaram novos operadores que tornam a sintaxe mais concisa. Porém, essas adições normalmente não alteram o poder expressivo das regexes, sendo encontradas adições que aumentam o poder expressivo, como é o caso das \emph{backreferences}, que permitem o reconhecimento de algumas linguagens não-regulares. \emph{Backreferences} consistem em referências \emph{submatches} reconhecidas anteriormente.
+Novas implementações de expressões regulares adicionaram novos operadores que tornam a sintaxe mais concisa. Porém, essas adições normalmente não alteram o poder expressivo das \emph{regexes}, sendo encontradas adições que aumentam o poder expressivo, como é o caso das \emph{backreferences}, que permitem o reconhecimento de algumas linguagens não-regulares. \emph{Backreferences} consistem em referências \emph{submatches} reconhecidas anteriormente.
 
 Pode ser observado o exemplo de uma linguagem composta por palavras repetidas, como \emph{DogDog} ou \emph{CatCat}, para o qual é possível definir uma expressão regular $/(.*)\backslash 1/$ que reconhece esta linguagem. $\backslash 1$ instrui o motor de reconhecimento a esperar uma nova palavra exatamente igual à obtida pelo reconhecimento do primeiro grupo $(.*)$.
 
@@ -525,7 +541,7 @@ Tal poder expressivo tem seu preço. O reconhecimento de \emph{backreferences} �
 
 Para suportar \emph{backreferences}, a implementação mais comum consiste em \emph{backtracking} com memória das capturas anteriores, o que impede a utilização de \emph{memorização}, técnica que poderia tornar polinomial a complexidade deste tipo de implementação. Mais detalhes sobre os tipos de implementação são discutidos na Seção~\ref{sec:simulacao}, na Página~\pageref{sec:simulacao}.
 
-Uma outra solução seria utilizar duas implementações, uma garantidamente polinomial e outra possivelmente exponencial, porém este tipo de solução exige grande esforço de engenharia para manter concordantes os resultados das duas implementações. Talvez por este motivo, a solução mais comum entre as linguagens é implementar somente o backtracking, possivelmente utilizando alguma heurística para otimizar casos mais críticos, mantendo o pior caso exponencial.
+Uma outra solução seria utilizar duas implementações, uma garantidamente polinomial (para casos simples) e outra possivelmente exponencial (para casos mais complexos), porém este tipo de solução exige grande esforço de engenharia para manter concordantes os resultados das duas implementações.
 
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 \section{Autômatos Finitos}
@@ -587,7 +603,7 @@ O autômato descrito na Figura~\ref{fig:exemplo_automato_epsilon}, por exemplo, 
 \section{Método de Construção de Thompson}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Pela sinergia entre expressões regulares e autômatos finitos. É útil poder converter entre um e outro pela facilidade de lidar com cada um deles em situações específicas. Ken Thompson \cite{bib:Thompson68} descreveu um método para construir autômatos a partir de expressões regulares.
+Pela sinergia entre expressões regulares e autômatos finitos e pela facilidade de lidar com cada um deles em situações específicas, é útil poder converter entre um e outro. Ken Thompson \cite{bib:Thompson68} descreveu um método para construir autômatos a partir de expressões regulares.
 
 Na época em que foi escrito, o artigo descrevia como gerar código de máquina para um IBM 7094. Isto era necessário por restrições de hardware da época. Hoje não é mais estritamente necessário. Este trabalho irá se limitar a descrever como construir o autômato a partir da expressão regular.
 
@@ -740,7 +756,7 @@ Definindo assim, se $n = |S|, m = |Q|$, então existem apenas $n \times m$ poss�
 
 Autômatos finitos determinísticos são muito mais fáceis de simular, visto que se aproximam muito mais intimamente aos computadores que conhecemos atualmente. 
 
-É sabido que autômatos finitos determinísticos (DFA) e não-determinísticos (NFA) são equivalentes em termos de poder expressivo. É possível converter entre um e outro com métodos conhecidos. Entretanto, cada um deles faz concessões em termos de recursos utilizados.
+É sabido que autômatos finitos determinísticos (DFA) e não-determinísticos (NFA) são equivalentes em termos de poder expressivo. É possível converter entre um e outro com métodos conhecidos. NFAs tem baixa complexidade de memória, mas são mais custosos em tempo de execução. DFAs, entretanto permitem uma execução mais rápida ao custo de uma alta complexidade de memória. 
 
 Um NFA com m estados, quando convertido para um DFA pode ter ate $2^m$ estados. Em termos de memória utilizada, NFAs são exponencialmente mais expressivos que DFAs. Entretanto, DFAs tem execução com menor complexidade que NFAs. Para uma entrada com n caracteres, NFAs podem ser simulados em $O(n \times m)$, enquanto DFAs em $O(m)$.
 
@@ -777,7 +793,7 @@ O maior perigo da conversão completa para DFA é o potencial explosivo que a ge
 
 Para a maior parte das aplicações práticas, dificilmente a quantidade de estados no DFA será tão grande. Por isso, uma aproximação combinada entre as duas abordagens poderia trazer vantagens.
 
-Durante a simulação paralela, os estados ativados simultaneamente correspondem exatamente a um estado no respectivo DFA. A realizar cache destes estados (porém mantendo uma política de gerência de memória, descartando os mais antigos) a implementação estará mantendo a complexidade de execução da simulação paralela, porém aumentando as chances de eventualmente gerar o DFA completamente.
+Durante a simulação paralela, os estados ativados simultaneamente correspondem exatamente a um estado no respectivo DFA. Ao realizar cache destes estados (porém mantendo uma política de gerência de memória, descartando os mais antigos) a implementação estará mantendo a complexidade de execução da simulação paralela, porém aumentando as chances de eventualmente gerar o DFA completamente.
 
 \emph{Vantagem}: Tem tempo de execução linear no caso médio ($O(n)$). Só precisa ler a entrada uma vez. Não requer uso de pilha.
 
@@ -788,8 +804,6 @@ Durante a simulação paralela, os estados ativados simultaneamente correspondem
 %======================================================================================
 
 Neste capítulo será apresentada a implementação da biblioteca \emph{PyRex} (expressões regulares em Python). A implementação na íntegra pode ser visualizada no Apêndice~\ref{app:full_source}.
-
-\section{Considerações Iniciais}
 
 Neste projeto o objetivo era alcançar uma implementação completamente polinomial para expressões regulares. Alcançado o primeiro objetivo, a implementação foi focada na simplicidade. Foram evitados truques de implementação que a tornassem mais rápida em detrimento da legibilidade. Todas as escolhas foram para reduzir a complexidade da implementação. Mesmo assim, o algoritmo utilizado foi eficiente o bastante para atingir o objetivo inicial.
 
@@ -834,8 +848,7 @@ machine = pyrex.rex('a(ab)+')
 print machine.match('aabab')
 \end{lstlisting}
 
-O retorno da chamada da função match pode ser tanto uma tupla com dois elementos (índices de início e final do match) ou uma referência nula (\emph{None} em Python). No exemplo da Listagem~\ref{lst:usage_example}, o retorno seria uma tupla $(0, 5)$, indicando que o match começa no índice 0 da string e termina no índice 4. Perceba que o índice final é tomado exclusivamente.
-
+O retorno da chamada da função match pode ser tanto uma tupla com dois elementos (índices de início e final do match) ou uma referência nula (\emph{None} em Python). No exemplo da Listagem~\ref{lst:usage_example}, o retorno seria uma tupla $(0, 5)$, indicando que o match começa no índice 0 da string e termina no índice 4. Perceba que a tupla denota um intervalo aberto à direita.
 
 \section{Análise sintática}
 
@@ -1091,7 +1104,7 @@ O problema de reconhecer palavras usando expressões regulares é uma problema d
 
 Uma expressão regular $abcd$ retornaria um match válido numa palavra $zzabcdzz$. Este comportamento permite que múltiplas soluções sejam válidas. Por exemplo, a mesma expressão poderia encontrar dois resultados diferentes na palavra $abcdabcd$. Muitos resultados poderiam se sobrepor, inclusive. A expressão $a*$, ao avaliar a palavra $aaaa$ pode levar a 10 resultados diferentes. A implementação utilizada influencia bastante na escolha de qual dos resultados deve ser retornado.
 
-A implementação proposta neste projeto sempre favorece as respostas mais longas. Em caso de empate, é favorecida a resposta que inicie mais à esquerda na entrada. Este comportamento é garantido pela função \emph{key}, representada naLlistagem~\ref{lst:matcher} na Página~\pageref{lst:matcher}.
+A implementação proposta neste projeto sempre favorece as respostas mais longas. Em caso de empate, é favorecida a resposta que inicie mais à esquerda na entrada. Este comportamento é garantido pela função \emph{key}, representada na Listagem~\ref{lst:matcher} na Página~\pageref{lst:matcher}.
 
 Este comportamento é coerente com o artigo original de Thompson e, consequentemente, com as implementações de ferramentas como \emph{sed} e \emph{grep} do sistema operacional Unix. Por outro lado, diverge de outras implementações usuais baseadas na do Perl, que geralmente retornam a primeira resposta encontrada seguindo uma ordem gulosa de avaliação \cite{bib:Cox07}.
 
@@ -1102,7 +1115,7 @@ $a*(b|abc)$ contra a string $abc$. A implementação padrão do Python retornari
 
 No Capítulo~\ref{cap:theory} foram mostradas diversas formas de simular o autômato construído a partir da expressão regular. Cada uma delas tem características particulares de complexidade de tempo e espaço, além de dificuldades de implementação diversas.
 
-O que se propõe nesta seção é demonstrar que qualquer implementação de expressões regulares que suporte \emph{backreferences} necessariamente torna o \emph{MATCH} um problema NP-difícil. Este resultado, apesar de não provar que estas implementações são intratáveis computacionalmente (o que envolveria provar que $P \neq NP$), na prática mostra que qualquer algoritmo conhecido é suficientemente ineficiente para aplicações onde o tempo de execução é crítico.
+O que se propõe nesta seção é demonstrar que qualquer implementação de expressões regulares que suporte \emph{backreferences} necessariamente torna o \emph{match} um problema NP-difícil. Este resultado mostra que qualquer algoritmo conhecido é suficientemente ineficiente para aplicações onde o tempo de execução é crítico.
 
 \subsection{Problemas NP-difíceis}
 
@@ -1126,17 +1139,17 @@ A classe NP diz respeito a todos os problemas de \emph{decisão} que podem ser r
 \end{figure}
 
 
-Uma característica importante dos problemas em NP é que se a resposta para o problema for \emph{sim}, dada uma \emph{evidência} (ou \emph{testemunha}) que mostre tal fato, é possível determinar em tempo polinomial se esta resposta está correta ou não utilizando uma máquina de Turing determinística.
+Uma característica importante dos problemas em NP é que se a resposta para o problema for \emph{sim}, dada um \emph{certificado} (ou \emph{testemunha}) que mostre tal fato, é possível determinar em tempo polinomial se esta resposta está correta ou não utilizando uma máquina de Turing determinística.
 
 Nos anos 70, Stephen Cook introduziu o conceito de problemas NP-completos \cite{bib:Cook71}. São problemas em NP tais que qualquer outro problema em NP pode ser reduzido a eles em tempo polinomial. Qualquer solução polinomial de um problema NP-completo demonstraria que todos os problemas em NP podem ser resolvidos polinomialmente em máquinas de Turing determinísticas.
 
 Cook também provou provou que o problema de satisfabilidade booleana (SAT) é NP-completo. Resultado parecido com o que Leonid Levin alcançou independentemente em 1973 \cite{bib:Levin73}. Hoje este resultado é conhecido como teorema de Cook--Levin. 
 
-O problema de satisfabilidade consiste em determinar se existe uma interpretação que satisfaça uma expressão booleana, i.e. se existe uma atribuição de variáveis que avalie tal expressão como \emph{verdadeira}. Neste problema, a \emph{evidência} consiste no conjunto de valores a se atribuir às variáveis para que a expressão seja avaliada como verdadeira. Para verificá-la, basta substituir por tais valores e avaliar a expressão resultante.
+O problema de satisfabilidade consiste em determinar se existe uma interpretação que satisfaça uma expressão booleana, i.e. se existe uma atribuição de variáveis que avalie tal expressão como \emph{verdadeira}. Neste problema, o \emph{certificado} consiste no conjunto de valores a se atribuir às variáveis para que a expressão seja avaliada como verdadeira. Para verificá-la, basta substituir por tais valores e avaliar a expressão resultante.
 
 Certas variações de SAT podem pertencer a classes de problemas diferentes. Uma variação possível é restringir às expressões booleanas a sempre estarem na CNF (\emph{Conjunctive Normal Form} ou Forma Normal Conjuntiva). 
 
-Se a expressão booleana estiver escrita na 2CNF (forma normal conjuntiva com no máximo 2 variáveis por cláusula) este problema torna-se polinomial. Neste caso, é referido como 2-satisfabilidade (2SAT). Entretanto, se a expressão estiver escrita na 3CNF, o problema (3SAT) continua NP-completo \cite{bib:Karp72}.
+Se a expressão booleana estiver escrita na 2CNF (forma normal conjuntiva com no máximo 2 variáveis por cláusula) este problema torna-se polinomial. Neste caso, é referido como 2-satisfabilidade (2SAT). Entretanto, se a expressão estiver escrita na 3CNF, o problema ({\sc 3sat}) continua NP-completo \cite{bib:Karp72}.
 
 Uma expressão está na 3CNF se ela está na forma:
 
@@ -1153,15 +1166,45 @@ Durante o reconhecimento de expressões regulares, uma funcionalidade comum em i
 
 Baseado nesta funcionalidade, muitas implementações modernas adicionam a capacidade de referenciar tais grupos de captura ainda durante o match de uma string. Por exemplo, dada uma linguagem $L = \{a^nba^n \mid n \in \mathbb{N}\}$, seria possível denotá-la com a expressão $(a*)b \backslash 1$. A referência ao grupo de captura 1 $(a*)$ se dá pela expressão $\backslash 1$.
 
-Denotaremos aqui o problema de reconhecimento de expressões regulares com \emph{backreferences} como $MATCH(e, s)$ onde $e$ é uma expressão regular com \emph{backreferences} e $n$ grupos de captura e $s$ a string a ser reconhecida. O objetivo é encontrar tupla $r = (s_1, s_2, \cdots, s_n)$, onde $s_i$ são substrings de $s$. A definição de $MATCH(e, s)$ é: existe tupla $r$ que pertença a linguagem definida pela expressão $e$?
+Denotaremos aqui o problema de reconhecimento de expressões regulares com \emph{backreferences} como {\sc Match}.
 
-\subsection{Implementação de 3SAT com expressões regulares}
 
-Para provar que um problema pertence a NP-díficil, basta provar que existe um problema em NP-completo que se reduz a ele em tempo polinomial. Usaremos 3SAT para tal prova.
+\begin{definition}{Match}
+Dada uma expressão regular $E$ com \emph{backreferences} abrangendo $n$ grupos de captura e $S$ a string a ser reconhecida, encontrar tupla $C = (c_1, c_2, \cdots, c_n)$, onde $c_i$ é substring de $s$ relativa ao reconhecimento do $i$-ésimo grupo de captura.
+\end{definition}
 
-Dada uma expressão booleana denotada na 3CNF, é possível construir uma expressão regular com \emph{backreferences} que reconhece uma string em especial se e somente se a expressão booleana tiver uma interpretação válida.
+\begin{theorem}
+{\sc Match} é NP-difícil.
+\end{theorem}
+\begin{proof}
+{\sc 3sat} é redutível para {\sc Match} utilizando a seguinte lógica: para resolver uma fórmula com $n$ variáveis e $m$ cláusulas, define-se a expressão regular
 
-Como exemplo, pode-se observar a expressão booleana
+\setlength\abovedisplayskip{0pt}
+\begin{equation*}
+            E = 
+                   \wedge (x?)^n .*;
+                   (?:\backslash 1v_{11}|\backslash 2 v_{12}|\backslash 3 v_{13}),
+                   (?:\backslash 1v_{21}|\backslash 2 v_{22}|\backslash 3 v_{23}),                   
+                   \ldots
+                   (?:\backslash 1v_{m1}|\backslash 2 v_{m2}|\backslash 3 v_{m3}),                   
+                    \$ 
+\end{equation*}
+
+\noindent e a string a ser reconhecida
+
+\setlength\abovedisplayskip{0pt}
+\begin{equation*}
+S = x^n;x,^m
+\end{equation*}
+
+\noindent onde $v_{ij} = x$ se a variável $j$ da cláusula $i$ aparecer negada na fórmula, caso contrário, $v_{ij} = \epsilon$. Isto força o reconhecimento da \emph{backreference} $\backslash j$ como $x$ ou $\epsilon$ respectivamente, porém pelo menos uma das variáveis precisa reconhecer a substring $x,$ definida para cada cláusula na string $S$. Assim, existem grupos de captura $C = (c_1, c_2, \cdots, c_n)$ se e somente se for possível reconhecer tanto as expressões dos grupos de captura ($x$ ou $\epsilon$ para $verdadeiro$ ou $falso$, respectivamente), como as \emph{backreferences} que representam as cláusulas da fórmula de forma consistente. Como tanto a expressão $E$ quanto a string $S$ podem ser construídas em $O(n+m)$ {\sc Match} é NP-difícil. \qed
+\end{proof}
+
+\subsection{Implementação de {\sc 3sat} com expressões regulares}
+
+Para exemplificar a demonstração da seção anterior, será descrita aqui uma implementação que permite a solução de instâncias do problema \textsc{3sat} utilizando as expressões regulares da linguagem Python.
+
+Como exemplo, pode-se observar a fórmula:
 
 \setlength\abovedisplayskip{0pt}
 \begin{equation*}
@@ -1186,10 +1229,10 @@ Ao tentar realizar match desta expressão com a string $xxx;x,x,x,x,$ o resultad
 
 A primeira parte da expressão denota os grupos iniciais onde entre 0 e 3 variáveis podem ser verdadeiras (reconhecendo `x'). A segunda parte da expressão define as cláusulas. Toda cláusula começa com a definição de um grupo que não gera captura, $(?:\ldots$. Então cada variável é descrita com uma altenação. $\backslash i$ referencia a variável $x_i$, enquanto $\backslash ix$ denota sua negação.
 
-A Listagem~\ref{lst:nphard} mostra uma implementação em Python de 3-SAT utilizando expressões regulares.
+A Listagem~\ref{lst:nphard} mostra uma implementação em Python de {\sc 3sat} utilizando expressões regulares.
 
 \vspace{0.5cm}
-\lstinputlisting[caption={Implementação de 3SAT com expressões regulares},label=lst:nphard]{benchmark/nphard.py}
+\lstinputlisting[caption={Implementação de {\sc 3sat} com expressões regulares},label=lst:nphard]{benchmark/nphard.py}
 
 \section{Benchmarks}
 
@@ -1247,7 +1290,7 @@ A Figura~\ref{fig:graph_bench_2} mostra o tempo de execução para as diferentes
 
 \subsection{Benchmark 3: a*a*a*a*a*b}
 
-Neste teste, o objetivo era demonstrar como mesmo em casos onde implementações baseadas em backtracking não geram tempos de execução exponenciais, ainda assim é possível alcançar tempos de execução super-lineares. Esta expressão força um backtracking para consumo de várias repetições $a*$. O tempo de execução esperado para implementações baseadas em backtracking é $O(n^5)$.
+Neste teste, o objetivo era demonstrar como mesmo em casos onde implementações baseadas em backtracking não geram tempos de execução exponenciais, ainda assim é possível alcançar tempos de execução maiores que $O(n)$. Esta expressão força um backtracking para consumo de várias repetições $a*$. O tempo de execução esperado para implementações baseadas em backtracking é $O(n^5)$.
 
 A Figura~\ref{fig:graph_bench_3} mostra o tempo de execução para as diferentes implementações. A tabela na Seção~\ref{sec:table_bench_3} (Página~\pageref{sec:table_bench_3}) contém os dados para este gráfico.
 
@@ -1284,7 +1327,7 @@ Estes resultados confirmam a necessidade de parcimônia ao utilizar expressões 
 
 \section{Funcionalidades não implementadas}
 
-Enquanto o principal objetivo neste trabalho era apresentar uma implementação simples de expressões regulares, algumas funcionalidades comuns em implementações modernas foram propositalmente ignoradas. Enquanto algumas delas podem ser implementadas facilmente sem sacrificar complexidade de tempo, outras necessariamente tornariam o match exponencial.
+O principal objetivo neste trabalho era apresentar uma implementação simples de expressões regulares, algumas funcionalidades comuns em implementações modernas foram propositalmente ignoradas. Enquanto algumas delas podem ser implementadas facilmente sem sacrificar complexidade de tempo, outras necessariamente tornariam o match exponencial. A seguir são comentadas algumas funcionalidades não implementadas.
 
 \begin{description}
 	\item[Classes de caracteres:] Para facilitar a escrita de expressões, muitas implementações disponibilizam conjuntos pré-definidos de caracteres. Exemplos incluem $\backslash w$, que inclui letras, números e underscore; ou $\backslash d$, que inclui todos os caracteres numéricos. Também deveria ser possível reconhecer classes customizadas, e.g. $[0-9a-fA-F]$, para caracteres aceitáveis num número na base hexadecimal.
@@ -1293,7 +1336,7 @@ Enquanto o principal objetivo neste trabalho era apresentar uma implementação 
 
 	\item[Captura de grupos:] A possibilidade de capturar grupos pode ser importante para extrair informações de strings. Por exemplo, para capturar números separados por vírgula, seria possível escrever a expressão $(\backslash d+),(\backslash d+)$. Assim, a primeira captura seria o primeiro número e a segunda o segundo número.
 
-	\item[Repetições contadas:] Poder definir a repetição de um grupo um número finito de vezes. A expressão $a\{2,4\}$ reconhece exatamente as strings $aa$, $aaa$ e $aaaa$. Apesar de ser fácil implementar usando autômatos (basta reescrever a expressão para $aaa?a?$. Porém, esta reescrita pode ter um crescimento exponencial. Um exemplo é a expressão $a\{1000000\}$. Onde uma expressão com 10 caracteres gera um autômato com no mínimo um milhão de estados.
+	\item[Repetições contadas:] É util poder definir a repetição de um certo grupo de captura um número finito de vezes, e.g. a expressão $a\{2,4\}$ deve reconhece exatamente as strings $aa$, $aaa$ e $aaaa$. É uma funcionalidade de simples implementação usando autômatos, bastando por exemplo reescrever a expressão como $aaa?a?$. Esta reescrita, porém, pode ter um crescimento exponencial. Um exemplo é a expressão $a\{1000000\}$. Onde uma expressão com 10 caracteres geraria um autômato com no mínimo um milhão de estados.
 	
 	\item[\emph{Zero-width assertions}:] Algumas vezes pode ser necessário condicionar o match de um grupo ao match de outras strings em volta da região do match principal. Exemplos incluem o match de fronteiras de palavra ($\backslash b$), que pode ser útil ao buscar por uma palavra inteira numa string. A expressão $\backslash bpalavra\backslash b$, por exemplo, procura por $palavra$ na entrada desde que não seja uma substring de nenhuma outra palavra.
 	
