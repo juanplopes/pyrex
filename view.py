@@ -8,8 +8,9 @@ try: input = raw_input
 except NameError: pass
 
 def simulate(machine, string):
-    for i, (answer, state) in enumerate(machine.matcher(string)):
-        print('Best answer: ' + (string[answer[0]:answer[1]] + ' ' + str(answer) if answer else '<none>'))
+    for i, answer, state in machine.matcher(string):
+        best = (string[answer[0]:answer[1]] + ' ' + str(answer) if answer else '<none>')
+        print('Best answer: ' + best)
         print('Input: ' + string)
         print('       ' + i*' ' + '^' + ' (' + str(i) + ')')
         print()

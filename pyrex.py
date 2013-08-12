@@ -45,38 +45,40 @@ def rex(pattern):
 class Machine(object):
     def __init__(self, states):
         self.states = states
+        self.n = len(states)
         
     def matcher(self, string):
-        A, B, V = deque(), deque(), set()
+        A, B, V = list(), list(), [-1]*len(self.states)
             
-        def addnext(start, j):
-            if j==len(self.states): return 1
-            if j in V or V.add(j): return 0
+        def addnext(start, i, j):
+            if j==self.n: return 1
+            if V[j] == i: return 0
+            V[j] = i
 
             if isinstance(self.states[j], tuple):
-                return sum(addnext(start, j+k) for k in self.states[j])
+                return sum(addnext(start, i, j+k) for k in self.states[j])
 
             B.append((start, j))
             return 0
         
-        key = lambda a: (a[1]-a[0], -a[0]) if a else (0, 0)
-        matches = lambda j, c: self.states[j] in (None, c)
-        
+        def key(a): return (a[1]-a[0], -a[0]) if a else (0, 0)
+
         answer = None
         for i, c in enumerate(string):
-            addnext(i, 0)
-            yield answer, B
+            addnext(i, i, 0)
+            yield i, answer, B
             
-            A, B, V = B, deque(), set()
+            A, B = B, A
+            del B[:]
 
             for start, j in A:
-                if matches(j, c) and addnext(start, j+1):
+                if self.states[j] in (None, c) and addnext(start, i+1, j+1):
                     answer = max(answer, (start, i+1), key=key)
             
-        yield answer, B
+        yield len(string), answer, B
         
     def match(self, string):
-        return reduce(lambda answer, s: s[0], self.matcher(string), None)
+        return reduce(lambda answer, s: s[1], self.matcher(string), None)
      
     def source(self):
         for s in self.states:
