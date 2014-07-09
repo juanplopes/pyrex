@@ -1,0 +1,14 @@
+#!/bin/bash
+
+echo 'a*b' > input2.txt
+echo 'n' > bench2.txt
+
+for i in $(seq 0 20 500); 
+do 
+    eval printf 'a%0.s' {1..$i} >> input2.txt
+    echo >> input2.txt
+    echo $i >> bench2.txt
+done
+
+./bench_run input2.txt bench2.txt ${1:-16}
+rm input2.txt
